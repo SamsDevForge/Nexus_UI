@@ -10,6 +10,7 @@ import {
   Environment,
 } from "@react-three/drei";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
@@ -531,7 +532,7 @@ export function NexusExperience() {
         <div className="brand-lockup" aria-label="Nexus AI">
           <span className="logo-crop" aria-hidden="true">
             <Image
-              src="/nexus-logo.png"
+              src="/nexus-logo.svg"
               alt=""
               fill
               sizes="38px"
@@ -566,12 +567,12 @@ export function NexusExperience() {
           context and acts before small problems become interruptions.
         </p>
         <div className="hero-actions">
-          <button className="primary-action" type="button" onClick={runSequence}>
-            <span>{stage === "ready" ? "Replay My Day" : "Preview My Day"}</span>
+          <Link className="primary-action" href="/app/today">
+            <span>Preview My Day</span>
             <span className="action-glyph" aria-hidden="true">
               ↗
             </span>
-          </button>
+          </Link>
           <button className="text-action" type="button" onClick={runSequence}>
             Explore the intelligence
             <span aria-hidden="true">—</span>

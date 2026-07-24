@@ -29,14 +29,17 @@ yarn-error.log*
 .pnpm-debug.log*
 .codex-dev*.log
 .codex-active*.log
+.codex-*.log
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
 
 # typescript
 next-env.d.ts
+*.tsbuildinfo
 /dist/
 /.wrangler/

@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   description:
     "An intelligent personal layer that connects routines, understands context and acts before interruptions happen.",
   icons: {
-    icon: "/nexus-logo.png?v=4",
-    shortcut: "/nexus-logo.png?v=4",
+    icon: "/nexus-logo.svg?v=1",
+    shortcut: "/nexus-logo.svg?v=1",
   },
 };
 
