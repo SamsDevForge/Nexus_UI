@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "NEXUS Rigid Display";
+  src: url("/fonts/nexus-rigid-display.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "NEXUS Wide Display";
+  src: url("/fonts/nexus-wide-display.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
 :root {
   --ink: #080a0d;
   --pearl: #edf2f6;
@@ -50,9 +66,9 @@ body {
 
 body {
   --nx-font-rigid:
-    "Rigid Square", var(--font-rigid-display), "Arial Black", sans-serif;
+    "Rigid Square", "NEXUS Rigid Display", "Arial Black", sans-serif;
   --nx-font-druk-wide:
-    "Druk Wide Bold", "Druk Wide", var(--font-druk-wide), "Arial Black",
+    "Druk Wide Bold", "Druk Wide", "NEXUS Wide Display", "Arial Black",
     sans-serif;
   margin: 0;
   color: var(--pearl);
