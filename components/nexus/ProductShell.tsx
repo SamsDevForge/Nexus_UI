@@ -46,6 +46,18 @@ export function ProductShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="product-shell">
+      <div className="product-cube-field" aria-hidden="true">
+        <span className="product-cube-halo" />
+        <div className="product-cube">
+          <span className="product-cube-face cube-face-front" />
+          <span className="product-cube-face cube-face-back" />
+          <span className="product-cube-face cube-face-right" />
+          <span className="product-cube-face cube-face-left" />
+          <span className="product-cube-face cube-face-top" />
+          <span className="product-cube-face cube-face-bottom" />
+        </div>
+      </div>
+
       <aside className="app-sidebar">
         <BrandLockup />
 

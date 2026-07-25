@@ -111,29 +111,31 @@ body text.
 - Align evidence, source, and action regions consistently.
 - Prefer grouped rows and section rhythm over separate cards for every object.
 
-## Surfaces and neumorphism
+## Surfaces and glass
 
-Dark neumorphism should appear sculpted from one environment.
+Product mode uses restrained dark glassmorphism over the atmospheric cube
+field. Glass must preserve hierarchy and legibility rather than becoming a
+collection of decorative translucent cards.
 
-Raised surface:
+Primary glass:
 
-- Subtle upper highlight
-- Deep, wide lower shadow
-- Low-contrast edge
-- Minimal transparency
+- Low-opacity graphite-blue fill
+- Controlled background blur and saturation
+- Thin pearl edge with a brighter top reflection
+- Soft depth shadow without muddy black rims
 
-Inset surface:
+Secondary glass:
 
-- Dark inner shadow
-- Controlled top reflection
-- Clear focus state
+- Lower blur and opacity than the primary insight
+- Shared boundaries for grouped sections
+- Clear focus and hover states
 
 Avoid:
 
 - Bright outlines around every surface
-- Heavy backdrop blur
+- Excessive blur that obscures the cube or text
 - Large collections of identical rounded cards
-- Shadows so dark that elements appear dirty
+- Fully transparent controls with weak contrast
 - Low-contrast grey-on-grey text
 
 ## Component families
@@ -258,5 +260,5 @@ A screen is not complete if:
 - Content could belong to any productivity app.
 
 The visual signature should come from purposeful contrast, stateful light,
-evidence-first insights, sculpted material, and a coherent context-to-action
-story.
+evidence-first insights, restrained glass depth, and a coherent
+context-to-action story.

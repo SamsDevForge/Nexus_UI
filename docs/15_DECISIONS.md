@@ -97,3 +97,14 @@ hierarchy.
 Unbounded and Anybody are self-hosted under the SIL Open Font License. Druk
 Wide remains unbundled without licensed webfont files, so the timing role uses
 the existing self-hosted open-source visual equivalent.
+
+## D-015 — Product mode uses restrained glass over a cube field
+
+The cinematic landing page remains unchanged. Product mode replaces the
+original dark-neumorphic material treatment with restrained dark
+glassmorphism while preserving the established information hierarchy,
+typography, interaction model, and sparse accent colour.
+
+A slow CSS 3D cube sits behind the interface as an atmospheric system-state
+object. Glass surfaces reveal it without compromising text contrast. The cube
+stops under reduced-motion preferences and is simplified at narrow widths.
