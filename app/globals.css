@@ -2478,8 +2478,8 @@ button {
   overflow: hidden;
   border: 1px solid rgba(207, 226, 245, 0.1);
   background: rgba(8, 14, 21, 0.24);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
-  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--nx-surface-blur)) saturate(108%);
+  backdrop-filter: blur(var(--nx-surface-blur)) saturate(108%);
 }
 
 .technical-overview {
@@ -3394,6 +3394,9 @@ button {
   --nx-glass-fill-strong: rgba(10, 13, 17, 0.34);
   --nx-glass-line: rgba(211, 235, 250, 0.13);
   --nx-glass-highlight: rgba(236, 248, 255, 0.1);
+  --nx-surface-blur: 4px;
+  --nx-inset-blur: 14px;
+  --nx-control-blur: 18px;
   background:
     radial-gradient(circle at 67% 45%, rgba(72, 100, 124, 0.1), transparent 24%),
     radial-gradient(circle at 48% 5%, rgba(255, 255, 255, 0.035), transparent 28%),
@@ -3565,6 +3568,22 @@ button {
     0 18px 42px rgba(0, 0, 0, 0.18);
 }
 
+.status-notice,
+.approval-panel,
+.deadline-section,
+.signal-readout,
+.permission-glyph,
+.evidence-chip,
+.status-tag,
+.primary-button,
+.quiet-button,
+.approval-button,
+.open-asset-button,
+.asset-mark {
+  -webkit-backdrop-filter: blur(var(--nx-control-blur)) saturate(142%);
+  backdrop-filter: blur(var(--nx-control-blur)) saturate(142%);
+}
+
 .nav-link.is-active {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.09),
@@ -3593,8 +3612,8 @@ button {
     0 34px 90px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     inset 0 0 90px rgba(91, 176, 226, 0.025);
-  -webkit-backdrop-filter: blur(12px) saturate(125%);
-  backdrop-filter: blur(12px) saturate(125%);
+  -webkit-backdrop-filter: blur(var(--nx-surface-blur)) saturate(110%);
+  backdrop-filter: blur(var(--nx-surface-blur)) saturate(110%);
 }
 
 .insight-timing {
@@ -3604,6 +3623,8 @@ button {
   box-shadow:
     inset 1px 0 0 rgba(255, 255, 255, 0.035),
     inset 18px 0 42px rgba(2, 6, 11, 0.12);
+  -webkit-backdrop-filter: blur(var(--nx-inset-blur)) saturate(132%);
+  backdrop-filter: blur(var(--nx-inset-blur)) saturate(132%);
 }
 
 .evidence-chip,
@@ -3622,11 +3643,23 @@ button {
     rgba(10, 19, 29, 0.28);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 14px 30px rgba(0, 0, 0, 0.21);
+    inset 0 -1px 0 rgba(140, 190, 220, 0.025),
+    0 18px 38px rgba(0, 0, 0, 0.26);
 }
 
 .quiet-button {
   color: rgba(191, 210, 223, 0.79);
+}
+
+.open-asset-button {
+  border: 1px solid rgba(218, 239, 252, 0.09);
+  border-radius: 9px;
+  background:
+    linear-gradient(145deg, rgba(224, 243, 255, 0.055), rgba(28, 62, 88, 0.018)),
+    rgba(10, 19, 29, 0.19);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 11px 24px rgba(0, 0, 0, 0.16);
 }
 
 .today-band,
@@ -3638,8 +3671,8 @@ button {
   background:
     linear-gradient(145deg, rgba(221, 241, 253, 0.05), rgba(31, 68, 95, 0.012)),
     rgba(7, 15, 24, 0.14);
-  -webkit-backdrop-filter: blur(9px) saturate(118%);
-  backdrop-filter: blur(9px) saturate(118%);
+  -webkit-backdrop-filter: blur(3px) saturate(106%);
+  backdrop-filter: blur(3px) saturate(106%);
 }
 
 .today-band {

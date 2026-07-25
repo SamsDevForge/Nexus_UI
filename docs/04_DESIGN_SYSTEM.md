@@ -121,13 +121,15 @@ collection of decorative translucent cards.
 Primary glass:
 
 - Low-opacity graphite-blue fill
-- Controlled background blur and saturation
+- Low background blur so the cube and atmospheric depth remain legible
 - Thin pearl edge with a brighter top reflection
 - Soft depth shadow without muddy black rims
 
 Secondary glass:
 
-- Lower blur and opacity than the primary insight
+- Stronger localized blur on controls, chips, and inset decision elements to
+  separate them spatially from the sharper parent surface
+- Lower-opacity fill than the primary insight
 - Shared boundaries for grouped sections
 - Clear focus and hover states
 

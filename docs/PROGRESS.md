@@ -26,6 +26,8 @@ system, application shell, and mocked Today reference experience.
 - High-transparency dark-glass product theme with the landing page’s obsidian
   WebGL cube behind the interface, plus a secondary smoothly looping glass
   squircle and static reduced-motion fallbacks
+- Depth-tiered glass with sharper low-blur content surfaces and stronger
+  localized blur on buttons, chips, and inset decision elements
 - Desktop product shell with grouped daily and system-control navigation
 - Narrow-width context bar and five-destination bottom navigation
 - Label-first daily navigation with short purpose cues instead of sequence
