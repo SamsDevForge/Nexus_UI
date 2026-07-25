@@ -31,6 +31,8 @@ system, application shell, and mocked Today reference experience.
 - Primary Today interaction surface refined as a restrained hybrid of liquid
   glass, dark glassmorphism, and soft neumorphic elevation
 - Desktop product shell with grouped daily and system-control navigation
+- Collapsible desktop sidebar with accessible compact labels and liquid-glass
+  hover capsules for navigation destinations
 - Narrow-width context bar and five-destination bottom navigation
 - Label-first daily navigation with short purpose cues instead of sequence
   numbers, plus a dedicated Technicals utility beside the account area

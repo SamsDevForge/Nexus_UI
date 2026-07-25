@@ -3,23 +3,43 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { ProductLandingCubeBackdrop } from "./ProductLandingCubeBackdrop";
 
 const dailyNavigation = [
-  { label: "Today", description: "Your day now", href: "/app/today" },
-  { label: "Timeline", description: "What happens next", href: "/app/timeline" },
-  { label: "Insights", description: "Useful recommendations", href: "/app/insights" },
-  { label: "NEXUS", description: "Ask and understand", href: "/app/nexus" },
-  { label: "Knowledge", description: "Find your sources", href: "/app/knowledge" },
+  { label: "Today", compact: "T", description: "Your day now", href: "/app/today" },
+  {
+    label: "Timeline",
+    compact: "TL",
+    description: "What happens next",
+    href: "/app/timeline",
+  },
+  {
+    label: "Insights",
+    compact: "I",
+    description: "Useful recommendations",
+    href: "/app/insights",
+  },
+  {
+    label: "NEXUS",
+    compact: "N",
+    description: "Ask and understand",
+    href: "/app/nexus",
+  },
+  {
+    label: "Knowledge",
+    compact: "K",
+    description: "Find your sources",
+    href: "/app/knowledge",
+  },
 ];
 
 const controlNavigation = [
-  { label: "Automations", href: "/app/automations" },
-  { label: "Connections", href: "/app/connections" },
-  { label: "Memory", href: "/app/memory" },
-  { label: "Activity", href: "/app/activity" },
-  { label: "Settings", href: "/app/settings" },
+  { label: "Automations", compact: "AU", href: "/app/automations" },
+  { label: "Connections", compact: "CO", href: "/app/connections" },
+  { label: "Memory", compact: "M", href: "/app/memory" },
+  { label: "Activity", compact: "AC", href: "/app/activity" },
+  { label: "Settings", compact: "S", href: "/app/settings" },
 ];
 
 function BrandLockup() {
@@ -44,9 +64,16 @@ function BrandLockup() {
 
 export function ProductShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [sidebarMinimized, setSidebarMinimized] = useState(false);
 
   return (
-    <div className="product-shell">
+    <div
+      className={
+        sidebarMinimized
+          ? "product-shell is-sidebar-minimized"
+          : "product-shell"
+      }
+    >
       <div className="product-cube-field" aria-hidden="true">
         <ProductLandingCubeBackdrop />
         <span className="product-cube-halo" />
@@ -62,8 +89,23 @@ export function ProductShell({ children }: { children: ReactNode }) {
         </div>
       </div>
 
-      <aside className="app-sidebar">
-        <BrandLockup />
+      <aside className="app-sidebar" id="product-sidebar">
+        <div className="sidebar-brand-row">
+          <BrandLockup />
+          <button
+            className="sidebar-minimize"
+            type="button"
+            aria-controls="product-sidebar"
+            aria-expanded={!sidebarMinimized}
+            aria-label={
+              sidebarMinimized ? "Expand product sidebar" : "Minimize product sidebar"
+            }
+            title={sidebarMinimized ? "Expand sidebar" : "Minimize sidebar"}
+            onClick={() => setSidebarMinimized((current) => !current)}
+          >
+            <span aria-hidden="true" />
+          </button>
+        </div>
 
         <div className="sidebar-state" aria-label="NEXUS is observing">
           <span className="sidebar-state-light" aria-hidden="true" />
@@ -88,11 +130,16 @@ export function ProductShell({ children }: { children: ReactNode }) {
                       : "nav-link nav-link-daily"
                   }
                   aria-current={active ? "page" : undefined}
+                  aria-label={item.label}
+                  title={sidebarMinimized ? item.label : undefined}
                 >
                   <span className="nav-section-cue" aria-hidden="true" />
                   <span className="nav-copy">
                     <b>{item.label}</b>
                     <small>{item.description}</small>
+                  </span>
+                  <span className="nav-compact-label" aria-hidden="true">
+                    {item.compact}
                   </span>
                   {active ? <i aria-hidden="true" /> : null}
                 </Link>
@@ -110,9 +157,14 @@ export function ProductShell({ children }: { children: ReactNode }) {
                   href={item.href}
                   className={active ? "nav-link is-active" : "nav-link"}
                   aria-current={active ? "page" : undefined}
+                  aria-label={item.label}
+                  title={sidebarMinimized ? item.label : undefined}
                 >
                   <span className="nav-control-dot" aria-hidden="true" />
-                  <span>{item.label}</span>
+                  <span className="nav-control-label">{item.label}</span>
+                  <span className="nav-compact-label" aria-hidden="true">
+                    {item.compact}
+                  </span>
                   {active ? <i aria-hidden="true" /> : null}
                 </Link>
               );
@@ -128,6 +180,7 @@ export function ProductShell({ children }: { children: ReactNode }) {
               : "sidebar-technicals"
           }
           aria-current={pathname === "/app/technicals" ? "page" : undefined}
+          title={sidebarMinimized ? "Dive into the technicals" : undefined}
         >
           <span className="technicals-glyph" aria-hidden="true">
             <i />
@@ -141,7 +194,9 @@ export function ProductShell({ children }: { children: ReactNode }) {
         </Link>
 
         <div className="sidebar-account">
-          <span className="account-monogram">AS</span>
+          <span className="account-monogram" title="Aadi Sharma">
+            AS
+          </span>
           <span>
             <b>Aadi Sharma</b>
             <small>Student profile</small>

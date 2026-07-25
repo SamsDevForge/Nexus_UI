@@ -86,6 +86,9 @@ Control navigation:
 Prototype diagnostics live in a separate Technicals utility beside the account
 area. They do not appear inside the daily decision surface.
 
+The desktop sidebar can collapse into a compact labelled rail. Accessible names
+and recognizable short labels remain available in the minimized state.
+
 Do not give all destinations equal visual weight. The first group supports daily
 use; the second controls the system.
 

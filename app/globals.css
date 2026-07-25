@@ -1016,6 +1016,7 @@ button {
     radial-gradient(circle at 70% -5%, rgba(127, 181, 220, 0.08), transparent 35%),
     linear-gradient(145deg, var(--nx-bg-1), var(--nx-bg-0) 75%);
   color: var(--nx-text-1);
+  transition: grid-template-columns var(--nx-motion-panel) var(--nx-ease-out);
 }
 
 .product-shell::before {
@@ -1056,6 +1057,13 @@ button {
   background: linear-gradient(90deg, transparent, rgba(209, 233, 249, 0.25));
 }
 
+.sidebar-brand-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .app-brand {
   display: inline-flex;
   gap: 12px;
@@ -1094,6 +1102,43 @@ button {
 .app-wordmark b {
   color: var(--nx-accent);
   font-weight: 580;
+}
+
+.sidebar-minimize {
+  position: relative;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(207, 226, 245, 0.08);
+  border-radius: 10px;
+  background: rgba(7, 12, 18, 0.34);
+  color: rgba(173, 201, 219, 0.68);
+  cursor: pointer;
+  place-items: center;
+  transition:
+    border-color var(--nx-motion-micro) ease,
+    background var(--nx-motion-micro) ease,
+    color var(--nx-motion-micro) ease,
+    transform var(--nx-motion-micro) ease;
+  -webkit-backdrop-filter: blur(var(--nx-control-blur)) saturate(138%);
+  backdrop-filter: blur(var(--nx-control-blur)) saturate(138%);
+}
+
+.sidebar-minimize:hover {
+  border-color: rgba(217, 240, 253, 0.2);
+  background: rgba(28, 45, 58, 0.42);
+  color: var(--nx-light);
+  transform: translateY(-1px);
+}
+
+.sidebar-minimize > span {
+  width: 7px;
+  height: 7px;
+  border-bottom: 1px solid currentcolor;
+  border-left: 1px solid currentcolor;
+  transform: translateX(1px) rotate(45deg);
+  transition: transform var(--nx-motion-component) var(--nx-ease-out);
 }
 
 .sidebar-state {
@@ -1173,12 +1218,15 @@ button {
 
 .nav-link {
   position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: 24px 1fr auto;
   gap: 8px;
   align-items: center;
   min-height: 42px;
+  overflow: hidden;
   padding: 0 11px;
+  border: 1px solid transparent;
   border-radius: 12px;
   color: rgba(164, 180, 193, 0.68);
   font-size: 12px;
@@ -1189,9 +1237,43 @@ button {
     transform var(--nx-motion-micro) ease;
 }
 
+.nav-link::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+  background:
+    radial-gradient(75% 38% at 24% 0%, rgba(246, 253, 255, 0.16), transparent 70%),
+    radial-gradient(36% 90% at 100% 48%, rgba(150, 212, 245, 0.075), transparent 72%),
+    linear-gradient(118deg, rgba(231, 247, 255, 0.07), rgba(41, 79, 104, 0.018) 42%, rgba(6, 13, 20, 0.12));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.095),
+    0 14px 30px rgba(0, 0, 0, 0.16);
+  opacity: 0;
+  transition:
+    border-color var(--nx-motion-micro) ease,
+    opacity var(--nx-motion-micro) ease;
+  -webkit-backdrop-filter: blur(var(--nx-control-blur)) saturate(142%);
+  backdrop-filter: blur(var(--nx-control-blur)) saturate(142%);
+}
+
+.nav-link > * {
+  position: relative;
+  z-index: 1;
+}
+
 .nav-link:hover {
   color: rgba(226, 236, 243, 0.92);
   transform: translateX(2px);
+}
+
+.nav-link:hover::before,
+.nav-link:focus-visible::before {
+  border-color: rgba(222, 243, 255, 0.17);
+  opacity: 1;
 }
 
 .nav-link.is-active {
@@ -1273,6 +1355,10 @@ button {
   color: rgba(151, 175, 191, 0.76);
 }
 
+.nav-compact-label {
+  display: none;
+}
+
 .nav-control-dot {
   width: 4px;
   height: 4px;
@@ -1282,10 +1368,13 @@ button {
 }
 
 .sidebar-technicals {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr);
   gap: 10px;
   align-items: center;
+  overflow: hidden;
   margin-top: 14px;
   padding: 11px 10px;
   border: 1px solid rgba(207, 226, 245, 0.07);
@@ -1300,10 +1389,40 @@ button {
     transform var(--nx-motion-micro) ease;
 }
 
+.sidebar-technicals::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+  background:
+    radial-gradient(78% 38% at 22% 0%, rgba(246, 253, 255, 0.15), transparent 72%),
+    linear-gradient(120deg, rgba(231, 247, 255, 0.06), rgba(35, 73, 98, 0.018), rgba(7, 14, 21, 0.11));
+  opacity: 0;
+  transition:
+    border-color var(--nx-motion-micro) ease,
+    opacity var(--nx-motion-micro) ease;
+  -webkit-backdrop-filter: blur(var(--nx-control-blur)) saturate(142%);
+  backdrop-filter: blur(var(--nx-control-blur)) saturate(142%);
+}
+
+.sidebar-technicals > * {
+  position: relative;
+  z-index: 1;
+}
+
 .sidebar-technicals:hover {
   border-color: rgba(206, 232, 248, 0.15);
   color: rgba(236, 243, 248, 0.94);
   transform: translateY(-1px);
+}
+
+.sidebar-technicals:hover::before,
+.sidebar-technicals:focus-visible::before {
+  border-color: rgba(222, 243, 255, 0.17);
+  opacity: 1;
 }
 
 .sidebar-technicals.is-active {
@@ -1387,6 +1506,113 @@ button {
   font-size: 12px;
   letter-spacing: 0.12em;
   text-decoration: none;
+}
+
+.product-shell.is-sidebar-minimized {
+  grid-template-columns: 82px minmax(0, 1fr);
+}
+
+.product-shell.is-sidebar-minimized .app-sidebar {
+  padding: 22px 13px 18px;
+}
+
+.product-shell.is-sidebar-minimized .app-sidebar::after {
+  right: 13px;
+  width: 52%;
+}
+
+.product-shell.is-sidebar-minimized .sidebar-brand-row {
+  gap: 4px;
+}
+
+.product-shell.is-sidebar-minimized .app-brand-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.product-shell.is-sidebar-minimized .app-wordmark,
+.product-shell.is-sidebar-minimized .sidebar-state > span:last-child,
+.product-shell.is-sidebar-minimized .nav-group > p,
+.product-shell.is-sidebar-minimized .nav-section-cue,
+.product-shell.is-sidebar-minimized .nav-copy,
+.product-shell.is-sidebar-minimized .nav-control-dot,
+.product-shell.is-sidebar-minimized .nav-control-label,
+.product-shell.is-sidebar-minimized .nav-link > i,
+.product-shell.is-sidebar-minimized .sidebar-technicals > span:last-child,
+.product-shell.is-sidebar-minimized .sidebar-account > span:nth-child(2),
+.product-shell.is-sidebar-minimized .sidebar-account > a {
+  display: none;
+}
+
+.product-shell.is-sidebar-minimized .sidebar-minimize {
+  width: 24px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.product-shell.is-sidebar-minimized .sidebar-minimize > span {
+  transform: translateX(-1px) rotate(225deg);
+}
+
+.product-shell.is-sidebar-minimized .sidebar-state {
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: 30px auto 24px;
+  padding: 0;
+}
+
+.product-shell.is-sidebar-minimized .app-navigation {
+  width: 100%;
+}
+
+.product-shell.is-sidebar-minimized .nav-group {
+  gap: 5px;
+}
+
+.product-shell.is-sidebar-minimized .nav-group + .nav-group {
+  margin-top: 17px;
+  padding-top: 17px;
+}
+
+.product-shell.is-sidebar-minimized .nav-link {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  width: 48px;
+  min-height: 46px;
+  margin-inline: auto;
+  padding: 0;
+  transform: none;
+}
+
+.product-shell.is-sidebar-minimized .nav-compact-label {
+  display: inline;
+  color: rgba(164, 186, 200, 0.75);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  font-weight: 540;
+  letter-spacing: 0.04em;
+}
+
+.product-shell.is-sidebar-minimized .nav-link.is-active .nav-compact-label {
+  color: var(--nx-light);
+}
+
+.product-shell.is-sidebar-minimized .sidebar-technicals {
+  grid-template-columns: 32px;
+  justify-content: center;
+  width: 48px;
+  margin-inline: auto;
+  padding: 7px;
+}
+
+.product-shell.is-sidebar-minimized .sidebar-account {
+  grid-template-columns: 32px;
+  justify-content: center;
+  width: 48px;
+  margin-inline: auto;
+  padding-inline: 8px;
 }
 
 .product-stage {
@@ -1520,6 +1746,7 @@ button {
 .open-asset-button:focus-visible,
 .nav-link:focus-visible,
 .mobile-nav-link:focus-visible,
+.sidebar-minimize:focus-visible,
 .sidebar-technicals:focus-visible,
 .mobile-technicals-link:focus-visible,
 .scenario-link:focus-visible,
@@ -3419,6 +3646,11 @@ button {
   overflow: hidden;
   pointer-events: none;
   perspective: 1200px;
+  transition: left var(--nx-motion-panel) var(--nx-ease-out);
+}
+
+.product-shell.is-sidebar-minimized .product-cube-field {
+  left: 82px;
 }
 
 .product-landing-cube-canvas {

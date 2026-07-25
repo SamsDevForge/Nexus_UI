@@ -134,6 +134,8 @@ Secondary glass:
 - Lower-opacity fill than the primary insight
 - Shared boundaries for grouped sections
 - Clear focus and hover states
+- Navigation hover uses a contained liquid-glass capsule with a translucent
+  pearl border and localized blur
 
 Avoid:
 
@@ -220,6 +222,7 @@ simultaneous animation of every element.
 ## Product composition
 
 - Stable shell
+- Collapsible desktop sidebar with a compact labelled rail
 - One dominant current insight
 - Secondary information grouped by time or purpose
 - Landing cube behind the glass hierarchy plus a compact state indicator

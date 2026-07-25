@@ -130,3 +130,11 @@ Prototype scenarios, mocked/live boundaries, and implementation diagnostics
 live under `/app/technicals`, reached through “Dive into the technicals” beside
 the account area. Technical controls do not compete with the Today screen’s
 daily decision hierarchy.
+
+## D-017 — Desktop navigation can collapse without losing meaning
+
+The product sidebar may collapse into a compact rail to return horizontal space
+to the active screen. Compact labels, accessible names, focus visibility, and
+tooltips preserve destination meaning. Navigation hover and focus use a
+contained liquid-glass border and localized blur, while active state remains
+distinct from hover.
