@@ -75,7 +75,16 @@ Use:
 
 - A clean geometric or neo-grotesk variable font for product text
 - A restrained display treatment for the NEXUS wordmark and hero
+- A squared Rigid-style display face for the Today greeting and primary
+  recommendation headline
+- A very wide, heavy Druk-style display face for the dominant time inside the
+  NEXUS timing state
 - A monospace face only for system state, timestamps, or identifiers
+
+Rigid Square and Druk Wide are preferred when licensed webfont files are
+available. Until those assets are supplied, use the bundled licensed visual
+equivalents behind the same design tokens rather than downloading unlicensed
+font files.
 
 Recommended hierarchy:
 

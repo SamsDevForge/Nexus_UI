@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {
+  Archivo_Black,
+  Geist,
+  Geist_Mono,
+  Russo_One,
+} from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -10,6 +15,18 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const rigidDisplay = Russo_One({
+  variable: "--font-rigid-display",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const drukWide = Archivo_Black({
+  variable: "--font-druk-wide",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -38,7 +55,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${rigidDisplay.variable} ${drukWide.variable}`}
+      >
         {children}
       </body>
     </html>

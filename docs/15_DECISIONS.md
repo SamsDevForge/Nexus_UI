@@ -84,3 +84,15 @@ must implement the same boundary.
 
 The NEXUS wordmark remains live text. The user-supplied SVG is the shared mark
 asset on public and product surfaces.
+
+## D-014 — Product decision typography uses two display roles
+
+The Today greeting and highest-value recommendation use a squared Rigid-style
+display face. The dominant timing value in the NEXUS state region uses a
+Druk Wide-style heavy display face. Body copy, evidence, controls, and metadata
+retain the established Geist and Geist Mono hierarchy.
+
+Rigid Square and Druk Wide are commercial typefaces and are not bundled without
+licensed webfont files. The implementation prefers those family names when
+available and otherwise uses self-hosted open-source visual equivalents through
+the same design tokens.
