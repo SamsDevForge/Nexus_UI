@@ -122,6 +122,8 @@ Primary glass:
 
 - Low-opacity graphite-blue fill
 - Low background blur so the cube and atmospheric depth remain legible
+- Restrained liquid-glass refraction on the primary interaction surface through
+  curved pearl highlights and translucent edge light
 - Thin pearl edge with a brighter top reflection
 - Soft depth shadow without muddy black rims
 

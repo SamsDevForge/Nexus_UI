@@ -28,6 +28,8 @@ system, application shell, and mocked Today reference experience.
   squircle and static reduced-motion fallbacks
 - Depth-tiered glass with sharper low-blur content surfaces and stronger
   localized blur on buttons, chips, and inset decision elements
+- Primary Today interaction surface refined as a restrained hybrid of liquid
+  glass, dark glassmorphism, and soft neumorphic elevation
 - Desktop product shell with grouped daily and system-control navigation
 - Narrow-width context bar and five-destination bottom navigation
 - Label-first daily navigation with short purpose cues instead of sequence

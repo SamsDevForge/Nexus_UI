@@ -116,6 +116,9 @@ the deterministic reduced-motion scenario.
 Large content surfaces use low background blur so the cube remains visually
 present. Smaller controls, evidence chips, and inset decision elements use
 stronger localized blur and tighter shadows to establish foreground depth.
+The primary interaction surface adds restrained liquid-glass refraction through
+static curved highlights and translucent edge light while retaining the dark
+glass fill and soft neumorphic elevation.
 
 ## D-016 — Daily navigation is label-first and diagnostics are separate
 

@@ -3616,10 +3616,81 @@ button {
   backdrop-filter: blur(var(--nx-surface-blur)) saturate(110%);
 }
 
+.insight-hero {
+  isolation: isolate;
+  border-color: rgba(222, 242, 254, 0.2);
+  background:
+    radial-gradient(ellipse at 18% -8%, rgba(235, 248, 255, 0.105), transparent 38%),
+    radial-gradient(ellipse at 86% 110%, rgba(91, 154, 194, 0.05), transparent 40%),
+    linear-gradient(135deg, rgba(227, 244, 255, 0.065), rgba(42, 74, 97, 0.016) 36%, rgba(4, 10, 16, 0.11) 72%),
+    rgba(7, 14, 22, 0.14);
+  box-shadow:
+    0 42px 105px rgba(0, 0, 0, 0.34),
+    -12px -14px 40px rgba(92, 132, 159, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 1px 0 0 rgba(224, 244, 255, 0.045),
+    inset -1px -1px 0 rgba(1, 5, 9, 0.34);
+}
+
+.insight-hero::before {
+  z-index: 3;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border: 1px solid rgba(229, 247, 255, 0.075);
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 18% at 22% 0%, rgba(244, 252, 255, 0.24), transparent 72%),
+    radial-gradient(18% 70% at 100% 29%, rgba(188, 227, 249, 0.095), transparent 76%),
+    linear-gradient(118deg, rgba(255, 255, 255, 0.045), transparent 21%, transparent 76%, rgba(155, 213, 244, 0.035));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 1px 0 0 rgba(221, 242, 254, 0.035);
+}
+
+.insight-hero::after {
+  position: absolute;
+  z-index: 0;
+  top: -44%;
+  right: 11%;
+  width: 360px;
+  height: 360px;
+  border-radius: 41% 59% 54% 46%;
+  content: "";
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 34% 32%, rgba(238, 250, 255, 0.13), transparent 23%),
+    radial-gradient(circle at 56% 55%, rgba(117, 193, 236, 0.075), transparent 58%);
+  filter: blur(24px);
+  opacity: 0.72;
+  transform: rotate(-18deg);
+}
+
+.insight-ambient {
+  top: -30%;
+  left: 9%;
+  width: 66%;
+  height: 122%;
+  border-radius: 38% 62% 58% 42%;
+  background:
+    radial-gradient(ellipse at 26% 20%, rgba(236, 249, 255, 0.115), transparent 25%),
+    radial-gradient(ellipse at 58% 47%, rgba(101, 181, 228, 0.07), transparent 57%);
+  filter: blur(22px);
+  opacity: 0.78;
+  transform: rotate(-11deg);
+}
+
+.insight-main {
+  background:
+    linear-gradient(112deg, rgba(245, 252, 255, 0.018), transparent 23%, transparent 76%, rgba(137, 200, 234, 0.012));
+}
+
 .insight-timing {
   border-left-color: rgba(214, 238, 252, 0.12);
   background:
-    linear-gradient(155deg, rgba(191, 226, 247, 0.045), rgba(5, 12, 20, 0.16));
+    radial-gradient(ellipse at 72% 3%, rgba(229, 247, 255, 0.075), transparent 34%),
+    linear-gradient(155deg, rgba(191, 226, 247, 0.055), rgba(5, 12, 20, 0.16));
   box-shadow:
     inset 1px 0 0 rgba(255, 255, 255, 0.035),
     inset 18px 0 42px rgba(2, 6, 11, 0.12);
@@ -3627,11 +3698,25 @@ button {
   backdrop-filter: blur(var(--nx-inset-blur)) saturate(132%);
 }
 
+.insight-timing::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+  background:
+    radial-gradient(80% 13% at 54% 0%, rgba(244, 252, 255, 0.13), transparent 72%),
+    linear-gradient(105deg, rgba(255, 255, 255, 0.025), transparent 28%);
+  opacity: 0.82;
+}
+
 .evidence-chip,
 .status-tag {
   border-color: rgba(215, 237, 250, 0.12);
   background: rgba(6, 14, 23, 0.18);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    0 9px 20px rgba(0, 0, 0, 0.12);
 }
 
 .primary-button,
@@ -3649,6 +3734,33 @@ button {
 
 .quiet-button {
   color: rgba(191, 210, 223, 0.79);
+}
+
+.insight-actions .primary-button,
+.insight-actions .quiet-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.insight-actions .primary-button::before,
+.insight-actions .quiet-button::before {
+  position: absolute;
+  top: -70%;
+  left: -8%;
+  width: 74%;
+  height: 150%;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+  background: radial-gradient(ellipse, rgba(247, 253, 255, 0.14), transparent 68%);
+  filter: blur(5px);
+  transform: rotate(-16deg);
+}
+
+.insight-actions .primary-button > *,
+.insight-actions .quiet-button > * {
+  position: relative;
+  z-index: 1;
 }
 
 .open-asset-button {
