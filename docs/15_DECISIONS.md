@@ -105,6 +105,10 @@ original dark-neumorphic material treatment with restrained dark
 glassmorphism while preserving the established information hierarchy,
 typography, interaction model, and sparse accent colour.
 
-A slow CSS 3D cube sits behind the interface as an atmospheric system-state
-object. Glass surfaces reveal it without compromising text contrast. The cube
-stops under reduced-motion preferences and is simplified at narrow widths.
+The product background reuses the landing cube’s rounded obsidian geometry,
+physical metal material, blue internal core, edge light, orbiting highlight,
+and slow diagonal rotation through a client-only WebGL layer. The earlier
+rounded glass form remains as a smaller secondary squircle with a seamless
+linear loop. Higher-transparency glass reveals both objects without
+compromising text contrast. Motion stops under reduced-motion preferences and
+the deterministic reduced-motion scenario.

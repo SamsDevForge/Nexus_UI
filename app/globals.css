@@ -3060,8 +3060,8 @@ button {
 /* Product glass theme */
 
 .product-shell {
-  --nx-glass-fill: rgba(9, 17, 27, 0.48);
-  --nx-glass-fill-strong: rgba(11, 20, 31, 0.68);
+  --nx-glass-fill: rgba(9, 17, 27, 0.2);
+  --nx-glass-fill-strong: rgba(11, 20, 31, 0.34);
   --nx-glass-line: rgba(211, 235, 250, 0.13);
   --nx-glass-highlight: rgba(236, 248, 255, 0.1);
   background:
@@ -3088,8 +3088,19 @@ button {
   perspective: 1200px;
 }
 
+.product-landing-cube-canvas {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.96;
+  filter: saturate(1.08) contrast(1.04);
+}
+
 .product-cube-halo {
   position: absolute;
+  z-index: 0;
   top: 13%;
   right: 0;
   width: 650px;
@@ -3104,28 +3115,37 @@ button {
   filter: blur(24px);
 }
 
-.product-cube {
+.product-glass-squircle-wrap {
   position: absolute;
-  top: 21%;
-  right: 8%;
-  width: 330px;
-  height: 330px;
-  opacity: 0.74;
+  z-index: 2;
+  bottom: 7%;
+  left: 7%;
+  width: 190px;
+  height: 190px;
+  opacity: 0.48;
+  transform: rotateX(-18deg) rotateY(24deg) rotateZ(2deg);
+  transform-style: preserve-3d;
+}
+
+.product-glass-squircle {
+  position: relative;
+  width: 100%;
+  height: 100%;
   transform-style: preserve-3d;
   will-change: transform;
-  animation: productCubeSpin 34s linear infinite;
+  animation: productSquircleSpin 24s linear infinite;
 }
 
-.product-shell:has(.today-page.is-reduced) .product-cube {
+.product-shell:has(.today-page.is-reduced) .product-glass-squircle {
   animation: none;
-  transform: rotateX(-18deg) rotateY(24deg) rotateZ(2deg);
+  transform: rotate3d(1, 1, 0.35, 18deg);
 }
 
-.product-cube-face {
+.product-squircle-face {
   position: absolute;
   inset: 0;
   border: 1px solid rgba(196, 231, 251, 0.2);
-  border-radius: 44px;
+  border-radius: 32px;
   background:
     linear-gradient(145deg, rgba(215, 241, 255, 0.1), rgba(75, 137, 178, 0.025)),
     rgba(8, 18, 29, 0.12);
@@ -3136,39 +3156,39 @@ button {
   backface-visibility: visible;
 }
 
-.product-cube-face::after {
+.product-squircle-face::after {
   position: absolute;
   inset: 13%;
   border: 1px solid rgba(191, 229, 249, 0.09);
-  border-radius: 28px;
+  border-radius: 20px;
   content: "";
   box-shadow:
     inset 0 0 32px rgba(123, 207, 251, 0.035),
     0 0 28px rgba(109, 194, 239, 0.025);
 }
 
-.cube-face-front {
-  transform: translateZ(165px);
+.squircle-face-front {
+  transform: translateZ(95px);
 }
 
-.cube-face-back {
-  transform: rotateY(180deg) translateZ(165px);
+.squircle-face-back {
+  transform: rotateY(180deg) translateZ(95px);
 }
 
-.cube-face-right {
-  transform: rotateY(90deg) translateZ(165px);
+.squircle-face-right {
+  transform: rotateY(90deg) translateZ(95px);
 }
 
-.cube-face-left {
-  transform: rotateY(-90deg) translateZ(165px);
+.squircle-face-left {
+  transform: rotateY(-90deg) translateZ(95px);
 }
 
-.cube-face-top {
-  transform: rotateX(90deg) translateZ(165px);
+.squircle-face-top {
+  transform: rotateX(90deg) translateZ(95px);
 }
 
-.cube-face-bottom {
-  transform: rotateX(-90deg) translateZ(165px);
+.squircle-face-bottom {
+  transform: rotateX(-90deg) translateZ(95px);
 }
 
 .product-stage {
@@ -3179,14 +3199,14 @@ button {
 .app-sidebar,
 .app-context-bar,
 .mobile-navigation {
-  -webkit-backdrop-filter: blur(30px) saturate(135%);
-  backdrop-filter: blur(30px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  backdrop-filter: blur(18px) saturate(125%);
 }
 
 .app-sidebar {
   border-right-color: var(--nx-glass-line);
   background:
-    linear-gradient(155deg, rgba(16, 27, 40, 0.68), rgba(5, 10, 17, 0.52));
+    linear-gradient(155deg, rgba(16, 27, 40, 0.42), rgba(5, 10, 17, 0.26));
   box-shadow:
     24px 0 80px rgba(0, 0, 0, 0.28),
     inset -1px 0 0 rgba(255, 255, 255, 0.035);
@@ -3194,7 +3214,7 @@ button {
 
 .app-context-bar {
   border-bottom-color: var(--nx-glass-line);
-  background: rgba(6, 12, 20, 0.46);
+  background: rgba(6, 12, 20, 0.28);
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.025);
 }
 
@@ -3249,20 +3269,20 @@ button {
 .phase-placeholder {
   border-color: rgba(216, 238, 252, 0.17);
   background:
-    linear-gradient(145deg, rgba(224, 243, 255, 0.105), rgba(31, 64, 91, 0.025)),
-    rgba(7, 15, 25, 0.44);
+    linear-gradient(145deg, rgba(224, 243, 255, 0.075), rgba(31, 64, 91, 0.015)),
+    rgba(7, 15, 25, 0.18);
   box-shadow:
     0 34px 90px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     inset 0 0 90px rgba(91, 176, 226, 0.025);
-  -webkit-backdrop-filter: blur(28px) saturate(135%);
-  backdrop-filter: blur(28px) saturate(135%);
+  -webkit-backdrop-filter: blur(12px) saturate(125%);
+  backdrop-filter: blur(12px) saturate(125%);
 }
 
 .insight-timing {
   border-left-color: rgba(214, 238, 252, 0.12);
   background:
-    linear-gradient(155deg, rgba(191, 226, 247, 0.055), rgba(5, 12, 20, 0.37));
+    linear-gradient(155deg, rgba(191, 226, 247, 0.045), rgba(5, 12, 20, 0.16));
   box-shadow:
     inset 1px 0 0 rgba(255, 255, 255, 0.035),
     inset 18px 0 42px rgba(2, 6, 11, 0.12);
@@ -3271,7 +3291,7 @@ button {
 .evidence-chip,
 .status-tag {
   border-color: rgba(215, 237, 250, 0.12);
-  background: rgba(6, 14, 23, 0.33);
+  background: rgba(6, 14, 23, 0.18);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
@@ -3280,8 +3300,8 @@ button {
 .approval-button {
   border-color: rgba(218, 239, 252, 0.15);
   background:
-    linear-gradient(145deg, rgba(224, 243, 255, 0.105), rgba(28, 62, 88, 0.035)),
-    rgba(10, 19, 29, 0.52);
+    linear-gradient(145deg, rgba(224, 243, 255, 0.08), rgba(28, 62, 88, 0.025)),
+    rgba(10, 19, 29, 0.28);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     0 14px 30px rgba(0, 0, 0, 0.21);
@@ -3298,10 +3318,10 @@ button {
   padding-inline: 32px;
   border-color: rgba(214, 237, 251, 0.12);
   background:
-    linear-gradient(145deg, rgba(221, 241, 253, 0.06), rgba(31, 68, 95, 0.018)),
-    rgba(7, 15, 24, 0.34);
-  -webkit-backdrop-filter: blur(20px) saturate(125%);
-  backdrop-filter: blur(20px) saturate(125%);
+    linear-gradient(145deg, rgba(221, 241, 253, 0.05), rgba(31, 68, 95, 0.012)),
+    rgba(7, 15, 24, 0.14);
+  -webkit-backdrop-filter: blur(9px) saturate(118%);
+  backdrop-filter: blur(9px) saturate(118%);
 }
 
 .today-band {
@@ -3333,12 +3353,12 @@ button {
   border-color: rgba(7, 15, 24, 0.92);
 }
 
-@keyframes productCubeSpin {
+@keyframes productSquircleSpin {
   from {
-    transform: rotateX(-18deg) rotateY(24deg) rotateZ(2deg);
+    transform: rotate3d(1, 1, 0.35, 0deg);
   }
   to {
-    transform: rotateX(342deg) rotateY(384deg) rotateZ(16deg);
+    transform: rotate3d(1, 1, 0.35, 360deg);
   }
 }
 
@@ -3347,48 +3367,54 @@ button {
     left: 218px;
   }
 
-  .product-cube {
-    right: 3%;
-    width: 280px;
-    height: 280px;
+  .product-glass-squircle-wrap {
+    bottom: 6%;
+    left: 5%;
+    width: 160px;
+    height: 160px;
   }
 
-  .cube-face-front {
-    transform: translateZ(140px);
+  .squircle-face-front {
+    transform: translateZ(80px);
   }
 
-  .cube-face-back {
-    transform: rotateY(180deg) translateZ(140px);
+  .squircle-face-back {
+    transform: rotateY(180deg) translateZ(80px);
   }
 
-  .cube-face-right {
-    transform: rotateY(90deg) translateZ(140px);
+  .squircle-face-right {
+    transform: rotateY(90deg) translateZ(80px);
   }
 
-  .cube-face-left {
-    transform: rotateY(-90deg) translateZ(140px);
+  .squircle-face-left {
+    transform: rotateY(-90deg) translateZ(80px);
   }
 
-  .cube-face-top {
-    transform: rotateX(90deg) translateZ(140px);
+  .squircle-face-top {
+    transform: rotateX(90deg) translateZ(80px);
   }
 
-  .cube-face-bottom {
-    transform: rotateX(-90deg) translateZ(140px);
+  .squircle-face-bottom {
+    transform: rotateX(-90deg) translateZ(80px);
   }
 }
 
 @media (max-width: 780px) {
   .product-cube-field {
     inset: 0;
-    opacity: 0.55;
+    opacity: 0.72;
   }
 
-  .product-cube {
-    top: 18%;
-    right: -74px;
-    width: 220px;
-    height: 220px;
+  .product-landing-cube-canvas {
+    opacity: 0.86;
+  }
+
+  .product-glass-squircle-wrap {
+    bottom: 16%;
+    left: -48px;
+    width: 140px;
+    height: 140px;
+    opacity: 0.42;
   }
 
   .product-cube-halo {
@@ -3398,43 +3424,43 @@ button {
     height: 500px;
   }
 
-  .cube-face-front {
-    transform: translateZ(110px);
+  .squircle-face-front {
+    transform: translateZ(70px);
   }
 
-  .cube-face-back {
-    transform: rotateY(180deg) translateZ(110px);
+  .squircle-face-back {
+    transform: rotateY(180deg) translateZ(70px);
   }
 
-  .cube-face-right {
-    transform: rotateY(90deg) translateZ(110px);
+  .squircle-face-right {
+    transform: rotateY(90deg) translateZ(70px);
   }
 
-  .cube-face-left {
-    transform: rotateY(-90deg) translateZ(110px);
+  .squircle-face-left {
+    transform: rotateY(-90deg) translateZ(70px);
   }
 
-  .cube-face-top {
-    transform: rotateX(90deg) translateZ(110px);
+  .squircle-face-top {
+    transform: rotateX(90deg) translateZ(70px);
   }
 
-  .cube-face-bottom {
-    transform: rotateX(-90deg) translateZ(110px);
+  .squircle-face-bottom {
+    transform: rotateX(-90deg) translateZ(70px);
   }
 
   .app-context-bar {
-    background: rgba(6, 12, 20, 0.58);
+    background: rgba(6, 12, 20, 0.36);
   }
 
   .mobile-navigation {
     border-color: rgba(214, 238, 252, 0.15);
-    background: rgba(7, 15, 24, 0.62);
+    background: rgba(7, 15, 24, 0.4);
   }
 
   .mobile-nav-link.is-active {
     background:
       linear-gradient(145deg, rgba(225, 244, 255, 0.1), rgba(30, 64, 90, 0.025)),
-      rgba(11, 21, 32, 0.52);
+      rgba(11, 21, 32, 0.3);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.1),
       0 10px 25px rgba(0, 0, 0, 0.2);

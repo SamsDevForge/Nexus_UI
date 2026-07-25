@@ -23,8 +23,9 @@ system, application shell, and mocked Today reference experience.
 - Existing Next.js and React Three Fiber landing page preserved
 - User-supplied SVG mark integrated while keeping the NEXUS AI wordmark as text
 - Shared product-mode colour, type, spacing, radius, elevation, and motion tokens
-- Restrained dark-glass product theme with a slow atmospheric cube behind the
-  interface and a static reduced-motion fallback
+- High-transparency dark-glass product theme with the landing page’s obsidian
+  WebGL cube behind the interface, plus a secondary smoothly looping glass
+  squircle and static reduced-motion fallbacks
 - Desktop product shell with grouped daily and system-control navigation
 - Narrow-width context bar and five-destination bottom navigation
 - Provider-neutral TypeScript contracts and `TodayService` boundary

@@ -37,7 +37,8 @@ Used inside the application:
 - Stable composition
 - Fast navigation
 - Reduced motion
-- Smaller cube or state glyph
+- Landing cube layered behind the glass interface, with a compact state glyph
+  retained in the decision surface
 - Higher information density
 - Clear focus and readable controls
 
@@ -217,7 +218,7 @@ simultaneous animation of every element.
 - Stable shell
 - One dominant current insight
 - Secondary information grouped by time or purpose
-- Cube reduced to state indicator
+- Landing cube behind the glass hierarchy plus a compact state indicator
 - Clear evidence and control
 - Scrolling where content requires it
 

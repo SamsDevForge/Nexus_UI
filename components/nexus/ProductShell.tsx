@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { ProductLandingCubeBackdrop } from "./ProductLandingCubeBackdrop";
 
 const dailyNavigation = [
   { label: "Today", href: "/app/today", marker: "01" },
@@ -47,14 +48,17 @@ export function ProductShell({ children }: { children: ReactNode }) {
   return (
     <div className="product-shell">
       <div className="product-cube-field" aria-hidden="true">
+        <ProductLandingCubeBackdrop />
         <span className="product-cube-halo" />
-        <div className="product-cube">
-          <span className="product-cube-face cube-face-front" />
-          <span className="product-cube-face cube-face-back" />
-          <span className="product-cube-face cube-face-right" />
-          <span className="product-cube-face cube-face-left" />
-          <span className="product-cube-face cube-face-top" />
-          <span className="product-cube-face cube-face-bottom" />
+        <div className="product-glass-squircle-wrap">
+          <div className="product-glass-squircle">
+            <span className="product-squircle-face squircle-face-front" />
+            <span className="product-squircle-face squircle-face-back" />
+            <span className="product-squircle-face squircle-face-right" />
+            <span className="product-squircle-face squircle-face-left" />
+            <span className="product-squircle-face squircle-face-top" />
+            <span className="product-squircle-face squircle-face-bottom" />
+          </div>
         </div>
       </div>
 
