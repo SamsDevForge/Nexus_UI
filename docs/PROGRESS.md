@@ -32,9 +32,9 @@ system, application shell, and mocked Today reference experience.
   lower-priority signals
 - Working Why, snooze, dismiss, approval, success, retry, and prototype-state
   interactions
-- Rigid-style display typography for the Today greeting and primary
-  recommendation, with Druk Wide-style treatment for the dominant departure
-  time
+- Unbounded display typography for the Today greeting, Anybody
+  ExtraExpanded Black Italic for the primary recommendation, and a Druk
+  Wide-style treatment for the dominant departure time
 - Loading, first-use, populated, stale, permission-denied, offline,
   recoverable-error, and reduced-motion states
 - Typecheck, lint, fixture tests, and production build scripts

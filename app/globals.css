@@ -16,6 +16,24 @@
   font-weight: 400;
 }
 
+@font-face {
+  font-family: "NEXUS Unbounded";
+  src: url("/fonts/nexus-greeting-unbounded-700.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "NEXUS Anybody Expanded";
+  src: url("/fonts/nexus-recommendation-anybody-expanded-900-italic.woff2")
+    format("woff2");
+  font-display: swap;
+  font-stretch: 150%;
+  font-style: italic;
+  font-weight: 900;
+}
+
 :root {
   --ink: #080a0d;
   --pearl: #edf2f6;
@@ -65,8 +83,12 @@ body {
 }
 
 body {
-  --nx-font-rigid:
-    "Rigid Square", "NEXUS Rigid Display", "Arial Black", sans-serif;
+  --nx-font-greeting:
+    "NEXUS Unbounded", "Unbounded", "NEXUS Rigid Display", "Arial Black",
+    sans-serif;
+  --nx-font-recommendation:
+    "NEXUS Anybody Expanded", "Anybody", "NEXUS Wide Display", "Arial Black",
+    sans-serif;
   --nx-font-druk-wide:
     "Druk Wide Bold", "Druk Wide", "NEXUS Wide Display", "Arial Black",
     sans-serif;
@@ -1361,10 +1383,10 @@ button {
 .today-heading h1 {
   margin: 0;
   color: var(--nx-text-1);
-  font-family: var(--nx-font-rigid);
+  font-family: var(--nx-font-greeting);
   font-size: clamp(36px, 3.35vw, 50px);
   font-synthesis: none;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 0.98;
   letter-spacing: -0.045em;
 }
@@ -1552,12 +1574,14 @@ button {
   max-width: 650px;
   margin: 27px 0 14px;
   color: var(--nx-light);
-  font-family: var(--nx-font-rigid);
+  font-family: var(--nx-font-recommendation);
   font-size: clamp(43px, 4.8vw, 69px);
   font-synthesis: none;
-  font-weight: 400;
+  font-stretch: 150%;
+  font-style: italic;
+  font-weight: 900;
   line-height: 0.95;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.06em;
   text-wrap: balance;
 }
 
