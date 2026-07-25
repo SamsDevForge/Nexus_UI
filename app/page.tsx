@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { NexusExperience } from "./NexusExperience";
+import { LandingExperienceClient } from "./LandingExperienceClient";
 
 export const metadata: Metadata = {
   title: "NEXUS AI — Predictive Personal Intelligence",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <NexusExperience />;
+  return <LandingExperienceClient />;
 }

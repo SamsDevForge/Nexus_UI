@@ -36,6 +36,9 @@ system, application shell, and mocked Today reference experience.
   hover capsules for navigation destinations
 - Decorative secondary spinning squircle removed so the landing cube remains
   the only animated background object in product mode
+- Cinematic Three.js modules are isolated to browser-only loading so Cloudflare
+  Workers can render production requests without evaluating WebGL dependencies
+  in global scope
 - Narrow-width context bar and five-destination bottom navigation
 - Label-first daily navigation with short purpose cues instead of sequence
   numbers, plus a dedicated Technicals utility beside the account area

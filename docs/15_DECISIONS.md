@@ -138,3 +138,12 @@ to the active screen. Compact labels, accessible names, focus visibility, and
 tooltips preserve destination meaning. Navigation hover and focus use a
 contained liquid-glass border and localized blur, while active state remains
 distinct from hover.
+
+## D-018 — Cinematic WebGL is browser-only
+
+The landing scene and other Three.js rendering code must load only in the
+browser. Cloudflare Worker request modules must not evaluate Three.js at global
+scope because its default loading manager creates runtime state that Workers
+allow only inside a request handler. The server renders a neutral scene shell,
+then the existing cinematic experience hydrates without changing its visual
+composition.
