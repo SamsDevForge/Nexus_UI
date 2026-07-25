@@ -3060,14 +3060,14 @@ button {
 /* Product glass theme */
 
 .product-shell {
-  --nx-glass-fill: rgba(9, 17, 27, 0.2);
-  --nx-glass-fill-strong: rgba(11, 20, 31, 0.34);
+  --nx-glass-fill: rgba(8, 10, 13, 0.2);
+  --nx-glass-fill-strong: rgba(10, 13, 17, 0.34);
   --nx-glass-line: rgba(211, 235, 250, 0.13);
   --nx-glass-highlight: rgba(236, 248, 255, 0.1);
   background:
-    radial-gradient(circle at 76% 34%, rgba(89, 179, 232, 0.17), transparent 31%),
-    radial-gradient(circle at 38% 90%, rgba(65, 105, 151, 0.13), transparent 37%),
-    linear-gradient(145deg, #04070c, #09131f 52%, #04070b);
+    radial-gradient(circle at 67% 45%, rgba(72, 100, 124, 0.1), transparent 24%),
+    radial-gradient(circle at 48% 5%, rgba(255, 255, 255, 0.035), transparent 28%),
+    #080a0d;
 }
 
 .product-shell::before {
@@ -3108,11 +3108,11 @@ button {
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(127, 207, 250, 0.16),
-    rgba(76, 140, 190, 0.045) 39%,
+    rgba(191, 216, 232, 0.055),
+    rgba(92, 118, 136, 0.018) 39%,
     transparent 68%
   );
-  filter: blur(24px);
+  filter: blur(28px);
 }
 
 .product-glass-squircle-wrap {
