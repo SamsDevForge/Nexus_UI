@@ -112,3 +112,14 @@ rounded glass form remains as a smaller secondary squircle with a seamless
 linear loop. Higher-transparency glass reveals both objects without
 compromising text contrast. Motion stops under reduced-motion preferences and
 the deterministic reduced-motion scenario.
+
+## D-016 — Daily navigation is label-first and diagnostics are separate
+
+Daily destinations are parallel user tasks, not steps in a sequence. Their
+sidebar treatment uses plain-language labels, short purpose cues, and a single
+active indicator instead of numeric prefixes.
+
+Prototype scenarios, mocked/live boundaries, and implementation diagnostics
+live under `/app/technicals`, reached through “Dive into the technicals” beside
+the account area. Technical controls do not compete with the Today screen’s
+daily decision hierarchy.

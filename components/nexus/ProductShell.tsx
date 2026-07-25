@@ -7,11 +7,11 @@ import type { ReactNode } from "react";
 import { ProductLandingCubeBackdrop } from "./ProductLandingCubeBackdrop";
 
 const dailyNavigation = [
-  { label: "Today", href: "/app/today", marker: "01" },
-  { label: "Timeline", href: "/app/timeline", marker: "02" },
-  { label: "Insights", href: "/app/insights", marker: "03" },
-  { label: "NEXUS", href: "/app/nexus", marker: "04" },
-  { label: "Knowledge", href: "/app/knowledge", marker: "05" },
+  { label: "Today", description: "Your day now", href: "/app/today" },
+  { label: "Timeline", description: "What happens next", href: "/app/timeline" },
+  { label: "Insights", description: "Useful recommendations", href: "/app/insights" },
+  { label: "NEXUS", description: "Ask and understand", href: "/app/nexus" },
+  { label: "Knowledge", description: "Find your sources", href: "/app/knowledge" },
 ];
 
 const controlNavigation = [
@@ -82,11 +82,18 @@ export function ProductShell({ children }: { children: ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={active ? "nav-link is-active" : "nav-link"}
+                  className={
+                    active
+                      ? "nav-link nav-link-daily is-active"
+                      : "nav-link nav-link-daily"
+                  }
                   aria-current={active ? "page" : undefined}
                 >
-                  <span className="nav-index">{item.marker}</span>
-                  <span>{item.label}</span>
+                  <span className="nav-section-cue" aria-hidden="true" />
+                  <span className="nav-copy">
+                    <b>{item.label}</b>
+                    <small>{item.description}</small>
+                  </span>
                   {active ? <i aria-hidden="true" /> : null}
                 </Link>
               );
@@ -113,6 +120,26 @@ export function ProductShell({ children }: { children: ReactNode }) {
           </div>
         </nav>
 
+        <Link
+          href="/app/technicals"
+          className={
+            pathname === "/app/technicals"
+              ? "sidebar-technicals is-active"
+              : "sidebar-technicals"
+          }
+          aria-current={pathname === "/app/technicals" ? "page" : undefined}
+        >
+          <span className="technicals-glyph" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+          <span>
+            <b>Dive into the technicals</b>
+            <small>States, sources and boundaries</small>
+          </span>
+        </Link>
+
         <div className="sidebar-account">
           <span className="account-monogram">AS</span>
           <span>
@@ -137,10 +164,9 @@ export function ProductShell({ children }: { children: ReactNode }) {
               <small>Bengaluru · IST</small>
             </span>
           </div>
-          <div className="context-meta">
-            <span>Prototype</span>
-            <b>Deterministic mock data</b>
-          </div>
+          <Link className="mobile-technicals-link" href="/app/technicals">
+            Technicals
+          </Link>
         </header>
 
         <main className="product-main">{children}</main>
@@ -156,7 +182,7 @@ export function ProductShell({ children }: { children: ReactNode }) {
               className={active ? "mobile-nav-link is-active" : "mobile-nav-link"}
               aria-current={active ? "page" : undefined}
             >
-              <span>{item.marker}</span>
+              <span className="mobile-nav-cue" aria-hidden="true" />
               <b>{item.label}</b>
             </Link>
           );

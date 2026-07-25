@@ -28,6 +28,8 @@ system, application shell, and mocked Today reference experience.
   squircle and static reduced-motion fallbacks
 - Desktop product shell with grouped daily and system-control navigation
 - Narrow-width context bar and five-destination bottom navigation
+- Label-first daily navigation with short purpose cues instead of sequence
+  numbers, plus a dedicated Technicals utility beside the account area
 - Provider-neutral TypeScript contracts and `TodayService` boundary
 - Deterministic mock adapter with ten named Today scenarios
 - Today screen with one dominant insight, evidence, confidence, freshness,
@@ -35,6 +37,8 @@ system, application shell, and mocked Today reference experience.
   lower-priority signals
 - Working Why, snooze, dismiss, approval, success, retry, and prototype-state
   interactions
+- Prototype-state controls and mocked/live boundaries consolidated under
+  `/app/technicals` so the Today screen remains user-focused
 - Unbounded display typography for the Today greeting, Anybody
   ExtraExpanded Black Italic for the primary recommendation, and a Druk
   Wide-style treatment for the dominant departure time

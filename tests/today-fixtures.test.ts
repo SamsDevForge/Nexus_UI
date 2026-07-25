@@ -16,6 +16,18 @@ test("every named scenario builds a matching deterministic snapshot", () => {
   }
 });
 
+test("every technical preview state has a human-readable explanation", () => {
+  const scenarioValues = TODAY_SCENARIOS.map(({ value }) => value);
+
+  assert.equal(new Set(scenarioValues).size, TODAY_SCENARIOS.length);
+  assert.equal(
+    TODAY_SCENARIOS.every(
+      ({ label, description }) => label.length > 0 && description.length > 12,
+    ),
+    true,
+  );
+});
+
 test("rain and traffic insight is evidence-backed and approval-safe", () => {
   const snapshot = buildTodaySnapshot("rain-and-traffic");
 

@@ -63,6 +63,7 @@ Purpose:
 | `/app/memory` | What NEXUS knows, inferred routines, and corrections |
 | `/app/activity` | Reads, insights, actions, approvals, and failures |
 | `/app/settings` | Profile, places, notification policy, privacy, and account |
+| `/app/technicals` | Prototype states, mocked boundaries, and implementation visibility |
 
 ## Desktop navigation
 
@@ -81,6 +82,9 @@ Control navigation:
 - Memory
 - Activity
 - Settings
+
+Prototype diagnostics live in a separate Technicals utility beside the account
+area. They do not appear inside the daily decision surface.
 
 Do not give all destinations equal visual weight. The first group supports daily
 use; the second controls the system.

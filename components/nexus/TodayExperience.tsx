@@ -1,15 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type {
   Evidence,
   FreshnessState,
   SystemState,
-  TodayScenario,
   TodaySnapshot,
 } from "@/lib/domain/contracts";
-import { todayService } from "@/lib/mocks/mock-today-service";
-import { TODAY_SCENARIOS } from "@/lib/mocks/today-fixtures";
 
 const systemLabels: Record<SystemState, string> = {
   dormant: "Dormant",
@@ -457,32 +454,14 @@ export function TodayExperience({
 }: {
   initialSnapshot: TodaySnapshot;
 }) {
-  const [scenario, setScenario] = useState<TodayScenario>(
-    initialSnapshot.scenario,
-  );
-  const [snapshot, setSnapshot] = useState<TodaySnapshot>(initialSnapshot);
   const [whyOpen, setWhyOpen] = useState(false);
   const [actionState, setActionState] = useState<"idle" | "approval" | "success">(
     "idle",
   );
   const [feedback, setFeedback] = useState("");
 
-  const reduced = scenario === "reduced-motion";
-  const scenarioLabel = useMemo(
-    () => TODAY_SCENARIOS.find((item) => item.value === scenario)?.label,
-    [scenario],
-  );
-
-  const handleScenario = async (nextScenario: TodayScenario) => {
-    setScenario(nextScenario);
-    setWhyOpen(false);
-    setActionState("idle");
-    setFeedback("");
-    const nextUrl = new URL(window.location.href);
-    nextUrl.searchParams.set("scenario", nextScenario);
-    window.history.replaceState({}, "", nextUrl);
-    setSnapshot(await todayService.getToday(nextScenario));
-  };
+  const snapshot = initialSnapshot;
+  const reduced = snapshot.scenario === "reduced-motion";
 
   const handleRetry = () => {
     setFeedback("Preparation completed on retry. No schedule changes were made.");
@@ -500,24 +479,6 @@ export function TodayExperience({
           <h1>{snapshot.greeting}</h1>
           <p>{snapshot.summary}</p>
         </div>
-
-        <label className="scenario-control">
-          <span>Prototype state</span>
-          <select
-            value={scenario}
-            onChange={(event) => {
-              void handleScenario(event.target.value as TodayScenario);
-            }}
-            aria-label="Choose a Today screen prototype state"
-          >
-            {TODAY_SCENARIOS.map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-          <small>{scenarioLabel}</small>
-        </label>
       </header>
 
       {snapshot.notice ? (

@@ -12,17 +12,58 @@ import type {
 export const TODAY_SCENARIOS: ReadonlyArray<{
   value: TodayScenario;
   label: string;
+  description: string;
 }> = [
-  { value: "rain-and-traffic", label: "Rain + traffic" },
-  { value: "student-normal-day", label: "Normal day" },
-  { value: "deadline-risk", label: "Deadline risk" },
-  { value: "connection-stale", label: "Stale source" },
-  { value: "first-use", label: "First use" },
-  { value: "loading", label: "Loading" },
-  { value: "permission-denied", label: "Permission denied" },
-  { value: "offline", label: "Offline" },
-  { value: "action-failed", label: "Action failed" },
-  { value: "reduced-motion", label: "Reduced motion" },
+  {
+    value: "rain-and-traffic",
+    label: "Rain + traffic",
+    description: "Commute pressure with weather, route and calendar evidence.",
+  },
+  {
+    value: "student-normal-day",
+    label: "Normal day",
+    description: "A calm day where no urgent intervention is needed.",
+  },
+  {
+    value: "deadline-risk",
+    label: "Deadline risk",
+    description: "A time-sensitive study recommendation with clear evidence.",
+  },
+  {
+    value: "connection-stale",
+    label: "Stale source",
+    description: "A connected source that needs refreshing.",
+  },
+  {
+    value: "first-use",
+    label: "First use",
+    description: "No connections yet, with one clear first step.",
+  },
+  {
+    value: "loading",
+    label: "Loading",
+    description: "Context is still being gathered.",
+  },
+  {
+    value: "permission-denied",
+    label: "Permission denied",
+    description: "Calendar access is paused without inventing context.",
+  },
+  {
+    value: "offline",
+    label: "Offline",
+    description: "The last prepared view, clearly marked as not live.",
+  },
+  {
+    value: "action-failed",
+    label: "Action failed",
+    description: "A recoverable preparation failure and retry path.",
+  },
+  {
+    value: "reduced-motion",
+    label: "Reduced motion",
+    description: "The same core experience without continuous motion.",
+  },
 ];
 
 const weatherEvidence: Evidence = {
