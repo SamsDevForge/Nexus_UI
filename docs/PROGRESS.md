@@ -24,15 +24,18 @@ system, application shell, and mocked Today reference experience.
 - User-supplied SVG mark integrated while keeping the NEXUS AI wordmark as text
 - Shared product-mode colour, type, spacing, radius, elevation, and motion tokens
 - High-transparency dark-glass product theme with the landing page’s obsidian
-  WebGL cube behind the interface, plus a secondary smoothly looping glass
-  squircle and static reduced-motion fallbacks
+  WebGL cube behind the interface and a static reduced-motion fallback
 - Depth-tiered glass with sharper low-blur content surfaces and stronger
   localized blur on buttons, chips, and inset decision elements
 - Primary Today interaction surface refined as a restrained hybrid of liquid
   glass, dark glassmorphism, and soft neumorphic elevation
+- Snooze and Dismiss now use compact outlined glass controls that stay close to
+  their text width on desktop and narrow layouts
 - Desktop product shell with grouped daily and system-control navigation
 - Collapsible desktop sidebar with accessible compact labels and liquid-glass
   hover capsules for navigation destinations
+- Decorative secondary spinning squircle removed so the landing cube remains
+  the only animated background object in product mode
 - Narrow-width context bar and five-destination bottom navigation
 - Label-first daily navigation with short purpose cues instead of sequence
   numbers, plus a dedicated Technicals utility beside the account area

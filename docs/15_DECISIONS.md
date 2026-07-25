@@ -107,9 +107,9 @@ typography, interaction model, and sparse accent colour.
 
 The product background reuses the landing cube’s rounded obsidian geometry,
 physical metal material, blue internal core, edge light, orbiting highlight,
-and slow diagonal rotation through a client-only WebGL layer. The earlier
-rounded glass form remains as a smaller secondary squircle with a seamless
-linear loop. Higher-transparency glass reveals both objects without
+and slow diagonal rotation through a client-only WebGL layer. The decorative
+secondary spinning squircle is removed so the landing cube remains the single
+animated background object. Higher-transparency glass reveals the cube without
 compromising text contrast. Motion stops under reduced-motion preferences and
 the deterministic reduced-motion scenario.
 

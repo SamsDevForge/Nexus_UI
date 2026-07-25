@@ -3342,7 +3342,7 @@ button {
 
   .insight-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) auto auto;
   }
 
   .insight-actions .primary-button {
@@ -3680,82 +3680,6 @@ button {
   filter: blur(28px);
 }
 
-.product-glass-squircle-wrap {
-  position: absolute;
-  z-index: 2;
-  bottom: 7%;
-  left: 7%;
-  width: 190px;
-  height: 190px;
-  opacity: 0.48;
-  transform: rotateX(-18deg) rotateY(24deg) rotateZ(2deg);
-  transform-style: preserve-3d;
-}
-
-.product-glass-squircle {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  will-change: transform;
-  animation: productSquircleSpin 24s linear infinite;
-}
-
-.product-shell:has(.today-page.is-reduced) .product-glass-squircle {
-  animation: none;
-  transform: rotate3d(1, 1, 0.35, 18deg);
-}
-
-.product-squircle-face {
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(196, 231, 251, 0.2);
-  border-radius: 32px;
-  background:
-    linear-gradient(145deg, rgba(215, 241, 255, 0.1), rgba(75, 137, 178, 0.025)),
-    rgba(8, 18, 29, 0.12);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.13),
-    inset 0 0 80px rgba(107, 191, 240, 0.045),
-    0 0 36px rgba(98, 181, 230, 0.035);
-  backface-visibility: visible;
-}
-
-.product-squircle-face::after {
-  position: absolute;
-  inset: 13%;
-  border: 1px solid rgba(191, 229, 249, 0.09);
-  border-radius: 20px;
-  content: "";
-  box-shadow:
-    inset 0 0 32px rgba(123, 207, 251, 0.035),
-    0 0 28px rgba(109, 194, 239, 0.025);
-}
-
-.squircle-face-front {
-  transform: translateZ(95px);
-}
-
-.squircle-face-back {
-  transform: rotateY(180deg) translateZ(95px);
-}
-
-.squircle-face-right {
-  transform: rotateY(90deg) translateZ(95px);
-}
-
-.squircle-face-left {
-  transform: rotateY(-90deg) translateZ(95px);
-}
-
-.squircle-face-top {
-  transform: rotateX(90deg) translateZ(95px);
-}
-
-.squircle-face-bottom {
-  transform: rotateX(-90deg) translateZ(95px);
-}
-
 .product-stage {
   position: relative;
   z-index: 2;
@@ -3968,6 +3892,43 @@ button {
   color: rgba(191, 210, 223, 0.79);
 }
 
+.insight-actions .text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 1px solid rgba(218, 239, 252, 0.12);
+  border-radius: 10px;
+  background:
+    linear-gradient(145deg, rgba(224, 243, 255, 0.045), rgba(28, 62, 88, 0.018)),
+    rgba(8, 16, 25, 0.2);
+  color: rgba(175, 194, 208, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 8px 18px rgba(0, 0, 0, 0.14);
+  -webkit-backdrop-filter: blur(var(--nx-control-blur)) saturate(130%);
+  backdrop-filter: blur(var(--nx-control-blur)) saturate(130%);
+  transition:
+    transform var(--nx-motion-micro) var(--nx-ease-out),
+    border-color var(--nx-motion-micro) var(--nx-ease-out),
+    background var(--nx-motion-micro) var(--nx-ease-out),
+    color var(--nx-motion-micro) var(--nx-ease-out);
+}
+
+.insight-actions .text-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(222, 241, 252, 0.22);
+  background:
+    linear-gradient(145deg, rgba(230, 246, 255, 0.075), rgba(35, 74, 103, 0.025)),
+    rgba(10, 20, 31, 0.3);
+  color: rgba(227, 238, 246, 0.88);
+}
+
+.insight-actions .text-button:active {
+  transform: translateY(0);
+}
+
 .insight-actions .primary-button,
 .insight-actions .quiet-button {
   position: relative;
@@ -4048,49 +4009,9 @@ button {
   border-color: rgba(7, 15, 24, 0.92);
 }
 
-@keyframes productSquircleSpin {
-  from {
-    transform: rotate3d(1, 1, 0.35, 0deg);
-  }
-  to {
-    transform: rotate3d(1, 1, 0.35, 360deg);
-  }
-}
-
 @media (max-width: 1120px) {
   .product-cube-field {
     left: 218px;
-  }
-
-  .product-glass-squircle-wrap {
-    bottom: 6%;
-    left: 5%;
-    width: 160px;
-    height: 160px;
-  }
-
-  .squircle-face-front {
-    transform: translateZ(80px);
-  }
-
-  .squircle-face-back {
-    transform: rotateY(180deg) translateZ(80px);
-  }
-
-  .squircle-face-right {
-    transform: rotateY(90deg) translateZ(80px);
-  }
-
-  .squircle-face-left {
-    transform: rotateY(-90deg) translateZ(80px);
-  }
-
-  .squircle-face-top {
-    transform: rotateX(90deg) translateZ(80px);
-  }
-
-  .squircle-face-bottom {
-    transform: rotateX(-90deg) translateZ(80px);
   }
 }
 
@@ -4104,43 +4025,11 @@ button {
     opacity: 0.86;
   }
 
-  .product-glass-squircle-wrap {
-    bottom: 16%;
-    left: -48px;
-    width: 140px;
-    height: 140px;
-    opacity: 0.42;
-  }
-
   .product-cube-halo {
     top: 8%;
     right: -190px;
     width: 500px;
     height: 500px;
-  }
-
-  .squircle-face-front {
-    transform: translateZ(70px);
-  }
-
-  .squircle-face-back {
-    transform: rotateY(180deg) translateZ(70px);
-  }
-
-  .squircle-face-right {
-    transform: rotateY(90deg) translateZ(70px);
-  }
-
-  .squircle-face-left {
-    transform: rotateY(-90deg) translateZ(70px);
-  }
-
-  .squircle-face-top {
-    transform: rotateX(90deg) translateZ(70px);
-  }
-
-  .squircle-face-bottom {
-    transform: rotateX(-90deg) translateZ(70px);
   }
 
   .app-context-bar {

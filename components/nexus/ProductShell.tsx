@@ -77,16 +77,6 @@ export function ProductShell({ children }: { children: ReactNode }) {
       <div className="product-cube-field" aria-hidden="true">
         <ProductLandingCubeBackdrop />
         <span className="product-cube-halo" />
-        <div className="product-glass-squircle-wrap">
-          <div className="product-glass-squircle">
-            <span className="product-squircle-face squircle-face-front" />
-            <span className="product-squircle-face squircle-face-back" />
-            <span className="product-squircle-face squircle-face-right" />
-            <span className="product-squircle-face squircle-face-left" />
-            <span className="product-squircle-face squircle-face-top" />
-            <span className="product-squircle-face squircle-face-bottom" />
-          </div>
-        </div>
       </div>
 
       <aside className="app-sidebar" id="product-sidebar">
