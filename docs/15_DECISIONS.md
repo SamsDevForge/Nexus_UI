@@ -147,3 +147,41 @@ scope because its default loading manager creates runtime state that Workers
 allow only inside a request handler. The server renders a neutral scene shell,
 then the existing cinematic experience hydrates without changing its visual
 composition.
+
+## D-019 — Dominant product cube remains
+
+The large cross-screen cube is an intentional part of the NEXUS product identity.
+
+Do not shrink, remove, reposition, mask, fade or confine the existing cube during
+future UI phases unless explicitly requested by the product owner.
+
+Future screens must design their content, contrast and surfaces around the cube
+rather than weakening its presence.
+
+## D-020 — Phase 2 core screens use six provider-neutral services
+
+Timeline, Insights, NEXUS, Knowledge, Notes, and Search depend on
+`TimelineService`, `InsightsService`, `NexusService`, `KnowledgeService`,
+`NotesService`, and `SearchService`. Their deterministic Phase 2 adapters share
+canonical contracts while keeping fixtures outside page and component modules.
+
+Future live adapters must preserve these boundaries or record a replacement
+decision. Provider payloads, model responses, and fixture imports must not leak
+into route components.
+
+## D-021 — One scenario remains coherent across core navigation
+
+The active prototype scenario travels as a query parameter through product
+navigation and global search results. This makes the same deadline, event,
+knowledge, conversation, and note story inspectable across every Phase 2 route
+without introducing persistence or backend state.
+
+The scenario control remains a prototype concern surfaced through Technicals.
+It is not a user preference or future production URL contract.
+
+## D-022 — Search is global and Notes is knowledge-adjacent
+
+Unified Search is available from every product route through `Ctrl/Cmd + K` and
+a dedicated `/app/search` experience instead of taking another permanent
+sidebar slot. Notes is discoverable from Knowledge, Search, and contextual
+shortcuts without changing the locked daily-versus-control navigation groups.

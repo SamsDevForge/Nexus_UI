@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ProductShell } from "@/components/nexus/ProductShell";
 
 export const metadata: Metadata = {
-  title: "Today",
+  title: {
+    default: "NEXUS AI",
+    template: "%s · NEXUS AI",
+  },
   description:
-    "A mocked NEXUS AI Today experience for proactive student planning.",
+    "The deterministic mocked NEXUS AI core product experience.",
 };
 
 export default function AppLayout({
@@ -12,5 +16,9 @@ export default function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <ProductShell>{children}</ProductShell>;
+  return (
+    <Suspense fallback={<div className="product-shell-loading" />}>
+      <ProductShell>{children}</ProductShell>
+    </Suspense>
+  );
 }

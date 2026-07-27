@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TODAY_SCENARIOS } from "@/lib/mocks/today-fixtures";
+import { scenarioHref } from "@/lib/mocks/phase2-fixtures";
 
 export const metadata: Metadata = {
   title: "Technicals",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 const implementationFacts = [
   {
     label: "Decision data",
-    value: "Typed Today snapshots",
+    value: "Seven typed core snapshots",
     detail: "Provider-neutral",
   },
   {
@@ -22,12 +23,45 @@ const implementationFacts = [
   {
     label: "Live connections",
     value: "Not connected yet",
-    detail: "Phase 1",
+    detail: "Phase 2 mock boundary",
   },
   {
     label: "External actions",
     value: "Previewed, never executed",
     detail: "Safe by default",
+  },
+];
+
+const phaseTwoServices = [
+  {
+    name: "TimelineService",
+    route: "/app/timeline",
+    detail: "Time groups, source reasoning and approval-safe schedule proposals",
+  },
+  {
+    name: "InsightsService",
+    route: "/app/insights",
+    detail: "Ranked recommendations, lifecycle, feedback and prepared actions",
+  },
+  {
+    name: "NexusService",
+    route: "/app/nexus",
+    detail: "Scripted conversations, evidence and recorded mock tool results",
+  },
+  {
+    name: "KnowledgeService",
+    route: "/app/knowledge",
+    detail: "Provider-neutral sources, documents and permission-aware retrieval",
+  },
+  {
+    name: "NotesService",
+    route: "/app/notes",
+    detail: "Source-grounded drafts, review state and future provider preparation",
+  },
+  {
+    name: "SearchService",
+    route: "/app/search",
+    detail: "Unified cross-domain results with type and source filters",
   },
 ];
 
@@ -42,8 +76,8 @@ export default function TechnicalsPage() {
         <h1>Technicals, in one place.</h1>
         <p>
           Explore how the prototype behaves, what each recommendation is built
-          from, and where the current product boundary sits. The everyday Today
-          view stays focused on your day.
+          from, and where the current product boundary sits. Everyday product
+          views stay focused on daily use.
         </p>
       </header>
 
@@ -53,7 +87,7 @@ export default function TechnicalsPage() {
             <p className="section-kicker">Current build</p>
             <h2 id="boundary-heading">What is real, and what is simulated</h2>
           </div>
-          <span>Phase 01 · UI foundation</span>
+          <span>Phase 02 · Core product experience</span>
         </div>
 
         <div className="technical-facts">
@@ -67,11 +101,38 @@ export default function TechnicalsPage() {
         </div>
       </section>
 
+      <section className="scenario-lab" aria-labelledby="services-heading">
+        <div className="technical-section-heading">
+          <div>
+            <p className="section-kicker">Provider-neutral boundaries</p>
+            <h2 id="services-heading">Six deterministic services</h2>
+          </div>
+          <span>Typed contracts · isolated fixtures</span>
+        </div>
+
+        <div className="phase2-service-list">
+          {phaseTwoServices.map((service) => (
+            <Link
+              className="phase2-service-row"
+              href={scenarioHref(service.route, "rain-and-traffic")}
+              key={service.name}
+            >
+              <span aria-hidden="true" />
+              <span>
+                <strong>{service.name}</strong>
+                <small>{service.detail}</small>
+              </span>
+              <b>Open route →</b>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <section className="scenario-lab" aria-labelledby="scenario-heading">
         <div className="technical-section-heading">
           <div>
             <p className="section-kicker">Experience states</p>
-            <h2 id="scenario-heading">See how Today responds</h2>
+            <h2 id="scenario-heading">See how the core product responds</h2>
           </div>
           <span>{TODAY_SCENARIOS.length} deterministic views</span>
         </div>
@@ -80,7 +141,7 @@ export default function TechnicalsPage() {
           {TODAY_SCENARIOS.map((scenario) => (
             <Link
               className="scenario-link"
-              href={`/app/today?scenario=${scenario.value}`}
+              href={scenarioHref("/app/timeline", scenario.value)}
               key={scenario.value}
             >
               <i aria-hidden="true" />
@@ -89,7 +150,7 @@ export default function TechnicalsPage() {
                 <small>{scenario.description}</small>
               </span>
               <b>
-                Open Today <span aria-hidden="true">→</span>
+                Open Timeline <span aria-hidden="true">→</span>
               </b>
             </Link>
           ))}

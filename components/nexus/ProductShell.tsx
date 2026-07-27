@@ -2,9 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState, type ReactNode } from "react";
+import { GlobalSearch } from "./GlobalSearch";
 import { ProductLandingCubeBackdrop } from "./ProductLandingCubeBackdrop";
+import {
+  parseNexusScenario,
+  scenarioHref,
+} from "@/lib/mocks/phase2-fixtures";
 
 const dailyNavigation = [
   { label: "Today", compact: "T", description: "Your day now", href: "/app/today" },
@@ -64,7 +69,10 @@ function BrandLockup() {
 
 export function ProductShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const scenario = parseNexusScenario(searchParams.get("scenario") ?? undefined);
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   return (
     <div
@@ -113,7 +121,7 @@ export function ProductShell({ children }: { children: ReactNode }) {
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={scenarioHref(item.href, scenario)}
                   className={
                     active
                       ? "nav-link nav-link-daily is-active"
@@ -144,7 +152,7 @@ export function ProductShell({ children }: { children: ReactNode }) {
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={scenarioHref(item.href, scenario)}
                   className={active ? "nav-link is-active" : "nav-link"}
                   aria-current={active ? "page" : undefined}
                   aria-label={item.label}
@@ -163,7 +171,7 @@ export function ProductShell({ children }: { children: ReactNode }) {
         </nav>
 
         <Link
-          href="/app/technicals"
+          href={scenarioHref("/app/technicals", scenario)}
           className={
             pathname === "/app/technicals"
               ? "sidebar-technicals is-active"
@@ -191,7 +199,10 @@ export function ProductShell({ children }: { children: ReactNode }) {
             <b>Aadi Sharma</b>
             <small>Student profile</small>
           </span>
-          <Link href="/app/settings" aria-label="Open account settings">
+          <Link
+            href={scenarioHref("/app/settings", scenario)}
+            aria-label="Open account settings"
+          >
             ···
           </Link>
         </div>
@@ -209,9 +220,24 @@ export function ProductShell({ children }: { children: ReactNode }) {
               <small>Bengaluru · IST</small>
             </span>
           </div>
-          <Link className="mobile-technicals-link" href="/app/technicals">
-            Technicals
-          </Link>
+          <div className="context-actions">
+            <button
+              className="global-search-trigger"
+              type="button"
+              aria-label="Open global search"
+              onClick={() => setSearchOpen(true)}
+            >
+              <span aria-hidden="true" />
+              <b>Search</b>
+              <kbd>⌘K</kbd>
+            </button>
+            <Link
+              className="mobile-technicals-link"
+              href={scenarioHref("/app/technicals", scenario)}
+            >
+              Technicals
+            </Link>
+          </div>
         </header>
 
         <main className="product-main">{children}</main>
@@ -223,7 +249,7 @@ export function ProductShell({ children }: { children: ReactNode }) {
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={scenarioHref(item.href, scenario)}
               className={active ? "mobile-nav-link is-active" : "mobile-nav-link"}
               aria-current={active ? "page" : undefined}
             >
@@ -233,6 +259,12 @@ export function ProductShell({ children }: { children: ReactNode }) {
           );
         })}
       </nav>
+
+      <GlobalSearch
+        scenario={scenario}
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+      />
     </div>
   );
 }
