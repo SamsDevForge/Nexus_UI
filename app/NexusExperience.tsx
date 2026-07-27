@@ -600,7 +600,7 @@ export function NexusExperience() {
         <div className="insight-head">
           <div>
             <span className="insight-kicker">Predicted action</span>
-            <h2>Good morning, Investor.</h2>
+            <h2>Good morning, User.</h2>
           </div>
           <span className="insight-mark" aria-hidden="true">
             <i />
