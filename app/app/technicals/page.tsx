@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const implementationFacts = [
   {
     label: "Decision data",
-    value: "Seven typed core snapshots",
+    value: "Thirteen typed snapshots",
     detail: "Provider-neutral",
   },
   {
@@ -23,7 +23,7 @@ const implementationFacts = [
   {
     label: "Live connections",
     value: "Not connected yet",
-    detail: "Phase 2 mock boundary",
+    detail: "Phase 3 mock boundary",
   },
   {
     label: "External actions",
@@ -65,6 +65,48 @@ const phaseTwoServices = [
   },
 ];
 
+const phaseThreeServices = [
+  {
+    name: "AutomationService",
+    route: "/app/automations",
+    detail: "Recipes, safe authority, dry-runs, recovery and global pause",
+  },
+  {
+    name: "ConnectionService",
+    route: "/app/connections",
+    detail: "Capability, health, resync, reconnect and dependency impact",
+  },
+  {
+    name: "PermissionService",
+    route: "/app/settings/permissions",
+    detail: "Purpose, retention, model use, notifications, authority and revocation",
+  },
+  {
+    name: "MemoryService",
+    route: "/app/memory",
+    detail: "Provenance, confidence, correction, confirmation and deletion",
+  },
+  {
+    name: "ActivityService",
+    route: "/app/activity",
+    detail: "Audit filters, recorded results, retry, reversal and mock export",
+  },
+  {
+    name: "SettingsService",
+    route: "/app/settings",
+    detail: "Profile, places, notification policy, privacy and data controls",
+  },
+];
+
+const permissionDimensions = [
+  "Provider capability",
+  "NEXUS read purpose",
+  "Normalized-data retention",
+  "Future model use",
+  "Notification permission",
+  "Action authority",
+];
+
 export default function TechnicalsPage() {
   return (
     <section className="technicals-page">
@@ -87,7 +129,7 @@ export default function TechnicalsPage() {
             <p className="section-kicker">Current build</p>
             <h2 id="boundary-heading">What is real, and what is simulated</h2>
           </div>
-          <span>Phase 02 · Core product experience</span>
+          <span>Phase 03 · Control and configuration</span>
         </div>
 
         <div className="technical-facts">
@@ -99,6 +141,57 @@ export default function TechnicalsPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="scenario-lab" aria-labelledby="control-services-heading">
+        <div className="technical-section-heading">
+          <div>
+            <p className="section-kicker">Phase 3 boundaries</p>
+            <h2 id="control-services-heading">Six deterministic control services</h2>
+          </div>
+          <span>Stateful session mocks · no live providers</span>
+        </div>
+
+        <div className="phase2-service-list">
+          {phaseThreeServices.map((service) => (
+            <Link
+              className="phase2-service-row"
+              href={scenarioHref(service.route, "rain-and-traffic")}
+              key={service.name}
+            >
+              <span aria-hidden="true" />
+              <span>
+                <strong>{service.name}</strong>
+                <small>{service.detail}</small>
+              </span>
+              <b>Open route</b>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="scenario-lab" aria-labelledby="permission-model-heading">
+        <div className="technical-section-heading">
+          <div>
+            <p className="section-kicker">Action safety</p>
+            <h2 id="permission-model-heading">One provider scope, six separate decisions</h2>
+          </div>
+          <span>Automatic Act unavailable by default</span>
+        </div>
+        <div className="technical-permission-model">
+          {permissionDimensions.map((dimension, index) => (
+            <div key={dimension}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <b>{dimension}</b>
+            </div>
+          ))}
+        </div>
+        <p className="technical-boundary-note">
+          Connection health, permission changes, memory corrections, exports,
+          deletions, dry-runs, retries, reversals, and action results are
+          deterministic fixtures. No OAuth, provider SDK, database, model,
+          notification service, or external tool is connected.
+        </p>
       </section>
 
       <section className="scenario-lab" aria-labelledby="services-heading">

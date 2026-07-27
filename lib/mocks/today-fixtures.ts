@@ -30,6 +30,11 @@ export const TODAY_SCENARIOS: ReadonlyArray<{
     description: "A time-sensitive study recommendation with clear evidence.",
   },
   {
+    value: "partial-connections",
+    label: "Partial connections",
+    description: "Calendar is available while email and course pages remain disconnected.",
+  },
+  {
     value: "connection-stale",
     label: "Stale source",
     description: "A connected source that needs refreshing.",
@@ -58,6 +63,11 @@ export const TODAY_SCENARIOS: ReadonlyArray<{
     value: "action-failed",
     label: "Action failed",
     description: "A recoverable preparation failure and retry path.",
+  },
+  {
+    value: "privacy-paused",
+    label: "Privacy paused",
+    description: "Observation and proactive preparation are paused globally.",
   },
   {
     value: "reduced-motion",
@@ -334,6 +344,25 @@ export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
     };
   }
 
+  if (scenario === "partial-connections") {
+    return {
+      ...snapshot,
+      systemState: "degraded",
+      notice: {
+        tone: "info",
+        title: "Some context is unavailable",
+        detail:
+          "Calendar and route guidance remain useful. Email and selected course pages are not connected.",
+      },
+      connections: snapshot.connections.map((connection) =>
+        connection.id === "connection-notion"
+          ? { ...connection, health: "disconnected" }
+          : connection,
+      ),
+      preparedAssets: preparedAssets.slice(0, 1),
+    };
+  }
+
   if (scenario === "first-use") {
     return {
       ...snapshot,
@@ -413,6 +442,22 @@ export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
         detail:
           "Your schedule is unchanged. Retry the preparation action when the connection is stable.",
       },
+    };
+  }
+
+  if (scenario === "privacy-paused") {
+    return {
+      ...snapshot,
+      systemState: "privacy-paused",
+      summary:
+        "Observation and automations are paused. Your last prepared view remains visible.",
+      notice: {
+        tone: "info",
+        title: "Privacy pause is active",
+        detail:
+          "NEXUS is not reading new provider context or evaluating automations until you resume.",
+      },
+      signals: [],
     };
   }
 

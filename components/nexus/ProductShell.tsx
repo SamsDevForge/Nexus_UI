@@ -73,6 +73,14 @@ export function ProductShell({ children }: { children: ReactNode }) {
   const scenario = parseNexusScenario(searchParams.get("scenario") ?? undefined);
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const shellState =
+    scenario === "privacy-paused"
+      ? { label: "Privacy paused", detail: "0 new signals" }
+      : scenario === "offline"
+        ? { label: "Offline", detail: "Prepared state" }
+        : scenario === "permission-denied"
+          ? { label: "Limited", detail: "Permission blocked" }
+          : { label: "Observing", detail: "3 live signals" };
 
   return (
     <div
@@ -105,11 +113,14 @@ export function ProductShell({ children }: { children: ReactNode }) {
           </button>
         </div>
 
-        <div className="sidebar-state" aria-label="NEXUS is observing">
+        <div
+          className={`sidebar-state is-${scenario}`}
+          aria-label={`NEXUS state: ${shellState.label}`}
+        >
           <span className="sidebar-state-light" aria-hidden="true" />
           <span>
-            <b>Observing</b>
-            <small>3 live signals</small>
+            <b>{shellState.label}</b>
+            <small>{shellState.detail}</small>
           </span>
         </div>
 
@@ -231,6 +242,12 @@ export function ProductShell({ children }: { children: ReactNode }) {
               <b>Search</b>
               <kbd>⌘K</kbd>
             </button>
+            <Link
+              className="mobile-controls-link"
+              href={scenarioHref("/app/settings", scenario)}
+            >
+              Controls
+            </Link>
             <Link
               className="mobile-technicals-link"
               href={scenarioHref("/app/technicals", scenario)}

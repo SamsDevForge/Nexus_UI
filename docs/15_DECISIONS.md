@@ -185,3 +185,17 @@ Unified Search is available from every product route through `Ctrl/Cmd + K` and
 a dedicated `/app/search` experience instead of taking another permanent
 sidebar slot. Notes is discoverable from Knowledge, Search, and contextual
 shortcuts without changing the locked daily-versus-control navigation groups.
+
+## D-023 — Phase 3 controls share one provider-neutral policy model
+
+Automations, Connections, Permission Centre, Memory, Activity, and Settings
+depend on `AutomationService`, `ConnectionService`, `PermissionService`,
+`MemoryService`, `ActivityService`, and `SettingsService`. Their Phase 3 mock
+adapters share deterministic session state so a revocation, global pause,
+memory correction, retry, reversal, export, or deletion request produces a
+coherent result across control surfaces and Activity.
+
+Provider capability, NEXUS read purpose, normalized-data retention, future
+model use, notification permission, and action authority remain separate
+dimensions. Provider write capability never grants automatic-action authority,
+and mocked authority escalation is capped at Ask.

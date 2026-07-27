@@ -4,10 +4,12 @@ export type TodayScenario =
   | "student-normal-day"
   | "rain-and-traffic"
   | "deadline-risk"
+  | "partial-connections"
   | "connection-stale"
   | "permission-denied"
   | "offline"
   | "action-failed"
+  | "privacy-paused"
   | "reduced-motion";
 
 export type TodayViewState =
@@ -427,6 +429,7 @@ export type UnifiedSearchResultType =
   | "conversation"
   | "knowledge"
   | "note"
+  | "control"
   | "email-derived";
 
 export interface UnifiedSearchResult {
@@ -457,4 +460,408 @@ export interface SearchResponse {
   availableSources: string[];
   localOnly: boolean;
   notice?: string;
+}
+
+export type ControlViewState =
+  | CoreViewState
+  | "partial"
+  | "privacy-paused";
+
+export type AutomationStatus =
+  | "active"
+  | "paused"
+  | "draft"
+  | "needs-attention"
+  | "blocked";
+
+export interface AutomationTrigger {
+  kind: "schedule" | "context-change" | "deadline-risk" | "event-window";
+  label: string;
+  cadence: string;
+}
+
+export interface AutomationCondition {
+  id: string;
+  label: string;
+  source: string;
+  satisfied: boolean;
+}
+
+export interface AutomationDependency {
+  id: string;
+  kind: "connection" | "permission";
+  label: string;
+  state: "available" | "stale" | "denied" | "disconnected";
+}
+
+export interface AutomationRun {
+  id: string;
+  automationId: string;
+  startedAt: string;
+  outcome: "succeeded" | "skipped" | "failed" | "blocked";
+  summary: string;
+  authorityUsed: AuthorityLevel;
+  reversible: boolean;
+}
+
+export interface AutomationDryRunResult {
+  automationId: string;
+  ranAt: string;
+  outcome: "would-suggest" | "would-prepare" | "would-ask" | "blocked";
+  proposedOutcome: string;
+  requiredAuthority: AuthorityLevel;
+  trace: ReadonlyArray<{
+    id: string;
+    label: string;
+    result: "passed" | "failed" | "not-run";
+    detail: string;
+  }>;
+}
+
+export interface AutomationDefinition {
+  id: string;
+  name: string;
+  description: string;
+  status: AutomationStatus;
+  trigger: AutomationTrigger;
+  conditions: AutomationCondition[];
+  proposedAction: string;
+  authority: AuthorityLevel;
+  dataUsed: string[];
+  dependencies: AutomationDependency[];
+  lastRunAt?: string;
+  nextEligibleAt?: string;
+  attentionReason?: string;
+  runHistory: AutomationRun[];
+  isTemplate?: boolean;
+}
+
+export interface AutomationSnapshot {
+  scenario: NexusScenario;
+  viewState: ControlViewState;
+  globallyPaused: boolean;
+  summary: string;
+  activeCount: number;
+  needsAttentionCount: number;
+  automations: AutomationDefinition[];
+  templates: AutomationDefinition[];
+  notice?: string;
+}
+
+export type ConnectionStatus =
+  | "connected"
+  | "disconnected"
+  | "syncing"
+  | "stale"
+  | "denied"
+  | "reconnect-required"
+  | "offline";
+
+export interface ConnectionCapability {
+  id: string;
+  label: string;
+  providerScope: string;
+  granted: boolean;
+  purpose: string;
+}
+
+export interface ConnectionIdentity {
+  provider: string;
+  accountLabel: string;
+  accountHint: string;
+  family:
+    | "calendar"
+    | "email"
+    | "knowledge"
+    | "location"
+    | "device";
+}
+
+export interface ConnectionRecord {
+  id: string;
+  identity: ConnectionIdentity;
+  status: ConnectionStatus;
+  capabilities: ConnectionCapability[];
+  lastSuccessfulSyncAt?: string;
+  freshness: FreshnessState;
+  dependentFeatures: string[];
+  dependentAutomationIds: string[];
+  permissionSummary: string;
+  retentionSummary: string;
+  healthDetail: string;
+}
+
+export interface ConnectionSyncResult {
+  connectionId: string;
+  status: "succeeded" | "failed" | "offline";
+  completedAt: string;
+  summary: string;
+  changedRecords: number;
+}
+
+export interface DependencyImpact {
+  title: string;
+  detail: string;
+  affectedFeatures: string[];
+  affectedAutomations: string[];
+  reversible: boolean;
+}
+
+export interface ConnectionSnapshot {
+  scenario: NexusScenario;
+  viewState: ControlViewState;
+  summary: string;
+  healthyCount: number;
+  attentionCount: number;
+  connections: ConnectionRecord[];
+  availableSetups: ConnectionRecord[];
+  notice?: string;
+}
+
+export type DataClass =
+  | "public"
+  | "personal"
+  | "private-content"
+  | "sensitive-context"
+  | "highly-sensitive";
+
+export type RetentionChoice =
+  | "none"
+  | "working-context"
+  | "30-days"
+  | "until-disconnected";
+
+export type ModelUseChoice = "never" | "allowed-for-purpose";
+
+export interface PermissionHistoryEntry {
+  id: string;
+  changedAt: string;
+  actor: "user" | "nexus-policy";
+  summary: string;
+}
+
+export interface PermissionGrant {
+  id: string;
+  sourceId: string;
+  sourceLabel: string;
+  capability: string;
+  providerScope: string;
+  dataClass: DataClass;
+  readAllowed: boolean;
+  readPurpose: string;
+  retention: RetentionChoice;
+  modelUse: ModelUseChoice;
+  notificationsAllowed: boolean;
+  actionAuthority: AuthorityLevel;
+  dependentFeatures: string[];
+  dependentAutomations: string[];
+  sensitive: boolean;
+  status: "granted" | "reduced" | "revoked";
+  history: PermissionHistoryEntry[];
+}
+
+export interface PermissionSnapshot {
+  scenario: NexusScenario;
+  viewState: ControlViewState;
+  observationPaused: boolean;
+  automationsPaused: boolean;
+  summary: string;
+  grants: PermissionGrant[];
+  notice?: string;
+}
+
+export type MemoryCategory =
+  | "user-stated"
+  | "inferred-routine"
+  | "preference"
+  | "important-place"
+  | "person"
+  | "working-memory";
+
+export interface MemoryEvidence {
+  id: string;
+  source: string;
+  detail: string;
+  observedAt: string;
+}
+
+export interface MemoryOrigin {
+  kind: "user-stated" | "inferred" | "source-derived";
+  sourceLabel: string;
+}
+
+export interface MemoryItem {
+  id: string;
+  category: MemoryCategory;
+  label: string;
+  value: string;
+  utility: string;
+  origin: MemoryOrigin;
+  evidence: MemoryEvidence[];
+  confidence?: number;
+  sensitivity: DataClass;
+  lastVerifiedAt: string;
+  expiresAt?: string;
+  usedBy: string[];
+  persistence: "temporary" | "persistent";
+  status: "confirmed" | "unconfirmed" | "conflicted" | "deleted";
+  inferenceLocked: boolean;
+  reversible: boolean;
+}
+
+export interface MemoryMutationResult {
+  memoryId: string;
+  status: "confirmed" | "corrected" | "deleted" | "restored";
+  summary: string;
+  recordedActivityId: string;
+}
+
+export interface MemorySnapshot {
+  scenario: NexusScenario;
+  viewState: ControlViewState;
+  summary: string;
+  items: MemoryItem[];
+  notice?: string;
+}
+
+export type ActivityEventType =
+  | "source-read"
+  | "connection-sync"
+  | "insight"
+  | "notification"
+  | "prepared-action"
+  | "approved-action"
+  | "rejected-action"
+  | "permission-change"
+  | "memory-change"
+  | "automation-run";
+
+export type ActivityOutcome =
+  | "success"
+  | "pending"
+  | "denied"
+  | "failed"
+  | "reversed";
+
+export interface ActivityActor {
+  kind: "user" | "nexus" | "provider-mock" | "policy";
+  label: string;
+}
+
+export interface ActivityEvent {
+  id: string;
+  occurredAt: string;
+  dateLabel: string;
+  type: ActivityEventType;
+  title: string;
+  summary: string;
+  source: string;
+  actor: ActivityActor;
+  requiredAuthority: AuthorityLevel;
+  grantedAuthority: AuthorityLevel;
+  outcome: ActivityOutcome;
+  evidence: Evidence[];
+  result: string;
+  failure?: {
+    code: string;
+    message: string;
+    recoverable: boolean;
+  };
+  reversible: boolean;
+  reversalState: "available" | "not-available" | "reversed";
+  relatedHref: string;
+  technicalDetail: string;
+}
+
+export interface ActivityFilters {
+  query: string;
+  types: ActivityEventType[];
+  sources: string[];
+  authorities: AuthorityLevel[];
+  outcomes: ActivityOutcome[];
+}
+
+export interface ActivitySnapshot {
+  scenario: NexusScenario;
+  viewState: ControlViewState;
+  summary: string;
+  events: ActivityEvent[];
+  availableSources: string[];
+  notice?: string;
+}
+
+export interface ImportantPlace {
+  id: string;
+  label: string;
+  address: string;
+  travelMode: "walk" | "cycle" | "transit" | "drive";
+}
+
+export interface QuietHours {
+  enabled: boolean;
+  startsAt: string;
+  endsAt: string;
+}
+
+export interface NotificationPolicy {
+  style: "essential" | "balanced" | "proactive";
+  inApp: boolean;
+  emailDigest: boolean;
+  devicePush: boolean;
+  morningBriefAt: string;
+  eveningBriefAt: string;
+  quietHours: QuietHours;
+}
+
+export interface PrivacyControls {
+  observationPaused: boolean;
+  automationsPaused: boolean;
+  defaultRetention: RetentionChoice;
+  futureModelUse: ModelUseChoice;
+}
+
+export interface AccessibilityPreferences {
+  reducedMotion: boolean;
+  highContrast: boolean;
+  largerText: boolean;
+}
+
+export interface UserPreferences {
+  displayName: string;
+  timezone: string;
+  locale: string;
+  places: ImportantPlace[];
+  notifications: NotificationPolicy;
+  privacy: PrivacyControls;
+  accessibility: AccessibilityPreferences;
+  personalization: {
+    conciseExplanations: boolean;
+    learnFromFeedback: boolean;
+    preferredTravelMode: ImportantPlace["travelMode"];
+  };
+}
+
+export interface SettingsSnapshot {
+  scenario: NexusScenario;
+  viewState: ControlViewState;
+  summary: string;
+  preferences: UserPreferences;
+  notice?: string;
+}
+
+export interface MockExportRequest {
+  id: string;
+  requestedAt: string;
+  scope: "all-data" | "activity-filter" | "source-derived";
+  status: "prepared" | "failed";
+  summary: string;
+}
+
+export interface MockDeletionRequest {
+  id: string;
+  requestedAt: string;
+  scope: "source-derived" | "account";
+  status: "confirmed" | "cancelled";
+  impact: DependencyImpact;
+  summary: string;
 }

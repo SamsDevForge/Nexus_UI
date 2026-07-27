@@ -2,9 +2,9 @@
 
 ## Current phase
 
-Phase 0, Phase 1, and Phase 2 implemented: repository foundation, shared
-product design system, application shell, Today reference experience, and the
-complete mocked core product experience.
+Phase 0 through Phase 3 implemented: repository foundation, shared product
+design system, application shell, complete mocked core product experience, and
+complete control and configuration surfaces.
 
 ## Completed
 
@@ -91,33 +91,86 @@ complete mocked core product experience.
   global search
 - Phase 2 contract, route, scenario-consistency, interaction, offline,
   permission, failure, and reduced-motion tests
+- Complete interactive `/app/automations` experience with a global policy
+  kill switch, active, paused, draft, blocked, and attention states, reviewed
+  templates, a structured custom editor, safe authority changes, duplicate,
+  pause/resume, deterministic dry-runs, trace review, run history, recovery,
+  and confirmed deletion
+- Complete interactive `/app/connections` experience with provider identity,
+  capability and purpose review, health, freshness, retention, dependent
+  features and automations, mock setup, resync, reconnect, capability
+  reduction, disconnect impact preview, and confirmed disconnect
+- Complete nested `/app/settings/permissions` Permission Centre separating
+  provider capability, read purpose, normalized-data retention, future model
+  use, notification permission, and action authority, with global observation
+  pause, automation kill switch, history, revocation impact, confirmation, and
+  conservative restoration
+- Complete interactive `/app/memory` experience separating user-stated facts,
+  inferred routines, preferences, places, people, and working memory, with
+  origin, evidence, confidence, sensitivity, verification, expiry, dependent
+  features, confirmation, correction, persistence, inference lock, deletion
+  impact, and restoration
+- Complete interactive `/app/activity` audit experience with chronological date
+  grouping, search, event/source/authority/outcome filters, actor, evidence,
+  required and granted authority, recorded result, recoverable retry,
+  reversible action state, related-control links, expandable technical detail,
+  and deterministic filtered export
+- Complete interactive `/app/settings` experience for profile and timezone,
+  important places and travel mode, notification channels and style, quiet
+  hours and brief schedules, personalization, global privacy controls,
+  retention and model-use defaults, accessibility, notification preview,
+  deterministic export, source-derived deletion, and account deletion review
+- Canonical Phase 3 contracts plus `AutomationService`, `ConnectionService`,
+  `PermissionService`, `MemoryService`, `ActivityService`, and
+  `SettingsService` boundaries with isolated fixtures and shared deterministic
+  session state
+- Shared Phase 3 scenarios for partial connections and privacy pause added to
+  the existing first-use, loading, normal, stale, denied, offline, failed, and
+  reduced-motion system
+- Calendar permission revocation coherently denies the Calendar connection,
+  blocks dependent automations, conflicts dependent memory, and records
+  Activity; global automation pause and memory corrections likewise remain
+  coherent across service boundaries
+- Global Ctrl/Cmd+K search now navigates to all Phase 3 control destinations,
+  the Permission Centre, notification preferences, privacy, export, and
+  deletion settings
+- `/app/technicals` extended with Phase 3 provider-neutral boundaries,
+  deterministic mock/live limits, scenario coverage, six permission
+  dimensions, and action-safety policy
+- Phase 3 validation passed: TypeScript, ESLint, 27 deterministic tests,
+  Next.js production build, and `git diff --check`
 
 ## Current implementation assumptions
 
 - The existing cinematic landing page is the accepted public visual baseline.
 - Core student data is deterministic and set in Bengaluru/IST.
-- Automations, Connections, Memory, Activity, and Settings remain intentional
-  Phase 3 placeholders.
+- Phase 3 control state is deterministic and session-local; persistence starts
+  in the later backend and identity phase.
 
 ## Mock/live status
 
 - UI: landing, application shell, Today, Timeline, Insights, NEXUS, Knowledge,
-  Notes, Search, and Technicals implemented
+  Notes, Search, Automations, Connections, Permission Centre, Memory, Activity,
+  Settings, and Technicals implemented
 - Backend: not implemented
 - Integrations: not implemented
 - AI: not implemented
 - Android: not implemented
 
 All Calendar, route, weather, task, future-source, document, note, conversation,
-search, approval, and action results remain deterministic mocks behind
-provider-neutral service boundaries. No model or external tool is called.
+search, connection, permission, memory, automation, activity, export, deletion,
+approval, and action results remain deterministic mocks behind provider-neutral
+service boundaries. No model, provider, notification service, or external tool
+is called.
 
 ## Known limitations
 
 - No live providers, authentication, backend, OAuth, or model calls exist.
-- Phase 3 control destinations remain deliberate placeholders.
 - Mock action approvals update only local component state and reset on route
   reload; persistence begins in a later platform phase.
+- Phase 3 connection setup, sync, reconnect, disconnect, export, deletion,
+  notification, retry, and reversal operations are interface-complete
+  simulations; they do not contact providers or change real data.
 - Unified search covers the deterministic Phase 2 fixture corpus, not a live
   index or RAG system.
 - The supplied `.svg` contains an embedded PNG rather than native vector paths,
@@ -127,7 +180,7 @@ provider-neutral service boundaries. No model or external tool is called.
 
 ## Next phase
 
-Phase 3 — Control and configuration screens with typed mock data: implement
-Automations, Connections, Permission Centre, Memory, Activity, Settings,
-notification preferences, privacy, export, and deletion surfaces. Do not
-connect live services yet.
+Phase 4 — Complete UI State Coverage: add the exhaustive cross-product
+first-use, no-connections, partial, loading, empty, rate-limited, stale,
+revoked, offline, degraded-AI, pending, running, succeeded, and recoverable
+failure state matrix. Do not connect live services yet.

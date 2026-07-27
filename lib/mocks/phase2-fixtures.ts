@@ -29,10 +29,12 @@ export function parseNexusScenario(value?: string | string[]): NexusScenario {
     "student-normal-day",
     "rain-and-traffic",
     "deadline-risk",
+    "partial-connections",
     "connection-stale",
     "permission-denied",
     "offline",
     "action-failed",
+    "privacy-paused",
     "reduced-motion",
   ];
 
@@ -168,6 +170,9 @@ function noticeForScenario(scenario: NexusScenario) {
   if (scenario === "connection-stale") {
     return "Knowledge material is 14 hours behind. Calendar and local notes remain usable.";
   }
+  if (scenario === "partial-connections") {
+    return "Calendar and local notes are available. Email and selected course pages remain disconnected.";
+  }
   if (scenario === "permission-denied") {
     return "Calendar access is paused. NEXUS will not infer missing event times.";
   }
@@ -176,6 +181,9 @@ function noticeForScenario(scenario: NexusScenario) {
   }
   if (scenario === "action-failed") {
     return "A prepared demo action failed safely. No calendar or provider state changed.";
+  }
+  if (scenario === "privacy-paused") {
+    return "Privacy pause is active. NEXUS is not reading new provider context.";
   }
   if (scenario === "reduced-motion") {
     return "Reduced motion is active. State changes remain available through text.";
@@ -1118,6 +1126,90 @@ const unifiedResults: UnifiedSearchResult[] = [
     permission: "restricted",
     keywords: ["private", "archive", "project"],
   },
+  {
+    id: "search-control-automations",
+    type: "control",
+    title: "Automations",
+    excerpt: "Pause recipes, review authority, run dry-runs, and inspect dependencies.",
+    source: "NEXUS controls",
+    freshness: "fresh",
+    updatedAt: "2026-07-25T09:20:00+05:30",
+    href: "/app/automations",
+    permission: "available",
+    keywords: ["automation", "recipe", "dry run", "pause", "authority"],
+  },
+  {
+    id: "search-control-connections",
+    type: "control",
+    title: "Connections",
+    excerpt: "Review provider capability, sync health, freshness, and retention.",
+    source: "NEXUS controls",
+    freshness: "fresh",
+    updatedAt: "2026-07-25T09:20:00+05:30",
+    href: "/app/connections",
+    permission: "available",
+    keywords: ["connections", "provider", "sync", "reconnect", "disconnect"],
+  },
+  {
+    id: "search-control-permissions",
+    type: "control",
+    title: "Permission Centre",
+    excerpt: "Control read purpose, retention, future model use, notifications, and authority.",
+    source: "NEXUS controls",
+    freshness: "fresh",
+    updatedAt: "2026-07-25T09:20:00+05:30",
+    href: "/app/settings/permissions",
+    permission: "available",
+    keywords: ["permission", "retention", "model use", "authority", "revoke"],
+  },
+  {
+    id: "search-control-memory",
+    type: "control",
+    title: "Memory",
+    excerpt: "Confirm, correct, expire, lock, forget, or restore remembered context.",
+    source: "NEXUS controls",
+    freshness: "fresh",
+    updatedAt: "2026-07-25T09:20:00+05:30",
+    href: "/app/memory",
+    permission: "available",
+    keywords: ["memory", "routine", "correct", "forget", "inference"],
+  },
+  {
+    id: "search-control-activity",
+    type: "control",
+    title: "Activity",
+    excerpt: "Audit reads, proposals, approvals, failures, retries, and reversals.",
+    source: "NEXUS controls",
+    freshness: "fresh",
+    updatedAt: "2026-07-25T09:20:00+05:30",
+    href: "/app/activity",
+    permission: "available",
+    keywords: ["activity", "audit", "history", "retry", "reverse"],
+  },
+  {
+    id: "search-control-notifications",
+    type: "control",
+    title: "Notification preferences",
+    excerpt: "Set interruption style, channels, quiet hours, and briefing schedule.",
+    source: "NEXUS settings",
+    freshness: "fresh",
+    updatedAt: "2026-07-25T09:20:00+05:30",
+    href: "/app/settings",
+    permission: "available",
+    keywords: ["notifications", "quiet hours", "morning brief", "settings"],
+  },
+  {
+    id: "search-control-data",
+    type: "control",
+    title: "Privacy, export, and deletion",
+    excerpt: "Pause observation, request a mock export, or review data deletion.",
+    source: "NEXUS settings",
+    freshness: "fresh",
+    updatedAt: "2026-07-25T09:20:00+05:30",
+    href: "/app/settings",
+    permission: "available",
+    keywords: ["privacy", "export", "delete", "account", "observation pause"],
+  },
 ];
 
 export function buildSearchResponse(
@@ -1165,6 +1257,7 @@ export function buildSearchResponse(
     "conversation",
     "knowledge",
     "note",
+    "control",
     "email-derived",
   ];
 

@@ -100,7 +100,7 @@ export function GlobalSearch({
             <span className="command-mark" aria-hidden="true">N</span>
             <span>
               <b id="command-title">Search NEXUS</b>
-              <small>Events, knowledge, notes and conversations</small>
+              <small>Context, knowledge, memory and controls</small>
             </span>
           </div>
           <button type="button" onClick={() => onOpenChange(false)}>

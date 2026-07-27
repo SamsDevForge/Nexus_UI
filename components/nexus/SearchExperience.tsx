@@ -22,6 +22,7 @@ const typeLabels: Record<UnifiedSearchResultType, string> = {
   conversation: "Conversations",
   knowledge: "Knowledge",
   note: "Notes",
+  control: "Controls",
   "email-derived": "Email-derived",
 };
 
