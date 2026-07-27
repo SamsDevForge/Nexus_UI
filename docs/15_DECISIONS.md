@@ -199,3 +199,14 @@ Provider capability, NEXUS read purpose, normalized-data retention, future
 model use, notification permission, and action authority remain separate
 dimensions. Provider write capability never grants automatic-action authority,
 and mocked authority escalation is capped at Ask.
+
+## D-024 — Focus mode may suspend the product cube
+
+The product owner may explicitly enable Focus mode from the shared context bar
+to remove the cross-screen cube and its halo from the render tree. Disabling
+Focus mode mounts the unchanged locked cube again.
+
+The device preference is stored in a first-party cookie so server rendering can
+honour it before the product shell is produced. This avoids mounting WebGL,
+allocating a renderer, or briefly showing the cube when Focus mode was already
+enabled.

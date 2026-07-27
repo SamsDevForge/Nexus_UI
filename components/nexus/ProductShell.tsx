@@ -11,6 +11,8 @@ import {
   scenarioHref,
 } from "@/lib/mocks/phase2-fixtures";
 
+const focusModeCookie = "nexus-focus-mode";
+
 const dailyNavigation = [
   { label: "Today", compact: "T", description: "Your day now", href: "/app/today" },
   {
@@ -67,12 +69,26 @@ function BrandLockup() {
   );
 }
 
-export function ProductShell({ children }: { children: ReactNode }) {
+export function ProductShell({
+  children,
+  initialFocusMode = false,
+}: {
+  children: ReactNode;
+  initialFocusMode?: boolean;
+}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const scenario = parseNexusScenario(searchParams.get("scenario") ?? undefined);
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
+  const [focusMode, setFocusMode] = useState(initialFocusMode);
   const [searchOpen, setSearchOpen] = useState(false);
+  const shellClassName = [
+    "product-shell",
+    sidebarMinimized ? "is-sidebar-minimized" : "",
+    focusMode ? "is-focus-mode" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
   const shellState =
     scenario === "privacy-paused"
       ? { label: "Privacy paused", detail: "0 new signals" }
@@ -82,18 +98,20 @@ export function ProductShell({ children }: { children: ReactNode }) {
           ? { label: "Limited", detail: "Permission blocked" }
           : { label: "Observing", detail: "3 live signals" };
 
+  const toggleFocusMode = () => {
+    const nextFocusMode = !focusMode;
+    setFocusMode(nextFocusMode);
+    document.cookie = `${focusModeCookie}=${nextFocusMode ? "on" : "off"}; path=/; max-age=31536000; samesite=lax`;
+  };
+
   return (
-    <div
-      className={
-        sidebarMinimized
-          ? "product-shell is-sidebar-minimized"
-          : "product-shell"
-      }
-    >
-      <div className="product-cube-field" aria-hidden="true">
-        <ProductLandingCubeBackdrop />
-        <span className="product-cube-halo" />
-      </div>
+    <div className={shellClassName}>
+      {!focusMode ? (
+        <div className="product-cube-field" aria-hidden="true">
+          <ProductLandingCubeBackdrop />
+          <span className="product-cube-halo" />
+        </div>
+      ) : null}
 
       <aside className="app-sidebar" id="product-sidebar">
         <div className="sidebar-brand-row">
@@ -232,6 +250,34 @@ export function ProductShell({ children }: { children: ReactNode }) {
             </span>
           </div>
           <div className="context-actions">
+            <button
+              className={
+                focusMode
+                  ? "focus-mode-trigger is-active"
+                  : "focus-mode-trigger"
+              }
+              type="button"
+              aria-pressed={focusMode}
+              aria-label={
+                focusMode
+                  ? "Disable Focus mode and show the cube"
+                  : "Enable Focus mode and hide the cube"
+              }
+              title={
+                focusMode
+                  ? "Disable Focus mode and show the cube"
+                  : "Enable Focus mode and hide the cube"
+              }
+              onClick={toggleFocusMode}
+            >
+              <span className="focus-mode-glyph" aria-hidden="true">
+                <i />
+              </span>
+              <span className="focus-mode-copy">
+                <b>Focus mode</b>
+                <small>{focusMode ? "Cube hidden" : "Cube visible"}</small>
+              </span>
+            </button>
             <button
               className="global-search-trigger"
               type="button"

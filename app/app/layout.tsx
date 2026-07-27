@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Suspense } from "react";
 import { ProductShell } from "@/components/nexus/ProductShell";
 
@@ -11,14 +12,20 @@ export const metadata: Metadata = {
     "The deterministic mocked NEXUS AI core product experience.",
 };
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const initialFocusMode =
+    cookieStore.get("nexus-focus-mode")?.value === "on";
+
   return (
     <Suspense fallback={<div className="product-shell-loading" />}>
-      <ProductShell>{children}</ProductShell>
+      <ProductShell initialFocusMode={initialFocusMode}>
+        {children}
+      </ProductShell>
     </Suspense>
   );
 }

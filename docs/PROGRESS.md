@@ -139,6 +139,8 @@ complete control and configuration surfaces.
   dimensions, and action-safety policy
 - Phase 3 validation passed: TypeScript, ESLint, 27 deterministic tests,
   Next.js production build, and `git diff --check`
+- Shared top-bar Focus mode can remove the cube and halo from the render tree,
+  persists on the device, and restores the unchanged locked cube when disabled
 
 ## Current implementation assumptions
 

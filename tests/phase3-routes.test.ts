@@ -78,3 +78,26 @@ test("global search includes new controls and the locked cube module remains iso
   assert.match(shell, /privacy-paused/);
   assert.match(backdrop, /product-landing-cube-canvas/);
 });
+
+test("Focus mode persists from the app layout and removes the cube from the render tree", async () => {
+  const layout = await readFile(
+    path.join(root, "app", "app", "layout.tsx"),
+    "utf8",
+  );
+  const shell = await readFile(
+    path.join(root, "components", "nexus", "ProductShell.tsx"),
+    "utf8",
+  );
+  const css = await readFile(path.join(root, "app", "globals.css"), "utf8");
+
+  assert.match(layout, /cookies\(\)/);
+  assert.match(layout, /nexus-focus-mode/);
+  assert.match(layout, /initialFocusMode=\{initialFocusMode\}/);
+  assert.match(shell, /<b>Focus mode<\/b>/);
+  assert.match(shell, /aria-pressed=\{focusMode\}/);
+  assert.match(shell, /\{!focusMode \? \(/);
+  assert.match(shell, /ProductLandingCubeBackdrop/);
+  assert.match(shell, /document\.cookie/);
+  assert.match(css, /\.focus-mode-trigger/);
+  assert.match(css, /\.focus-mode-trigger\.is-active/);
+});
