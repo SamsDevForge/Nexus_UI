@@ -240,3 +240,15 @@ ambiguous scheduling details, or bypasses action confirmation.
 Phase 4 routes captured items through the provider-neutral Notes, Timeline,
 Settings, and Activity boundaries. Results persist only for the active
 deterministic demo session. Durable storage begins in a later backend phase.
+
+## D-027 — Scrollable product surfaces share one restrained glass treatment
+
+Visible scrollbars use one site-wide dark liquid-glass treatment with a
+translucent inset track, softly raised pearl-blue thumb, and distinct hover and
+active states. The treatment applies to page content, panels, dialogs, search
+results, and previews without changing their layout or overflow behaviour.
+
+Compact navigation rails and horizontal filter strips may continue to hide
+their scrollbars when direct touch, wheel, or keyboard scrolling remains
+available. Forced-colour environments retain the platform scrollbar instead of
+the branded treatment.

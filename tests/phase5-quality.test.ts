@@ -83,3 +83,23 @@ test("narrow layouts preserve touch targets and reduced-motion coverage", async 
   );
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
+
+test("scrollable surfaces share one accessible liquid-glass scrollbar treatment", async () => {
+  const css = await readFile("app/globals.css", "utf8");
+
+  assert.match(
+    css,
+    /scrollbar-color: var\(--nx-scrollbar-thumb\) var\(--nx-scrollbar-track\)/,
+  );
+  assert.match(css, /:where\(\*\)::-webkit-scrollbar-track/);
+  assert.match(css, /:where\(\*\)::-webkit-scrollbar-thumb:hover/);
+  assert.match(css, /:where\(\*\)::-webkit-scrollbar-button/);
+  assert.match(
+    css,
+    /@media \(forced-colors: active\) \{[\s\S]*scrollbar-color: auto;/,
+  );
+  assert.match(
+    css,
+    /\.app-navigation \{[\s\S]*scrollbar-width: none;/,
+  );
+});

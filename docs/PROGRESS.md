@@ -229,6 +229,14 @@ Quick Capture, and the responsive, accessible, motion-complete website audit.
   Next.js production build, Sites/vinext production build, `git diff --check`,
   rendered keyboard/responsive/state verification, and an error-free browser
   console and hydration audit.
+- Visible overflow regions now share a site-wide dark liquid-glass scrollbar
+  with a translucent inset track, raised pearl-blue thumb, hover and active
+  feedback, hidden native arrow buttons, and a platform-native forced-colour
+  fallback. Intentionally concealed navigation and filter rails remain
+  unchanged.
+- The shared scrollbar enhancement passed TypeScript, ESLint, 51 deterministic
+  tests, the Next.js production build, the Sites/vinext production build,
+  rendered Quick Capture and page-scroll inspection, and browser diagnostics.
 
 ## Current implementation assumptions
 
