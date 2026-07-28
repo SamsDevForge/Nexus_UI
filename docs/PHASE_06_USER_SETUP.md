@@ -179,8 +179,9 @@ Then:
 1. Create a Railway project.
 2. Connect the existing NEXUS GitHub repository.
 3. Create one FastAPI service from the Phase 6 branch/commit.
-4. Set the Railway service root directory to `backend`; Railway will use
-   `backend/railway.toml`.
+4. Point Railway at the backend directory or configuration created by Codex.
+   For the implemented Phase 6 service, set the root directory to `backend`;
+   Railway will use `backend/railway.toml`.
 5. Do not create a Render deployment.
 6. Set the health-check path to the path reported by Codex, expected to be:
 
@@ -234,7 +235,10 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID
 NEXT_PUBLIC_FIREBASE_APP_ID
 ```
 
-These are the exact frontend variable names implemented by Phase 6.
+Use the exact variable names implemented by Codex if they differ.
+
+The names listed above are the exact frontend variable names implemented by
+Phase 6.
 
 Keep the current Sites deployment:
 
@@ -311,18 +315,7 @@ Do not spend time configuring these during Phase 6:
 
 Those are introduced in their corresponding later phases.
 
-## 9. Local implementation status
-
-The local implementation uses Alembic revision
-`20260728_0001_phase6_foundation`. The frontend default remains
-`NEXT_PUBLIC_NEXUS_RUNTIME_MODE=mock`; set `phase6-live` only after both
-Firebase and the deployed API are configured.
-
-The product-owner-supplied Teams asset is registered at
-`public/icons/microsoft-teams.svg`. It does not authorize or call Microsoft
-Graph.
-
-## 10. Phase 6 completion evidence
+## 9. Phase 6 completion evidence
 
 Do not consider Phase 6 complete until the handoff contains:
 
@@ -339,3 +332,14 @@ Do not consider Phase 6 complete until the handoff contains:
 - `exfonts/` integrity result
 - Clear list of anything still mocked
 - Exact Phase 7 starting point
+
+## 10. Local implementation status
+
+The local implementation uses Alembic revision
+`20260728_0001_phase6_foundation`. The frontend default remains
+`NEXT_PUBLIC_NEXUS_RUNTIME_MODE=mock`; set `phase6-live` only after both
+Firebase and the deployed API are configured.
+
+The product-owner-supplied Teams asset is registered at
+`public/icons/microsoft-teams.svg`. It does not authorize or call Microsoft
+Graph.
