@@ -229,14 +229,16 @@ Quick Capture, and the responsive, accessible, motion-complete website audit.
   Next.js production build, Sites/vinext production build, `git diff --check`,
   rendered keyboard/responsive/state verification, and an error-free browser
   console and hydration audit.
-- Visible overflow regions now share a site-wide dark liquid-glass scrollbar
-  with a translucent inset track, raised pearl-blue thumb, hover and active
-  feedback, hidden native arrow buttons, and a platform-native forced-colour
-  fallback. Intentionally concealed navigation and filter rails remain
-  unchanged.
-- The shared scrollbar enhancement passed TypeScript, ESLint, 51 deterministic
-  tests, the Next.js production build, the Sites/vinext production build,
-  rendered Quick Capture and page-scroll inspection, and browser diagnostics.
+- Visible overflow regions now share a site-wide liquid-glass scrollbar with a
+  mostly transparent blurred track, a translucent frosted pearl-blue thumb,
+  hover and active feedback, hidden native arrow buttons, and a
+  platform-native forced-colour fallback. Browsers that do not blur scrollbar
+  pseudo-elements retain the same transparent refracted treatment.
+  Intentionally concealed navigation and filter rails remain unchanged.
+- The refined shared scrollbar enhancement passed TypeScript, ESLint, 52
+  deterministic tests, the Next.js production build, the Sites/vinext
+  production build, rendered Quick Capture inspection with computed blur and
+  transparency checks, and browser diagnostics.
 - The landing hero now presents a prominent “Enter NEXUS” liquid-glass action
   that opens `/app/today`, while the prior subtle preview presentation is hidden
   and the locked cube module remains byte-for-byte unchanged.

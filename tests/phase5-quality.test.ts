@@ -94,6 +94,10 @@ test("scrollable surfaces share one accessible liquid-glass scrollbar treatment"
   assert.match(css, /:where\(\*\)::-webkit-scrollbar-track/);
   assert.match(css, /:where\(\*\)::-webkit-scrollbar-thumb:hover/);
   assert.match(css, /:where\(\*\)::-webkit-scrollbar-button/);
+  assert.match(css, /-webkit-backdrop-filter: blur\(12px\) saturate\(135%\)/);
+  assert.match(css, /backdrop-filter: blur\(16px\) saturate\(145%\)/);
+  assert.match(css, /--nx-scrollbar-track: rgba\(7, 16, 24, 0\.12\)/);
+  assert.match(css, /::-webkit-scrollbar-corner \{[\s\S]*background: transparent;/);
   assert.match(
     css,
     /@media \(forced-colors: active\) \{[\s\S]*scrollbar-color: auto;/,

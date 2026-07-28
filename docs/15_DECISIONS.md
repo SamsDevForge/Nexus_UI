@@ -243,9 +243,11 @@ deterministic demo session. Durable storage begins in a later backend phase.
 
 ## D-027 — Scrollable product surfaces share one restrained glass treatment
 
-Visible scrollbars use one site-wide dark liquid-glass treatment with a
-translucent inset track, softly raised pearl-blue thumb, and distinct hover and
-active states. The treatment applies to page content, panels, dialogs, search
+Visible scrollbars use one site-wide liquid-glass treatment with a mostly
+transparent inset track, a blurred translucent pearl-blue thumb, and distinct
+hover and active states. The transparent gradient and refraction layers remain
+the visual fallback when a browser does not apply backdrop blur to scrollbar
+pseudo-elements. The treatment applies to page content, panels, dialogs, search
 results, and previews without changing their layout or overflow behaviour.
 
 Compact navigation rails and horizontal filter strips may continue to hide
