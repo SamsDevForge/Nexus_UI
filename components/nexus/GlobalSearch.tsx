@@ -106,7 +106,11 @@ export function GlobalSearch({
               <small>Context, knowledge, memory and controls</small>
             </span>
           </div>
-          <button type="button" onClick={() => onOpenChange(false)}>
+          <button
+            type="button"
+            aria-label="Close search"
+            onClick={() => onOpenChange(false)}
+          >
             Esc
           </button>
         </header>
@@ -117,6 +121,15 @@ export function GlobalSearch({
             value={query}
             placeholder="Search your permitted context…"
             aria-label="Search your permitted context"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="true"
+            aria-controls="command-results"
+            aria-activedescendant={
+              response?.results[activeIndex]
+                ? `command-option-${response.results[activeIndex].id}`
+                : undefined
+            }
             onChange={(event) => {
               setQuery(event.target.value);
               void runSearch(event.target.value);
@@ -157,13 +170,19 @@ export function GlobalSearch({
           ) : null}
         </div>
 
-        <div className="command-results" role="listbox" aria-label="Search results">
+        <div
+          className="command-results"
+          id="command-results"
+          role="listbox"
+          aria-label="Search results"
+        >
           {response?.notice ? <p className="command-notice">{response.notice}</p> : null}
           {response?.results.map((result, index) => (
             <button
               className={activeIndex === index ? "is-active" : undefined}
               type="button"
               role="option"
+              id={`command-option-${result.id}`}
               aria-selected={activeIndex === index}
               key={result.id}
               onMouseEnter={() => setActiveIndex(index)}
@@ -218,6 +237,12 @@ export function GlobalSearch({
             </div>
           ) : null}
         </div>
+
+        <p className="sr-only" role="status" aria-live="polite">
+          {response
+            ? `${response.results.length} search result${response.results.length === 1 ? "" : "s"} available.`
+            : "Searching permitted context."}
+        </p>
 
         <footer>
           <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>

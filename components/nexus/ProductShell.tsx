@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { GlobalSearch } from "./GlobalSearch";
 import { ProductIcon } from "./ProductIcon";
 import { ProductLandingCubeBackdrop } from "./ProductLandingCubeBackdrop";
@@ -88,6 +88,8 @@ export function ProductShell({
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
   const [focusMode, setFocusMode] = useState(initialFocusMode);
   const [searchOpen, setSearchOpen] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
+  const previousPathRef = useRef(pathname);
   const canonical = canonicalScenario(scenario);
   const productState = stateDimensionsForScenario(scenario);
   const shellClassName = [
@@ -124,8 +126,24 @@ export function ProductShell({
     document.cookie = `${focusModeCookie}=${nextFocusMode ? "on" : "off"}; path=/; max-age=31536000; samesite=lax`;
   };
 
+  useEffect(() => {
+    if (previousPathRef.current === pathname) return;
+    previousPathRef.current = pathname;
+    window.requestAnimationFrame(() =>
+      mainRef.current?.focus({ preventScroll: true }),
+    );
+  }, [pathname]);
+
   return (
     <div className={shellClassName}>
+      <a className="nexus-skip-link" href="#nexus-main-content">
+        Skip to main content
+      </a>
+
+      <p className="sr-only" role="status" aria-live="polite">
+        NEXUS system state: {shellState.label}. {shellState.detail}.
+      </p>
+
       {!focusMode ? (
         <div className="product-cube-field" aria-hidden="true">
           <ProductLandingCubeBackdrop />
@@ -321,7 +339,14 @@ export function ProductShell({
           </div>
         </header>
 
-        <main className="product-main">{children}</main>
+        <main
+          className="product-main"
+          id="nexus-main-content"
+          ref={mainRef}
+          tabIndex={-1}
+        >
+          {children}
+        </main>
       </div>
 
       <nav className="mobile-navigation" aria-label="Primary product navigation">

@@ -112,8 +112,6 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
     if (!open) return;
     const panel = panelRef.current;
     if (!panel) return;
-    const first = focusableElements(panel)[0];
-    window.requestAnimationFrame(() => first?.focus());
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -138,6 +136,20 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open, requestClose]);
+
+  useEffect(() => {
+    if (!open) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+    const target = panel.querySelector<HTMLElement>(
+      stage === "draft"
+        ? "textarea"
+        : "[data-quick-capture-stage-focus]",
+    );
+    window.requestAnimationFrame(() =>
+      target?.focus({ preventScroll: true }),
+    );
+  }, [open, preview?.mode, stage]);
 
   const startPreview = async () => {
     const next = await service.preview(draft);
@@ -379,7 +391,9 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
             <div className="quick-capture-body">
               <div className="quick-capture-preview">
                 <p className="section-kicker">Note preview</p>
-                <h3>{preview.title}</h3>
+                <h3 data-quick-capture-stage-focus tabIndex={-1}>
+                  {preview.title}
+                </h3>
                 <p className="quick-capture-plain-text">{preview.body}</p>
                 <dl>
                   <div>
@@ -422,7 +436,9 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
             <div className="quick-capture-body">
               <div className="quick-capture-review-heading">
                 <p className="section-kicker">Event extraction</p>
-                <h3>Review every scheduling detail.</h3>
+                <h3 data-quick-capture-stage-focus tabIndex={-1}>
+                  Review every scheduling detail.
+                </h3>
                 <p>Only explicit dates, times, and labelled locations are extracted.</p>
               </div>
               <label className="quick-capture-field">
@@ -513,7 +529,9 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
               <div className="quick-capture-confirm">
                 <ProductIcon name="date-favorite" size={32} />
                 <p className="section-kicker">Awaiting confirmation</p>
-                <h3>{preview.title}</h3>
+                <h3 data-quick-capture-stage-focus tabIndex={-1}>
+                  {preview.title}
+                </h3>
                 <p>
                   {preview.date} · {preview.startTime}
                   {preview.endTime ? `–${preview.endTime}` : ""} · {preview.timezone}
@@ -542,7 +560,9 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
           {stage === "saving" ? (
             <div className="quick-capture-progress" aria-live="polite" aria-busy="true">
               <span aria-hidden="true" />
-              <b>{preview?.mode === "event" ? "Preparing event" : "Saving note"}</b>
+              <b data-quick-capture-stage-focus tabIndex={-1}>
+                {preview?.mode === "event" ? "Preparing event" : "Saving note"}
+              </b>
               <p>No result is shown until the deterministic service records it.</p>
             </div>
           ) : null}
@@ -554,7 +574,9 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
                 size={36}
               />
               <p className="section-kicker">Recorded result</p>
-              <h3>{result.summary}</h3>
+              <h3 data-quick-capture-stage-focus tabIndex={-1}>
+                {result.summary}
+              </h3>
               <p>
                 Manual-paste provenance and an Activity entry were recorded.
                 This item lasts only for the active demo session.
@@ -578,7 +600,9 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
               <p className="section-kicker">
                 {result.status === "blocked" ? "Confirmation blocked" : "Recoverable failure"}
               </p>
-              <h3>{result.summary}</h3>
+              <h3 data-quick-capture-stage-focus tabIndex={-1}>
+                {result.summary}
+              </h3>
               <p>Your pasted text and edits remain available. No successful result was claimed.</p>
               <footer className="quick-capture-actions">
                 {result.status === "blocked" && canonical === "permission-revoked" ? (
@@ -604,7 +628,9 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
             <div className="quick-capture-result is-discard" role="alertdialog" aria-modal="true">
               <ProductIcon name="scissors" size={34} />
               <p className="section-kicker">Unsaved draft</p>
-              <h3>Discard this Quick Capture draft?</h3>
+              <h3 data-quick-capture-stage-focus tabIndex={-1}>
+                Discard this Quick Capture draft?
+              </h3>
               <p>Your pasted text and edits will be removed from this demo session.</p>
               <footer className="quick-capture-actions">
                 <button type="button" onClick={() => setStage(preview ? "preview" : "draft")}>
@@ -636,7 +662,7 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
         className="quick-capture-launcher"
         ref={launcherRef}
         type="button"
-        aria-label="Open Quick Capture"
+        aria-label={open ? "Close Quick Capture" : "Open Quick Capture"}
         aria-expanded={open}
         aria-haspopup="dialog"
         title="Quick Capture"
@@ -653,6 +679,7 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
           alt=""
           width={30}
           height={30}
+          loading="eager"
           unoptimized
         />
         <span className="quick-capture-tooltip" role="tooltip">

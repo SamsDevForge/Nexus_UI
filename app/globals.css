@@ -11955,3 +11955,113 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Phase 5 responsive and accessibility completion */
+
+.nexus-skip-link {
+  position: fixed;
+  z-index: 100;
+  top: -60px;
+  left: 14px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(158, 220, 250, 0.72);
+  border-radius: 12px;
+  background: #08111a;
+  color: var(--nx-text-1);
+  font-size: 0.75rem;
+  font-weight: 650;
+  text-decoration: none;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.48);
+  align-items: center;
+}
+
+.nexus-skip-link:focus {
+  top: 12px;
+  display: inline-flex;
+  outline: 2px solid var(--nx-accent);
+  outline-offset: 3px;
+}
+
+.product-main:focus,
+[data-quick-capture-stage-focus]:focus {
+  outline: none;
+}
+
+.nexus-notes-mark {
+  display: grid;
+  place-items: center;
+}
+
+.nexus-notes-mark img {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 780px) {
+  .mobile-brand .app-brand,
+  .focus-mode-trigger,
+  .global-search-trigger,
+  .mobile-controls-link {
+    min-height: 44px;
+  }
+
+  .focus-mode-trigger,
+  .global-search-trigger {
+    width: 44px;
+  }
+
+  .mobile-controls-link {
+    align-items: center;
+    padding-inline: 4px;
+  }
+
+  .today-page button,
+  .phase2-page button,
+  .control-page button,
+  .command-palette > header button,
+  .command-input button,
+  .command-palette > footer button,
+  .memory-category-tabs button {
+    min-height: 44px;
+  }
+
+  .product-main .text-button,
+  .product-main .open-asset-button,
+  .product-main .quiet-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .product-main input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) {
+    min-height: 44px;
+  }
+
+  .command-palette > header button {
+    min-width: 44px;
+  }
+
+  .timeline-filters button {
+    min-width: 44px;
+  }
+
+  .state-coverage-chips a {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    padding-inline: 9px;
+  }
+
+  .control-detail-links a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .control-detail-group > a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+}

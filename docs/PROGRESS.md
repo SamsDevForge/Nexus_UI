@@ -2,10 +2,10 @@
 
 ## Current phase
 
-Phase 0 through Phase 4 implemented: repository foundation, shared product
+Phase 0 through Phase 5 implemented: repository foundation, shared product
 design system, application shell, complete mocked core product experience,
-complete control and configuration surfaces, cross-product state coverage, and
-Quick Capture.
+complete control and configuration surfaces, cross-product state coverage,
+Quick Capture, and the responsive, accessible, motion-complete website audit.
 
 ## Completed
 
@@ -202,6 +202,33 @@ Quick Capture.
   unsaved-draft confirmation, note preview/save and Nexus Notes provenance,
   editable event extraction, explicit event confirmation, and the recorded
   Timeline result.
+- Phase 5 completed the rendered responsive audit for every public and product
+  route at 1440 x 900 and 390 x 844, plus the high-risk route set at
+  1280 x 800, 1024 x 768, and 768 x 1024. Populated and relevant non-ideal
+  states retained their hierarchy and had no document-level horizontal
+  overflow.
+- Product-shell skip navigation, client-route focus handoff, and accessible
+  non-canvas system-state text now keep the experience usable without relying
+  on the locked cube.
+- Quick Capture keeps editor focus while typing and moves focus predictably
+  across draft, review, success, and failure stages.
+- Global search now exposes complete combobox/listbox relationships, active
+  option state, result-count announcements, and a named close control while
+  preserving the existing Ctrl/Cmd+K workflow.
+- Targeted mobile-only sizing brings shared header, command, content-action,
+  filter, and state-matrix controls to the approximate 44 x 44 px touch
+  target without restyling the approved layouts.
+- Phase 5 motion review introduced no new animation. Existing reduced-motion
+  media paths and the deterministic reduced-motion scenario preserve
+  navigation, dialogs, command search, Quick Capture, outcomes, and recovery.
+- The Phase 5 performance budget passed: shared and route JavaScript chunks are
+  unchanged, shared CSS grew about 0.8%, no dependency was added, and the
+  existing lazy Three.js warning remains isolated behind the locked cube
+  loading boundary.
+- Phase 5 validation passed: TypeScript, ESLint, 50 deterministic tests,
+  Next.js production build, Sites/vinext production build, `git diff --check`,
+  rendered keyboard/responsive/state verification, and an error-free browser
+  console and hydration audit.
 
 ## Current implementation assumptions
 
@@ -252,8 +279,5 @@ only bounded deterministic extraction for clearly formatted scheduling fields.
 
 ## Next phase
 
-Phase 5 — Responsive, Accessible, and Motion-Complete Website: complete the
-desktop, laptop, tablet, and narrow-width audit; keyboard and semantic
-accessibility; contrast; reduced-motion behaviour; performance budgets; final
-cube-state language; and the landing-to-product transition. Do not begin live
-integrations.
+Phase 6 - Backend, Identity, and User Profile. Phase 6 begins Stage B. Do not
+begin later integrations before its prerequisites and acceptance criteria.

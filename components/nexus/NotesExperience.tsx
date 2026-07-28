@@ -153,7 +153,7 @@ export function NotesExperience({
         kicker="Native knowledge workspace"
         title="Nexus Notes"
         summary={initialSnapshot.summary}
-        mark={<NexusNotesMark className="notes-heading-mark" size={74} />}
+        mark={<NexusNotesMark className="notes-heading-mark" size={74} eager />}
         action={
           <button className="primary-button" type="button" onClick={createManualNote}>
             New Nexus note

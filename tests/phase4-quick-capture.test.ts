@@ -42,7 +42,10 @@ test("Quick Capture uses the supplied launcher asset and accessible focus-safe s
   ]);
 
   assert.match(component, /src="\/icons\/nexus-notepad\.svg"/);
-  assert.match(component, /aria-label="Open Quick Capture"/);
+  assert.match(
+    component,
+    /aria-label=\{open \? "Close Quick Capture" : "Open Quick Capture"\}/,
+  );
   assert.match(component, /launcherRef\.current\?\.focus\(\)/);
   assert.match(component, /focusableElements/);
   assert.match(component, /stage === "discard"/);

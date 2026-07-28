@@ -3,9 +3,11 @@ import Image from "next/image";
 export function NexusNotesMark({
   className = "",
   size = 24,
+  eager = false,
 }: {
   className?: string;
   size?: number;
+  eager?: boolean;
 }) {
   return (
     <span
@@ -16,8 +18,9 @@ export function NexusNotesMark({
         src="/nexus-notes-logo.svg"
         alt=""
         width={size}
-        height={size}
+        height={Math.round((size * 302) / 324)}
         sizes={`${size}px`}
+        loading={eager ? "eager" : undefined}
         unoptimized
       />
     </span>
