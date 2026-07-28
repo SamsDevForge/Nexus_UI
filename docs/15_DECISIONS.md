@@ -252,3 +252,15 @@ Compact navigation rails and horizontal filter strips may continue to hide
 their scrollbars when direct touch, wheel, or keyboard scrolling remains
 available. Forced-colour environments retain the platform scrollbar instead of
 the branded treatment.
+
+## D-028 — Landing entry is explicit while the cube stays locked
+
+The landing hero exposes one prominent “Enter NEXUS” action that routes directly
+to `/app/today`. It replaces the visual presentation of the earlier subtle
+preview link in the same hero action group, retaining the secondary intelligence
+demonstration without adding navigation clutter.
+
+The action is mounted outside the byte-locked landing experience module so the
+approved cube implementation, camera, lighting, copy hierarchy, and sequence
+remain unchanged. Its liquid-glass and soft-neumorphic treatment belongs to the
+shared NEXUS material language and retains an explicit keyboard focus state.

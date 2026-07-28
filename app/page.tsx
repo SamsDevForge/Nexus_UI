@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingEntryAction } from "./LandingEntryAction";
 import { LandingExperienceClient } from "./LandingExperienceClient";
 
 export const metadata: Metadata = {
@@ -8,5 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <LandingExperienceClient />;
+  return (
+    <>
+      <LandingExperienceClient />
+      <LandingEntryAction />
+    </>
+  );
 }

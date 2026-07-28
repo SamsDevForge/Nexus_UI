@@ -103,3 +103,25 @@ test("scrollable surfaces share one accessible liquid-glass scrollbar treatment"
     /\.app-navigation \{[\s\S]*scrollbar-width: none;/,
   );
 });
+
+test("the landing page exposes a prominent app entry without modifying the locked cube", async () => {
+  const landing = await readFile("app/LandingEntryAction.tsx", "utf8");
+  const page = await readFile("app/page.tsx", "utf8");
+  const css = await readFile("app/globals.css", "utf8");
+
+  assert.match(landing, /href="\/app\/today"/);
+  assert.match(landing, /Enter NEXUS/);
+  assert.match(
+    landing,
+    /aria-label="Enter NEXUS and open your Today dashboard"/,
+  );
+  assert.match(landing, /createPortal/);
+  assert.match(page, /<LandingEntryAction \/>/);
+  assert.match(css, /\.landing-entry-action \{/);
+  assert.match(css, /\.landing-entry-action:focus-visible/);
+  assert.match(css, /\.hero-actions > \.primary-action \{[\s\S]*display: none;/);
+  assert.match(
+    css,
+    /\.nexus-shell\.is-ready > \.landing-entry-action-mobile \{[\s\S]*display: grid;/,
+  );
+});

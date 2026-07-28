@@ -237,6 +237,12 @@ Quick Capture, and the responsive, accessible, motion-complete website audit.
 - The shared scrollbar enhancement passed TypeScript, ESLint, 51 deterministic
   tests, the Next.js production build, the Sites/vinext production build,
   rendered Quick Capture and page-scroll inspection, and browser diagnostics.
+- The landing hero now presents a prominent “Enter NEXUS” liquid-glass action
+  that opens `/app/today`, while the prior subtle preview presentation is hidden
+  and the locked cube module remains byte-for-byte unchanged.
+- The landing entry enhancement passed TypeScript, ESLint, 52 deterministic
+  tests, both production builds, rendered landing inspection, keyboard naming,
+  and direct navigation into Today.
 
 ## Current implementation assumptions
 
