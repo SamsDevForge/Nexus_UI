@@ -6,7 +6,8 @@ Phase 0 through Phase 5 are accepted. Phase 6 local implementation is complete:
 the platform foundation, identity boundary, onboarding, durable user profile,
 settings, places, preferences, manual Quick Capture persistence, and audit-safe
 Activity are implemented. The Phase 6 cloud acceptance checks await provider
-configuration.
+deployment access and runtime configuration that are not present in the
+connected Railway and Sites surfaces.
 
 ## Completed
 
@@ -266,6 +267,14 @@ configuration.
   and an Alembic upgrade/current check against an isolated database. Responsive
   visual inspection covered sign-in and onboarding at 1440 x 900 and
   390 x 844 with no horizontal overflow.
+- The 2026-07-28 cloud acceptance attempt re-ran the complete local validation
+  successfully and reconfirmed the locked cube hashes, secret scan, and all 22
+  untouched `exfonts/` files. Railway authentication succeeded, but the
+  connected workspace exposed zero projects and required the account owner to
+  accept Railway's Terms of Service before deployment. The existing active
+  private/custom Sites project remained at version 18 and its runtime-variable
+  store exposed no Phase 6 keys. No backend, migration, or frontend deployment
+  was claimed, and real-user acceptance tests were not run.
 
 ## Current implementation assumptions
 
@@ -286,7 +295,7 @@ configuration.
 - Persistence: SQLAlchemy/Alembic PostgreSQL foundation implemented; isolated
   migration and API tests pass
 - Identity: Firebase web sign-in and server token verification implemented,
-  pending real project configuration
+  pending deployed end-to-end verification
 - Integrations: Teams icon registered; no external data connector implemented
 - AI: not implemented
 - Android: not implemented
@@ -305,10 +314,12 @@ in Activity; they do not write to a provider calendar.
 
 ## Known limitations
 
-- Firebase, Neon, Railway, and Sites production variables are not available in
-  this workspace, so real sign-in, deployed PostgreSQL persistence, Railway
-  readiness, cross-user cloud isolation, and the private Sites release remain
-  externally unverified.
+- The connected Railway workspace has no deployable project and is gated by
+  Railway Terms-of-Service acceptance, which Codex cannot perform for the
+  account owner. The existing Sites project has no Phase 6 runtime keys.
+  Consequently production Alembic state, Railway readiness, real Firebase
+  sign-in, durable reload/reauthentication, cross-user isolation, error-state
+  behavior, and a new private Sites version remain externally unverified.
 - Mock action approvals outside the Phase 6 durable boundaries still update
   only deterministic local state and reset on route reload.
 - Phase 3 connection setup, sync, reconnect, disconnect, export, deletion,
