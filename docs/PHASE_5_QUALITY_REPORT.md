@@ -189,7 +189,7 @@ cube architecture is explicitly reopened.
 
 - `npm run typecheck`
 - `npm run lint`
-- `npm test` - 50 tests passed
+- `npm test` - 52 tests passed
 - `npm run build`
 - `npm run build:sites`
 - `git diff --check`

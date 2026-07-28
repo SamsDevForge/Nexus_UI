@@ -153,6 +153,7 @@ Add:
 - Authentication integration
 - PostgreSQL schema and migrations
 - User profile, timezone, places, travel mode, quiet hours, and preferences
+- Durable manually reviewed Quick Capture notes and local event drafts
 - Typed frontend API client
 - Mock/live adapter switch
 - Audit-safe logging
@@ -162,7 +163,7 @@ Exit gate:
 - A user can sign in, complete onboarding, and retain settings.
 - UI contracts remain stable when mock adapters are replaced.
 
-### Phase 7 — Public APIs
+### Phase 7 — Weather, Maps, and Public Context APIs
 
 Connect:
 
@@ -240,14 +241,16 @@ Exit gate:
 - NEXUS extracts useful structured items and always links back to evidence.
 - Raw message retention is minimized and documented.
 
-### Phase 11 — Notion and Drive
+### Phase 11 — Notion and Microsoft Teams
 
 Add:
 
 - Selected-page and selected-database Notion access
 - Notion change webhooks
 - Read, create, append, and update workflows
-- Google Drive file discovery
+- Microsoft Teams selected-team/channel access behind explicit Graph consent
+- Teams message and meeting-context normalization with source links
+- Optional Google Drive file discovery when the user chooses it
 - Permission-aware document ingestion
 - Class-note and meeting-note templates
 

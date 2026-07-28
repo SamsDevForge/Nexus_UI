@@ -6,13 +6,13 @@ NEXUS requires more than APIs.
 
 | Method | Use |
 | --- | --- |
-| OAuth API | User-authorized Calendar, Gmail, Outlook, Notion, and Drive data |
+| OAuth API | User-authorized Calendar, Gmail, Outlook, Notion, Teams, and optional Drive data |
 | Webhook/change notification | Near-real-time source changes |
 | Incremental polling | Recovery and providers without suitable webhooks |
 | Scheduled public API call | Weather, routes, public holidays |
 | Mobile SDK | Location, network, battery, Health Connect |
 | Desktop companion | Laptop battery, selected local files, connectivity |
-| Manual entry/import | Timetable, places, preferences, ICS, fallback tasks |
+| Manual entry/import | Quick Capture, timetable, places, preferences, ICS, fallback tasks |
 | User feedback | Relevance, timing, corrections, and memory confidence |
 
 n8n can coordinate several of these methods, but it cannot access information
@@ -34,13 +34,18 @@ that a provider or operating system does not expose.
 - Manual or ICS timetable
 - Gmail
 - Notion
-- Google Drive
+- Microsoft Teams
+- Quick Capture
+
+Google Drive remains an optional knowledge source, not part of the required
+core integration set.
 
 ### Group 3 — Provider alternatives
 
 - Outlook Calendar
 - Outlook mail
 - OneDrive
+- Google Drive
 - Other note systems
 - Learning-management systems with supported APIs
 
@@ -68,7 +73,7 @@ that a provider or operating system does not expose.
 | Leave-time advice | Event location, origin, travel mode, Routes API | Refresh near departure |
 | Umbrella reminder | Rain forecast during travel window | Do not use daily rain alone |
 | Deadline radar | Tasks plus progress signals | Due date without progress is weak evidence |
-| Class preparation | Calendar plus Notion/Drive/email files | Link evidence |
+| Class preparation | Calendar plus Notion/Teams/email files, optionally Drive | Link evidence |
 | Offline lecture pack | File source plus mobile cache | Website alone cannot guarantee offline phone access |
 | Charger reminder | Laptop companion or explicit heuristic | Do not pretend phone data reveals laptop battery |
 | Poor-sleep adjustment | Health Connect/wearable | Separate sensitive consent |
@@ -198,6 +203,8 @@ deadline as confirmed.
 - No traffic provider: static travel time plus warning
 - No email: manual task capture
 - No Notion: internal notes
+- No Teams: Quick Capture or source-linked manual notes
+- No Drive: selected Notion, Teams, email, or manual sources
 - No health permission: omit health reasoning entirely
 - Offline: last-known data with clear timestamp
 

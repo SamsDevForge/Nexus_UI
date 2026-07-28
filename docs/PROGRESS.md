@@ -2,10 +2,11 @@
 
 ## Current phase
 
-Phase 0 through Phase 5 implemented: repository foundation, shared product
-design system, application shell, complete mocked core product experience,
-complete control and configuration surfaces, cross-product state coverage,
-Quick Capture, and the responsive, accessible, motion-complete website audit.
+Phase 0 through Phase 5 are accepted. Phase 6 local implementation is complete:
+the platform foundation, identity boundary, onboarding, durable user profile,
+settings, places, preferences, manual Quick Capture persistence, and audit-safe
+Activity are implemented. The Phase 6 cloud acceptance checks await provider
+configuration.
 
 ## Completed
 
@@ -225,7 +226,7 @@ Quick Capture, and the responsive, accessible, motion-complete website audit.
   unchanged, shared CSS grew about 0.8%, no dependency was added, and the
   existing lazy Three.js warning remains isolated behind the locked cube
   loading boundary.
-- Phase 5 validation passed: TypeScript, ESLint, 50 deterministic tests,
+- Phase 5 validation passed: TypeScript, ESLint, 52 deterministic tests,
   Next.js production build, Sites/vinext production build, `git diff --check`,
   rendered keyboard/responsive/state verification, and an error-free browser
   console and hydration audit.
@@ -245,47 +246,77 @@ Quick Capture, and the responsive, accessible, motion-complete website audit.
 - The landing entry enhancement passed TypeScript, ESLint, 52 deterministic
   tests, both production builds, rendered landing inspection, keyboard naming,
   and direct navigation into Today.
+- Phase 6 added a Firebase-backed identity adapter behind a provider-neutral
+  principal, protected product routes in `phase6-live` mode, first-login user
+  upsert, a five-step onboarding flow, and sign-out while preserving the
+  deterministic mock runtime.
+- A FastAPI service now owns authenticated profile, preference, place, manual
+  capture, and Activity endpoints. PostgreSQL persistence is defined by typed
+  SQLAlchemy models and Alembic revision
+  `20260728_0001_phase6_foundation`; readiness checks the database and
+  production configuration fails closed.
+- Durable live adapters now replace only Phase 6 settings, Activity, Nexus Note
+  capture, and local event-draft capture. Idempotency, ownership isolation,
+  correction, deletion, timezone validation, overnight quiet hours, bounded
+  auth retry, exact-origin CORS, and audit redaction have automated coverage.
+- The product-owner Teams SVG was sanitized and registered at
+  `public/icons/microsoft-teams.svg` without adding Microsoft Graph behavior.
+- Local Phase 6 validation passes 61 frontend tests, 14 backend tests,
+  TypeScript, ESLint, Ruff, strict MyPy, Next.js and Sites production builds,
+  and an Alembic upgrade/current check against an isolated database. Responsive
+  visual inspection covered sign-in and onboarding at 1440 x 900 and
+  390 x 844 with no horizontal overflow.
 
 ## Current implementation assumptions
 
 - The existing cinematic landing page is the accepted public visual baseline.
 - Core student data is deterministic and set in Bengaluru/IST.
-- Phase 3 control state is deterministic and session-local; persistence starts
-  in the later backend and identity phase.
-- Quick Capture notes, events, and Activity records persist only for the active
-  deterministic browser demo session and reset on scenario change or reload.
+- `mock` remains the deliberate default and preserves all accepted demo state.
+- `phase6-live` requires configured Firebase identity and the FastAPI service.
+  It persists the Phase 6 profile, settings, places, manual captures, and
+  related Activity only.
 
 ## Mock/live status
 
 - UI: landing, application shell, Today, Timeline, Insights, NEXUS, Knowledge,
-  Nexus Notes, Search, Automations, Connections, Permission Centre, Memory, Activity,
-  Settings, and Technicals implemented
-- Backend: not implemented
-- Integrations: not implemented
+  Nexus Notes, Search, Automations, Connections, Permission Centre, Memory,
+  Activity, Settings, Technicals, sign-in, and onboarding implemented
+- Backend: FastAPI identity, user, profile, preference, place, manual capture,
+  and Activity APIs implemented
+- Persistence: SQLAlchemy/Alembic PostgreSQL foundation implemented; isolated
+  migration and API tests pass
+- Identity: Firebase web sign-in and server token verification implemented,
+  pending real project configuration
+- Integrations: Teams icon registered; no external data connector implemented
 - AI: not implemented
 - Android: not implemented
 
-All Calendar, route, weather, task, future-source, document, note, conversation,
-search, connection, permission, memory, automation, activity, export, deletion,
+Calendar, route, weather, task, future-source, document, conversation, search,
+connection, permission, memory, automation, export, provider deletion,
 approval, and action results remain deterministic mocks behind provider-neutral
-service boundaries. No model, provider, notification service, or external tool
-is called.
+service boundaries. No model, productivity provider, notification service, or
+external tool is called.
 
 Quick Capture does not read the clipboard, call a model or parser service, or
 write to a calendar provider. It renders pasted markup as plain text and uses
 only bounded deterministic extraction for clearly formatted scheduling fields.
+In live mode, reviewed notes and local event drafts persist in NEXUS and appear
+in Activity; they do not write to a provider calendar.
 
 ## Known limitations
 
-- No live providers, authentication, backend, OAuth, or model calls exist.
-- Mock action approvals update only local component state and reset on route
-  reload; persistence begins in a later platform phase.
+- Firebase, Neon, Railway, and Sites production variables are not available in
+  this workspace, so real sign-in, deployed PostgreSQL persistence, Railway
+  readiness, cross-user cloud isolation, and the private Sites release remain
+  externally unverified.
+- Mock action approvals outside the Phase 6 durable boundaries still update
+  only deterministic local state and reset on route reload.
 - Phase 3 connection setup, sync, reconnect, disconnect, export, deletion,
   notification, retry, and reversal operations are interface-complete
   simulations; they do not contact providers or change real data.
-- Quick Capture session results disappear on reload and are not shared across
-  tabs or devices. File attachments, rich text, voice input, automatic
-  clipboard monitoring, and durable persistence remain out of scope.
+- Quick Capture is durable only in configured `phase6-live` mode. File
+  attachments, rich text, voice input, automatic clipboard monitoring, and
+  provider calendar writes remain out of scope.
 - Unified search covers the deterministic Phase 2 fixture corpus, not a live
   index or RAG system.
 - The supplied `.svg` contains an embedded PNG rather than native vector paths,
@@ -295,5 +326,6 @@ only bounded deterministic extraction for clearly formatted scheduling fields.
 
 ## Next phase
 
-Phase 6 - Backend, Identity, and User Profile. Phase 6 begins Stage B. Do not
-begin later integrations before its prerequisites and acceptance criteria.
+Phase 7 — Weather, Maps, and Public Context APIs. Begin only after the Phase 6
+cloud acceptance checks in `docs/PHASE_06_USER_SETUP.md` pass. No Phase 7
+implementation has started.

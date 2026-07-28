@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nexus-api"
+version = "0.1.0"
+description = "Phase 6 identity, profile, and durable manual-capture API for NEXUS AI."
+requires-python = ">=3.12"
+dependencies = [
+  "alembic==1.18.5",
+  "asyncpg==0.31.0",
+  "fastapi==0.140.7",
+  "firebase-admin==7.5.0",
+  "pydantic==2.13.4",
+  "pydantic-settings==2.14.2",
+  "SQLAlchemy==2.0.51",
+  "tzdata==2026.3",
+  "uvicorn[standard]==0.51.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "aiosqlite==0.22.1",
+  "httpx==0.28.1",
+  "mypy==1.20.2",
+  "pytest==9.1.1",
+  "pytest-asyncio==1.4.0",
+  "ruff==0.16.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["nexus_api*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+exclude = ["alembic"]
+
+[[tool.mypy.overrides]]
+module = ["firebase_admin.*"]
+ignore_missing_imports = true

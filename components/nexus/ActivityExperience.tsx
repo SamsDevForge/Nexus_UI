@@ -10,6 +10,11 @@ import type {
   AuthorityLevel,
 } from "@/lib/domain/contracts";
 import { createMockPhase3Services } from "@/lib/mocks/mock-phase3-services";
+import { useNexusAuth } from "@/lib/auth/AuthProvider";
+import {
+  createPhase6ActivityService,
+  PHASE6_CAPTURE_CHANGE_EVENT,
+} from "@/lib/services/phase6-live-services";
 import { scenarioHref } from "@/lib/mocks/phase2-fixtures";
 import { InterfaceAssetIcon } from "@/components/nexus/InterfaceAssetIcon";
 import {
@@ -39,9 +44,14 @@ export function ActivityExperience({
 }: {
   initialSnapshot: ActivitySnapshot;
 }) {
+  const auth = useNexusAuth();
+  const live = auth.mode === "phase6-live" && Boolean(auth.apiClient);
   const service = useMemo(
-    () => createMockPhase3Services(initialSnapshot.scenario).activityService,
-    [initialSnapshot.scenario],
+    () =>
+      live && auth.apiClient
+        ? createPhase6ActivityService(auth.apiClient, initialSnapshot)
+        : createMockPhase3Services(initialSnapshot.scenario).activityService,
+    [auth.apiClient, initialSnapshot, live],
   );
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [selectedId, setSelectedId] = useState(
@@ -76,10 +86,13 @@ export function ActivityExperience({
       const detail = (event as CustomEvent<{ scenario?: string }>).detail;
       if (detail?.scenario === initialSnapshot.scenario) void refresh();
     };
+    if (live) void refresh();
     window.addEventListener("nexus:mock-session-change", handleSessionChange);
+    window.addEventListener(PHASE6_CAPTURE_CHANGE_EVENT, refresh);
     return () => {
       active = false;
       window.removeEventListener("nexus:mock-session-change", handleSessionChange);
+      window.removeEventListener(PHASE6_CAPTURE_CHANGE_EVENT, refresh);
     };
   }, [
     authority,
@@ -89,6 +102,7 @@ export function ActivityExperience({
     service,
     source,
     type,
+    live,
   ]);
 
   const runFilters = async (

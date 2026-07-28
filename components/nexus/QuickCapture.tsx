@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -18,6 +19,8 @@ import type {
 } from "@/lib/domain/contracts";
 import { canonicalScenario } from "@/lib/domain/state-coverage";
 import { createMockQuickCaptureService } from "@/lib/mocks/mock-quick-capture-service";
+import { useNexusAuth } from "@/lib/auth/AuthProvider";
+import { createPhase6QuickCaptureService } from "@/lib/services/phase6-live-services";
 import { ProductIcon } from "@/components/nexus/ProductIcon";
 
 type CaptureStage =
@@ -67,11 +70,15 @@ function focusableElements(container: HTMLElement) {
 }
 
 export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
-  const [service] = useState(() => {
+  const auth = useNexusAuth();
+  const service = useMemo(() => {
+    if (auth.mode === "phase6-live" && auth.apiClient) {
+      return createPhase6QuickCaptureService(auth.apiClient, scenario);
+    }
     const created = createMockQuickCaptureService(scenario);
     created.resetSession();
     return created;
-  });
+  }, [auth.apiClient, auth.mode, scenario]);
   const launcherRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);

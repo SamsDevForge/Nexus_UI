@@ -16,6 +16,7 @@ import {
   canonicalScenario,
   stateDimensionsForScenario,
 } from "@/lib/domain/state-coverage";
+import { useNexusAuth } from "@/lib/auth/AuthProvider";
 
 const focusModeCookie = "nexus-focus-mode";
 
@@ -84,6 +85,7 @@ export function ProductShell({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const auth = useNexusAuth();
   const scenario = parseNexusScenario(searchParams.get("scenario") ?? undefined);
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
   const [focusMode, setFocusMode] = useState(initialFocusMode);
@@ -92,6 +94,16 @@ export function ProductShell({
   const previousPathRef = useRef(pathname);
   const canonical = canonicalScenario(scenario);
   const productState = stateDimensionsForScenario(scenario);
+  const accountName =
+    auth.mode === "phase6-live"
+      ? auth.nexusUser?.displayName ?? auth.firebaseUser?.displayName ?? "NEXUS user"
+      : "Aadi Sharma";
+  const accountMonogram = accountName
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
   const shellClassName = [
     "product-shell",
     sidebarMinimized ? "is-sidebar-minimized" : "",
@@ -257,19 +269,32 @@ export function ProductShell({
         </Link>
 
         <div className="sidebar-account">
-          <span className="account-monogram" title="Aadi Sharma">
-            AS
+          <span className="account-monogram" title={accountName}>
+            {accountMonogram}
           </span>
           <span>
-            <b>Aadi Sharma</b>
-            <small>Student profile</small>
+            <b>{accountName}</b>
+            <small>
+              {auth.mode === "phase6-live" ? "Durable profile" : "Student profile"}
+            </small>
           </span>
-          <Link
-            href={scenarioHref("/app/settings", scenario)}
-            aria-label="Open account settings"
-          >
-            ···
-          </Link>
+          {auth.mode === "phase6-live" ? (
+            <button
+              className="sidebar-sign-out"
+              type="button"
+              aria-label="Sign out of NEXUS"
+              onClick={() => void auth.signOut()}
+            >
+              Sign out
+            </button>
+          ) : (
+            <Link
+              href={scenarioHref("/app/settings", scenario)}
+              aria-label="Open account settings"
+            >
+              ···
+            </Link>
+          )}
         </div>
       </aside>
 

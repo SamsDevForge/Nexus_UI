@@ -1,20 +1,14 @@
 # NEXUS AI
 
-A cinematic NEXUS AI landing experience and a Phase 1 product foundation built
-with Next.js, React, React Three Fiber, Drei, Three.js, TypeScript, and CSS
-design tokens.
+NEXUS AI is a cinematic Next.js product experience with a Phase 6 platform
+foundation: Firebase identity, a provider-neutral typed API client, a FastAPI
+service, PostgreSQL persistence through SQLAlchemy/Alembic, onboarding, durable
+settings, and durable manual Quick Capture records.
 
-## Current routes
+The default runtime remains deterministic `mock` mode. Live mode is opt-in and
+fails closed when its Firebase or API configuration is incomplete.
 
-- `/` — preserved cinematic landing page
-- `/app/today` — complete mocked Today reference experience
-- `/app/*` — intentional phase placeholders for future product screens
-
-The Today route accepts deterministic scenarios through the `scenario` query
-parameter. The on-screen prototype-state control is the easiest way to inspect
-them.
-
-## Local development
+## Local frontend
 
 Requires Node.js 20.9 or newer.
 
@@ -23,28 +17,59 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). Copy `.env.example` to
+`.env.local` only when testing the Phase 6 live adapter, and set:
 
-## Production validation
+```text
+NEXT_PUBLIC_NEXUS_RUNTIME_MODE=phase6-live
+```
 
-```bash
+## Local backend
+
+The backend requires Python 3.11 or newer.
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\python -m pip install -r requirements.txt -r requirements-dev.txt
+Copy-Item ..\.env.example .env
+.\.venv\Scripts\python -m alembic upgrade head
+.\.venv\Scripts\python -m uvicorn nexus_api.main:app --reload --port 8000
+```
+
+Use a PostgreSQL connection for normal live-mode development. Automatic schema
+creation is restricted to the isolated test configuration; deployed
+environments must run Alembic migrations.
+
+Health endpoints:
+
+- `GET /health/live` — process liveness
+- `GET /health/ready` — database readiness
+
+## Validation
+
+```powershell
 npm run typecheck
 npm run lint
 npm test
 npm run build
 npm run build:sites
-npm run start
+
+cd backend
+.\.venv\Scripts\python -m ruff check .
+.\.venv\Scripts\python -m mypy nexus_api
+.\.venv\Scripts\python -m pytest
 ```
 
-Phase 1 uses mock adapters only and requires no environment variables.
+The first database revision is `20260728_0001_phase6_foundation`. Railway uses
+`backend/railway.toml`, runs `alembic upgrade head` before deployment, starts
+Uvicorn, and checks `/health/ready`.
 
-## Deploy to Vercel
+## Phase boundaries
 
-Import this GitHub repository in Vercel. The framework is detected as Next.js
-and no environment variables or backend services are required.
+Phase 6 does not connect Gmail, Calendar, Maps, weather, Notion, Microsoft
+Graph/Teams, Drive, n8n, a model provider, notifications, or Android. The
+Microsoft Teams SVG is registered only as a sanitized product asset.
 
-The default Vercel settings are sufficient:
-
-- Build command: `npm run build`
-- Output: Next.js default
-- Node.js: 20.x or 22.x
+Provider setup and production verification are documented in
+[`docs/PHASE_06_USER_SETUP.md`](docs/PHASE_06_USER_SETUP.md).

@@ -266,3 +266,43 @@ The action is mounted outside the byte-locked landing experience module so the
 approved cube implementation, camera, lighting, copy hierarchy, and sequence
 remain unchanged. Its liquid-glass and soft-neumorphic treatment belongs to the
 shared NEXUS material language and retains an explicit keyboard focus state.
+
+## D-029 — Phase 6 introduces a provider-neutral platform boundary
+
+Firebase verifies identity, but route code depends on an
+`AuthenticatedPrincipal` contract rather than Firebase payloads. FastAPI owns
+authorization and application semantics; PostgreSQL is the system of record;
+SQLAlchemy models and Alembic migrations define the durable schema. Production
+startup fails closed when database or Firebase verification configuration is
+missing, uses exact-origin CORS, and never accepts a client-supplied user ID as
+authority.
+
+The website chooses its runtime deliberately: `mock` preserves the accepted
+deterministic product, while `phase6-live` protects product routes with Firebase
+identity and replaces only the Phase 6 settings, Activity, and manual-capture
+boundaries. Later provider integrations remain typed mocks until their phases.
+
+## D-030 — The core connection set is fixed and consent remains separate
+
+The core integration set is Weather, Maps, Calendar, Gmail, Notion, Microsoft
+Teams, and Quick Capture. Google Drive is optional. Firebase Google sign-in
+proves identity only; it does not authorize Gmail, Calendar, Drive, Maps, or
+other Google data. Microsoft Teams is an asset registration in Phase 6 and
+requires separate Microsoft Graph consent in Phase 11.
+
+Every external connection must retain its own capability, purpose, revocation,
+freshness, and action-authority boundary. No later phase may infer connector
+permission from identity sign-in.
+
+## D-031 — Reviewed manual captures become durable before provider writes
+
+Phase 6 persists user-confirmed Quick Capture notes and local event drafts under
+the authenticated user's ownership, with idempotency keys and audit-safe
+Activity records. Event confirmation means “saved in NEXUS”; it does not create
+or update a Google, Outlook, or Teams calendar item. Calendar provider writes
+remain out of scope until the Calendar phase and still require explicit
+authority.
+
+Corrections and deletion operate on the owning user's stored capture. Raw
+capture text, provider tokens, email bodies, location history, and other
+sensitive content do not enter structured logs.

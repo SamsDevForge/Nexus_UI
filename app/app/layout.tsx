@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 import { ProductShell } from "@/components/nexus/ProductShell";
+import { AuthGate } from "@/components/nexus/AuthGate";
 
 export const metadata: Metadata = {
   title: {
@@ -23,9 +24,11 @@ export default async function AppLayout({
 
   return (
     <Suspense fallback={<div className="product-shell-loading" />}>
-      <ProductShell initialFocusMode={initialFocusMode}>
-        {children}
-      </ProductShell>
+      <AuthGate>
+        <ProductShell initialFocusMode={initialFocusMode}>
+          {children}
+        </ProductShell>
+      </AuthGate>
     </Suspense>
   );
 }

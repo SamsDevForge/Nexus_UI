@@ -12,6 +12,12 @@ import type {
 } from "@/lib/domain/contracts";
 import { notesService } from "@/lib/mocks/mock-phase2-services";
 import { scenarioHref } from "@/lib/mocks/phase2-fixtures";
+import { useNexusAuth } from "@/lib/auth/AuthProvider";
+import {
+  durableCaptureToNote,
+  loadDurableCaptures,
+  PHASE6_CAPTURE_CHANGE_EVENT,
+} from "@/lib/services/phase6-live-services";
 import {
   BlockingState,
   HealthStrip,
@@ -29,6 +35,8 @@ export function NotesExperience({
   initialSnapshot: NotesSnapshot;
   capturedNoteId?: string;
 }) {
+  const auth = useNexusAuth();
+  const live = auth.mode === "phase6-live" && Boolean(auth.apiClient);
   const [notes, setNotes] = useState(initialSnapshot.notes);
   const [filter, setFilter] = useState<NoteFilter>("all");
   const [selectedId, setSelectedId] = useState(
@@ -48,6 +56,22 @@ export function NotesExperience({
   useEffect(() => {
     let active = true;
     const refresh = async () => {
+      if (live && auth.apiClient) {
+        const captures = await loadDurableCaptures(auth.apiClient);
+        const durableNotes = captures
+          .map(durableCaptureToNote)
+          .filter((note): note is NoteArtifact => Boolean(note));
+        if (!active) return;
+        setNotes([...durableNotes, ...initialSnapshot.notes]);
+        if (capturedNoteId) {
+          const captured = durableNotes.find((note) => note.id === capturedNoteId);
+          if (captured) {
+            setSelectedId(captured.id);
+            setDraftBody(captured.body);
+          }
+        }
+        return;
+      }
       const next = await notesService.getNotes(initialSnapshot.scenario);
       if (!active) return;
       setNotes(next.notes);
@@ -65,11 +89,19 @@ export function NotesExperience({
     };
     void refresh();
     window.addEventListener("nexus:mock-session-change", handleSessionChange);
+    window.addEventListener(PHASE6_CAPTURE_CHANGE_EVENT, refresh);
     return () => {
       active = false;
       window.removeEventListener("nexus:mock-session-change", handleSessionChange);
+      window.removeEventListener(PHASE6_CAPTURE_CHANGE_EVENT, refresh);
     };
-  }, [capturedNoteId, initialSnapshot.scenario]);
+  }, [
+    auth.apiClient,
+    capturedNoteId,
+    initialSnapshot.notes,
+    initialSnapshot.scenario,
+    live,
+  ]);
 
   const chooseNote = (note: NoteArtifact) => {
     setSelectedId(note.id);
@@ -80,6 +112,22 @@ export function NotesExperience({
 
   const saveDraft = async () => {
     if (!selected) return;
+    if (live && auth.apiClient && selected.provenance === "manual-paste") {
+      await auth.apiClient.request(`/api/v1/captures/${selected.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ rawText: draftBody }),
+      });
+      setNotes((current) =>
+        current.map((note) =>
+          note.id === selected.id
+            ? { ...note, body: draftBody, updatedAt: new Date().toISOString() }
+            : note,
+        ),
+      );
+      setEditing(false);
+      setFeedback("Correction saved in NEXUS.");
+      return;
+    }
     const updated = await notesService.updateNote(selected.id, {
       body: draftBody,
       state: "draft",

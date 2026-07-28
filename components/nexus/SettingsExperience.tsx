@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   MockDeletionRequest,
   NotificationPolicy,
@@ -12,6 +12,8 @@ import { createMockPhase3Services } from "@/lib/mocks/mock-phase3-services";
 import { scenarioHref } from "@/lib/mocks/phase2-fixtures";
 import { InterfaceAssetIcon } from "@/components/nexus/InterfaceAssetIcon";
 import type { SettingsSection } from "@/lib/services/settings-service";
+import { useNexusAuth } from "@/lib/auth/AuthProvider";
+import { createPhase6SettingsService } from "@/lib/services/phase6-live-services";
 import {
   ControlDialog,
   ControlHeader,
@@ -53,11 +55,19 @@ export function SettingsExperience({
 }: {
   initialSnapshot: SettingsSnapshot;
 }) {
-  const services = useMemo(
+  const auth = useNexusAuth();
+  const mockServices = useMemo(
     () => createMockPhase3Services(initialSnapshot.scenario),
     [initialSnapshot.scenario],
   );
-  const service = services.settingsService;
+  const live = auth.mode === "phase6-live" && Boolean(auth.apiClient);
+  const service = useMemo(
+    () =>
+      live && auth.apiClient
+        ? createPhase6SettingsService(auth.apiClient, initialSnapshot)
+        : mockServices.settingsService,
+    [auth.apiClient, initialSnapshot, live, mockServices.settingsService],
+  );
   const [preferences, setPreferences] = useState(initialSnapshot.preferences);
   const [section, setSection] = useState<SettingsView>("profile");
   const [dialog, setDialog] = useState<
@@ -71,6 +81,28 @@ export function SettingsExperience({
   const [deletion, setDeletion] = useState<MockDeletionRequest | null>(null);
   const [feedback, setFeedback] = useState("");
 
+  useEffect(() => {
+    if (!live) return;
+    let active = true;
+    void service
+      .getSettings(initialSnapshot.scenario)
+      .then((snapshot) => {
+        if (active) setPreferences(snapshot.preferences);
+      })
+      .catch((reason: unknown) => {
+        if (active) {
+          setFeedback(
+            reason instanceof Error
+              ? reason.message
+              : "NEXUS could not load durable settings.",
+          );
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [initialSnapshot.scenario, live, service]);
+
   const updatePreferences = (update: Partial<UserPreferences>) => {
     setPreferences((current) => ({ ...current, ...update }));
   };
@@ -79,15 +111,39 @@ export function SettingsExperience({
     target: SettingsSection,
     update: Partial<UserPreferences>,
   ) => {
-    const next = await service.saveSection(target, update);
-    setPreferences(next);
-    setFeedback(`${settingsSections.find((item) => item.id === target)?.label} saved.`);
+    try {
+      const next = await service.saveSection(target, update);
+      setPreferences(next);
+      setFeedback(
+        `${settingsSections.find((item) => item.id === target)?.label} ${
+          live ? "saved durably" : "saved"
+        }.`,
+      );
+    } catch (reason) {
+      setFeedback(
+        reason instanceof Error
+          ? `${reason.message} Your unsaved edits remain on screen.`
+          : "NEXUS did not save these changes. Your edits remain on screen.",
+      );
+    }
   };
 
   const resetSection = async (target: SettingsSection) => {
-    const next = await service.resetSection(target);
-    setPreferences(next);
-    setFeedback(`${settingsSections.find((item) => item.id === target)?.label} reset.`);
+    try {
+      const next = await service.resetSection(target);
+      setPreferences(next);
+      setFeedback(
+        `${settingsSections.find((item) => item.id === target)?.label} reset${
+          live ? " and saved" : ""
+        }.`,
+      );
+    } catch (reason) {
+      setFeedback(
+        reason instanceof Error
+          ? reason.message
+          : "NEXUS could not reset this section.",
+      );
+    }
   };
 
   return (

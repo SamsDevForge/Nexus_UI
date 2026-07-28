@@ -7,6 +7,12 @@ import type {
   TimelineSnapshot,
 } from "@/lib/domain/contracts";
 import { timelineService } from "@/lib/mocks/mock-phase2-services";
+import { useNexusAuth } from "@/lib/auth/AuthProvider";
+import {
+  durableCaptureToTimeline,
+  loadDurableCaptures,
+  PHASE6_CAPTURE_CHANGE_EVENT,
+} from "@/lib/services/phase6-live-services";
 import {
   BlockingState,
   HealthStrip,
@@ -35,6 +41,8 @@ export function TimelineExperience({
   initialSnapshot: TimelineSnapshot;
   capturedEntryId?: string;
 }) {
+  const auth = useNexusAuth();
+  const live = auth.mode === "phase6-live" && Boolean(auth.apiClient);
   const [selectedDay, setSelectedDay] = useState(initialSnapshot.selectedDay);
   const [groups, setGroups] = useState(initialSnapshot.groups);
   const [filter, setFilter] = useState<"all" | TimelineEntryKind>("all");
@@ -56,6 +64,42 @@ export function TimelineExperience({
   useEffect(() => {
     let active = true;
     const refresh = async () => {
+      if (live && auth.apiClient) {
+        const captures = await loadDurableCaptures(auth.apiClient);
+        const durableEntries = captures
+          .map(durableCaptureToTimeline)
+          .filter((entry): entry is TimelineEntry => Boolean(entry));
+        const nextGroups = structuredClone(initialSnapshot.groups);
+        for (const entry of durableEntries) {
+          let target = nextGroups.find((item) => item.date === entry.day);
+          if (!target) {
+            target = {
+              id: `capture-day-${entry.day}`,
+              date: entry.day,
+              label: entry.day,
+              shortLabel: entry.day.slice(5),
+              entries: [],
+            };
+            nextGroups.unshift(target);
+          }
+          target.entries = [
+            entry,
+            ...target.entries.filter((item) => item.id !== entry.id),
+          ];
+        }
+        if (!active) return;
+        setGroups(nextGroups);
+        if (capturedEntryId) {
+          const captured = durableEntries.find(
+            (entry) => entry.id === capturedEntryId,
+          );
+          if (captured) {
+            setSelectedDay(captured.day);
+            setSelectedEntry(captured);
+          }
+        }
+        return;
+      }
       const next = await timelineService.getTimeline(initialSnapshot.scenario);
       if (!active) return;
       setGroups(next.groups);
@@ -75,11 +119,19 @@ export function TimelineExperience({
     };
     void refresh();
     window.addEventListener("nexus:mock-session-change", handleSessionChange);
+    window.addEventListener(PHASE6_CAPTURE_CHANGE_EVENT, refresh);
     return () => {
       active = false;
       window.removeEventListener("nexus:mock-session-change", handleSessionChange);
+      window.removeEventListener(PHASE6_CAPTURE_CHANGE_EVENT, refresh);
     };
-  }, [capturedEntryId, initialSnapshot.scenario]);
+  }, [
+    auth.apiClient,
+    capturedEntryId,
+    initialSnapshot.groups,
+    initialSnapshot.scenario,
+    live,
+  ]);
 
   const resolve = async (
     entry: TimelineEntry,
