@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { InterfaceAssetIcon } from "@/components/nexus/InterfaceAssetIcon";
+import { NexusNotesMark } from "@/components/nexus/NexusNotesMark";
+import { ProductIcon } from "@/components/nexus/ProductIcon";
 import type {
   NoteArtifact,
   NoteReviewState,
@@ -21,12 +24,16 @@ type NoteFilter = "all" | NoteReviewState;
 
 export function NotesExperience({
   initialSnapshot,
+  capturedNoteId,
 }: {
   initialSnapshot: NotesSnapshot;
+  capturedNoteId?: string;
 }) {
   const [notes, setNotes] = useState(initialSnapshot.notes);
   const [filter, setFilter] = useState<NoteFilter>("all");
-  const [selectedId, setSelectedId] = useState(initialSnapshot.notes[0]?.id ?? "");
+  const [selectedId, setSelectedId] = useState(
+    capturedNoteId ?? initialSnapshot.notes[0]?.id ?? "",
+  );
   const [draftBody, setDraftBody] = useState(initialSnapshot.notes[0]?.body ?? "");
   const [editing, setEditing] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -37,6 +44,32 @@ export function NotesExperience({
     [filter, notes],
   );
   const groups = [...new Set(visible.map((note) => note.group))];
+
+  useEffect(() => {
+    let active = true;
+    const refresh = async () => {
+      const next = await notesService.getNotes(initialSnapshot.scenario);
+      if (!active) return;
+      setNotes(next.notes);
+      if (capturedNoteId) {
+        const captured = next.notes.find((note) => note.id === capturedNoteId);
+        if (captured) {
+          setSelectedId(captured.id);
+          setDraftBody(captured.body);
+        }
+      }
+    };
+    const handleSessionChange = (event: Event) => {
+      const detail = (event as CustomEvent<{ scenario?: string }>).detail;
+      if (detail?.scenario === initialSnapshot.scenario) void refresh();
+    };
+    void refresh();
+    window.addEventListener("nexus:mock-session-change", handleSessionChange);
+    return () => {
+      active = false;
+      window.removeEventListener("nexus:mock-session-change", handleSessionChange);
+    };
+  }, [capturedNoteId, initialSnapshot.scenario]);
 
   const chooseNote = (note: NoteArtifact) => {
     setSelectedId(note.id);
@@ -87,7 +120,7 @@ export function NotesExperience({
   const createManualNote = () => {
     const manual: NoteArtifact = {
       id: "note-manual-phase2",
-      title: "Untitled internal note",
+      title: "Untitled Nexus note",
       group: "Personal",
       state: "draft",
       updatedAt: "2026-07-25T09:25:00+05:30",
@@ -105,7 +138,7 @@ export function NotesExperience({
     ]);
     chooseNote(manual);
     setEditing(true);
-    setFeedback("Manual internal note created in demo state.");
+    setFeedback("Nexus note created in demo state.");
   };
 
   return (
@@ -117,12 +150,13 @@ export function NotesExperience({
       }
     >
       <PhaseHeader
-        kicker="Prepared knowledge artifacts"
-        title="Notes"
+        kicker="Native knowledge workspace"
+        title="Nexus Notes"
         summary={initialSnapshot.summary}
+        mark={<NexusNotesMark className="notes-heading-mark" size={74} />}
         action={
           <button className="primary-button" type="button" onClick={createManualNote}>
-            New internal note
+            New Nexus note
           </button>
         }
       />
@@ -130,12 +164,16 @@ export function NotesExperience({
         notice={initialSnapshot.notice}
         tone={initialSnapshot.viewState === "error" ? "danger" : "warning"}
       />
-      <BlockingState state={initialSnapshot.viewState} noun="notes library" />
+      <BlockingState
+        state={notes.length > 0 ? "populated" : initialSnapshot.viewState}
+        noun="notes library"
+        scenario={initialSnapshot.scenario}
+      />
 
       {notes.length > 0 ? (
         <>
           <div className="notes-source-rule">
-            <span aria-hidden="true">i</span>
+            <NexusNotesMark className="notes-rule-mark" size={30} />
             <p>
               NEXUS can organize permitted source material. It cannot create factual
               lecture notes when no source exists.
@@ -155,10 +193,17 @@ export function NotesExperience({
           />
 
           <div className="notes-workspace">
-            <aside className="notes-library" aria-label="Notes library">
+            <aside className="notes-library" aria-label="Nexus Notes library">
               {groups.map((group) => (
                 <section key={group}>
-                  <h2>{group}</h2>
+                  <h2>
+                    <InterfaceAssetIcon
+                      kind="folder"
+                      className="notes-folder-icon"
+                      size={14}
+                    />
+                    <span>{group}</span>
+                  </h2>
                   {visible
                     .filter((note) => note.group === group)
                     .map((note) => (
@@ -192,6 +237,18 @@ export function NotesExperience({
                   <span>{Math.round(selected.confidence * 100)}% confidence</span>
                 </header>
 
+                {selected.provenance === "manual-paste" ? (
+                  <div className="note-manual-provenance" role="status">
+                    <b>Manual paste</b>
+                    <span>
+                      {selected.sourceLabel
+                        ? `Source label · ${selected.sourceLabel}`
+                        : "No source app connection"}
+                    </span>
+                    <small>Session-only · plain text</small>
+                  </div>
+                ) : null}
+
                 {editing ? (
                   <div className="note-edit-area">
                     <label htmlFor="note-body">Draft content</label>
@@ -201,7 +258,12 @@ export function NotesExperience({
                       onChange={(event) => setDraftBody(event.target.value)}
                     />
                     <div>
-                      <button className="primary-button" type="button" onClick={saveDraft}>
+                      <button
+                        className="primary-button note-save-button"
+                        type="button"
+                        onClick={saveDraft}
+                      >
+                        <ProductIcon name="save" size={15} />
                         Save draft
                       </button>
                       <button
@@ -228,7 +290,7 @@ export function NotesExperience({
                   <section>
                     <span>Source citations</span>
                     {selected.citations.length === 0 ? (
-                      <p>No external citations. This is a manual internal note.</p>
+                      <p>No external citations. This is a manual Nexus note.</p>
                     ) : (
                       selected.citations.map((citation) => (
                         <Link

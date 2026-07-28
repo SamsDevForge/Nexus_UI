@@ -14,6 +14,9 @@ import {
   PhaseHeader,
   ScenarioBanner,
 } from "@/components/nexus/Phase2Shared";
+import { InterfaceAssetIcon } from "@/components/nexus/InterfaceAssetIcon";
+import { NexusNotesMark } from "@/components/nexus/NexusNotesMark";
+import { ProductIcon } from "@/components/nexus/ProductIcon";
 
 const typeLabels: Record<UnifiedSearchResultType, string> = {
   event: "Events",
@@ -21,7 +24,7 @@ const typeLabels: Record<UnifiedSearchResultType, string> = {
   insight: "Insights",
   conversation: "Conversations",
   knowledge: "Knowledge",
-  note: "Notes",
+  note: "Nexus Notes",
   control: "Controls",
   "email-derived": "Email-derived",
 };
@@ -101,6 +104,7 @@ export function SearchExperience({
             : response.viewState
         }
         noun="search index"
+        scenario={response.scenario}
       />
 
       {!["loading", "empty"].includes(response.viewState) ? (
@@ -232,7 +236,9 @@ export function SearchExperience({
 
             {response.viewState === "permission-denied" ? (
               <div className="search-restricted-state">
-                <span aria-hidden="true">×</span>
+                <span className="notice-glyph is-danger" aria-hidden="true">
+                  <i />
+                </span>
                 <div>
                   <b>Some results need permission</b>
                   <p>
@@ -283,7 +289,35 @@ export function SearchExperience({
                         href={scenarioHref(result.href, initialResponse.scenario)}
                         key={result.id}
                       >
-                        <span className={`search-result-icon is-${result.type}`} aria-hidden="true" />
+                        {result.type === "note" ? (
+                          <NexusNotesMark
+                            className="search-result-icon is-note"
+                            size={24}
+                          />
+                        ) : result.type === "email-derived" ? (
+                          <InterfaceAssetIcon
+                            kind="email"
+                            className="search-result-icon is-email-derived"
+                            size={24}
+                          />
+                        ) : result.type === "knowledge" ? (
+                          <InterfaceAssetIcon
+                            kind="file"
+                            className="search-result-icon is-knowledge"
+                            size={24}
+                          />
+                        ) : result.type === "event" ? (
+                          <ProductIcon
+                            name="date-search"
+                            className="search-result-icon is-event"
+                            size={24}
+                          />
+                        ) : (
+                          <span
+                            className={`search-result-icon is-${result.type}`}
+                            aria-hidden="true"
+                          />
+                        )}
                         <span>
                           <b>{result.title}</b>
                           <small>{result.excerpt}</small>

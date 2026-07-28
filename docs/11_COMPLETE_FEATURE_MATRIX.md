@@ -7,6 +7,8 @@ pitch or added during product planning.
 | --- | --- | --- | --- | --- |
 | Cinematic landing | None | Three.js/UI | 1 | Web |
 | Full product shell | Mock contracts | UI | 1 | Web |
+| Cross-product state coverage | Mock contracts and source health | Deterministic UI state | 4 | Web |
+| Quick Capture manual note/event bridge | User-pasted plain text | Deterministic parsing and service composition | UI 4, durable storage 6+ | Web-first |
 | Today intelligence screen | All current context | Ranking/UI | 2, live 16–17 | Both |
 | Timeline | Calendar, tasks, travel | Deterministic | 2, live 9 | Both |
 | Insight feed | Context events | Ranking | 2, live 17 | Both |

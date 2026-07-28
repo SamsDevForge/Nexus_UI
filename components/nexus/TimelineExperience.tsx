@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   TimelineEntry,
   TimelineEntryKind,
@@ -14,6 +14,10 @@ import {
   PhaseHeader,
   ScenarioBanner,
 } from "@/components/nexus/Phase2Shared";
+import {
+  ProductIcon,
+  timelineStatusIcon,
+} from "@/components/nexus/ProductIcon";
 
 const filters: Array<{ value: "all" | TimelineEntryKind; label: string }> = [
   { value: "all", label: "All" },
@@ -26,18 +30,21 @@ const filters: Array<{ value: "all" | TimelineEntryKind; label: string }> = [
 
 export function TimelineExperience({
   initialSnapshot,
+  capturedEntryId,
 }: {
   initialSnapshot: TimelineSnapshot;
+  capturedEntryId?: string;
 }) {
   const [selectedDay, setSelectedDay] = useState(initialSnapshot.selectedDay);
+  const [groups, setGroups] = useState(initialSnapshot.groups);
   const [filter, setFilter] = useState<"all" | TimelineEntryKind>("all");
   const [selectedEntry, setSelectedEntry] = useState<TimelineEntry | null>(null);
   const [outcomes, setOutcomes] = useState<Record<string, string>>({});
   const [feedback, setFeedback] = useState("");
 
   const group =
-    initialSnapshot.groups.find((item) => item.date === selectedDay) ??
-    initialSnapshot.groups[0];
+    groups.find((item) => item.date === selectedDay) ??
+    groups[0];
   const entries = useMemo(
     () =>
       (group?.entries ?? []).filter(
@@ -45,6 +52,34 @@ export function TimelineExperience({
       ),
     [filter, group],
   );
+
+  useEffect(() => {
+    let active = true;
+    const refresh = async () => {
+      const next = await timelineService.getTimeline(initialSnapshot.scenario);
+      if (!active) return;
+      setGroups(next.groups);
+      if (capturedEntryId) {
+        const captured = next.groups
+          .flatMap((item) => item.entries)
+          .find((entry) => entry.id === capturedEntryId);
+        if (captured) {
+          setSelectedDay(captured.day);
+          setSelectedEntry(captured);
+        }
+      }
+    };
+    const handleSessionChange = (event: Event) => {
+      const detail = (event as CustomEvent<{ scenario?: string }>).detail;
+      if (detail?.scenario === initialSnapshot.scenario) void refresh();
+    };
+    void refresh();
+    window.addEventListener("nexus:mock-session-change", handleSessionChange);
+    return () => {
+      active = false;
+      window.removeEventListener("nexus:mock-session-change", handleSessionChange);
+    };
+  }, [capturedEntryId, initialSnapshot.scenario]);
 
   const resolve = async (
     entry: TimelineEntry,
@@ -89,13 +124,17 @@ export function TimelineExperience({
         notice={initialSnapshot.notice}
         tone={initialSnapshot.viewState === "error" ? "danger" : "warning"}
       />
-      <BlockingState state={initialSnapshot.viewState} noun="timeline" />
+      <BlockingState
+        state={groups.length > 0 ? "populated" : initialSnapshot.viewState}
+        noun="timeline"
+        scenario={initialSnapshot.scenario}
+      />
 
-      {initialSnapshot.groups.length > 0 ? (
+      {groups.length > 0 ? (
         <>
           <div className="timeline-toolbar">
             <div className="timeline-days" role="group" aria-label="Visible day">
-              {initialSnapshot.groups.map((item) => (
+              {groups.map((item) => (
                 <button
                   className={selectedDay === item.date ? "is-active" : undefined}
                   type="button"
@@ -153,9 +192,10 @@ export function TimelineExperience({
                 ) : null}
                 {entries.map((entry) => {
                   const outcome = outcomes[entry.id];
+                  const visibleStatus = outcome ?? entry.status;
                   return (
                     <article
-                      className={`timeline-entry is-${entry.kind} status-${outcome ?? entry.status}`}
+                      className={`timeline-entry is-${entry.kind} status-${visibleStatus}`}
                       key={entry.id}
                     >
                       <button
@@ -172,17 +212,23 @@ export function TimelineExperience({
                           <b>{entry.timeLabel}</b>
                           {entry.endLabel ? <small>{entry.endLabel}</small> : null}
                         </time>
-                        <span className="timeline-entry-node" aria-hidden="true" />
+                        <ProductIcon
+                          name={timelineStatusIcon(visibleStatus)}
+                          className={`timeline-entry-icon status-${visibleStatus}`}
+                          size={24}
+                        />
                         <span>
                           <small>{entry.kind}</small>
                           <strong>{entry.title}</strong>
                           <em>{entry.detail}</em>
                         </span>
                         <span className="timeline-entry-status">
-                          {(outcome ?? entry.status).replace("-", " ")}
+                          {visibleStatus.replace("-", " ")}
                         </span>
                       </button>
-                      {entry.proposedAction && !outcome ? (
+                      {entry.proposedAction &&
+                      !outcome &&
+                      !["running", "succeeded", "failed"].includes(entry.status) ? (
                         <div className="timeline-inline-actions">
                           <button type="button" onClick={() => resolve(entry, "accept")}>
                             Accept
@@ -192,6 +238,15 @@ export function TimelineExperience({
                           </button>
                           <button type="button" onClick={() => resolve(entry, "reject")}>
                             Reject
+                          </button>
+                        </div>
+                      ) : null}
+                      {entry.proposedAction &&
+                      !outcome &&
+                      entry.status === "failed" ? (
+                        <div className="timeline-inline-actions">
+                          <button type="button" onClick={() => resolve(entry, "accept")}>
+                            Retry safely
                           </button>
                         </div>
                       ) : null}
@@ -222,6 +277,15 @@ export function TimelineExperience({
                   confidence={selectedEntry.confidence}
                   authority={selectedEntry.requiredAuthority}
                 />
+                {selectedEntry.provenance === "manual-paste" ? (
+                  <div className="timeline-reasoning">
+                    <span>Manual-paste provenance</span>
+                    <p>{selectedEntry.sourceEvidence}</p>
+                    <small>
+                      {selectedEntry.timezone} · reviewed before confirmation
+                    </small>
+                  </div>
+                ) : null}
                 {selectedEntry.reasoning ? (
                   <div className="timeline-reasoning">
                     <span>Why it appears here</span>

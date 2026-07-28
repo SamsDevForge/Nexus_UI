@@ -172,7 +172,7 @@ test("knowledge, notes and unified search use their service contracts", async ()
   const filtered = await searchService.search(
     "student-normal-day",
     "",
-    { types: ["note"], sources: ["Internal NEXUS notes"] },
+    { types: ["note"], sources: ["Nexus Notes"] },
   );
 
   assert.equal(document?.title, "Packet routing lab brief");
@@ -181,7 +181,7 @@ test("knowledge, notes and unified search use their service contracts", async ()
   assert.equal(prepared.status, "approved");
   assert.equal(filtered.results.every((result) => result.type === "note"), true);
   assert.equal(
-    filtered.results.every((result) => result.source === "Internal NEXUS notes"),
+    filtered.results.every((result) => result.source === "Nexus Notes"),
     true,
   );
 });

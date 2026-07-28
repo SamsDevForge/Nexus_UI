@@ -530,12 +530,12 @@ export function NexusExperience() {
 
       <header className="system-header">
         <div className="brand-lockup" aria-label="Nexus AI">
-          <span className="logo-crop" aria-hidden="true">
+          <span className="brand-symbol" aria-hidden="true">
             <Image
               src="/nexus-logo.svg"
               alt=""
               fill
-              sizes="38px"
+              sizes="30px"
               priority
               unoptimized
             />

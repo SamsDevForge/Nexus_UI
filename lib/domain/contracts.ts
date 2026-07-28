@@ -1,16 +1,70 @@
 export type TodayScenario =
   | "first-use"
+  | "no-connections"
   | "loading"
+  | "empty"
+  | "error"
   | "student-normal-day"
   | "rain-and-traffic"
   | "deadline-risk"
   | "partial-connections"
+  | "rate-limited"
+  | "stale-source"
   | "connection-stale"
+  | "permission-revoked"
   | "permission-denied"
   | "offline"
+  | "degraded-ai"
+  | "action-pending"
+  | "action-running"
+  | "action-succeeded"
+  | "action-recoverable-failure"
   | "action-failed"
   | "privacy-paused"
   | "reduced-motion";
+
+export type DataAvailabilityState =
+  | "loading"
+  | "populated"
+  | "empty"
+  | "partial";
+
+export type SourceAvailabilityState =
+  | "fresh"
+  | "stale"
+  | "disconnected"
+  | "revoked"
+  | "rate-limited"
+  | "offline"
+  | "error";
+
+export type IntelligenceAvailabilityState =
+  | "ready"
+  | "degraded"
+  | "unavailable";
+
+export type ActionLifecycleState =
+  | "idle"
+  | "proposed"
+  | "pending-approval"
+  | "running"
+  | "succeeded"
+  | "failed-recoverably"
+  | "failed-finally"
+  | "reversed";
+
+export type ConfigurationState =
+  | "first-use"
+  | "no-connections"
+  | "configured";
+
+export interface ProductStateDimensions {
+  data: DataAvailabilityState;
+  source: SourceAvailabilityState;
+  intelligence: IntelligenceAvailabilityState;
+  action: ActionLifecycleState;
+  configuration: ConfigurationState;
+}
 
 export type TodayViewState =
   | "populated"
@@ -124,6 +178,7 @@ export interface ConnectionHealth {
 
 export interface TodaySnapshot {
   scenario: TodayScenario;
+  state: ProductStateDimensions;
   viewState: TodayViewState;
   systemState: SystemState;
   greeting: string;
@@ -164,7 +219,10 @@ export interface SourceHealth {
     | "stale"
     | "disconnected"
     | "permission-denied"
-    | "offline";
+    | "offline"
+    | "rate-limited"
+    | "error"
+    | "revoked";
   freshness: FreshnessState;
   lastObservedAt?: string;
   detail: string;
@@ -183,6 +241,9 @@ export type TimelineEntryStatus =
   | "inferred"
   | "suggested"
   | "pending-approval"
+  | "running"
+  | "succeeded"
+  | "failed"
   | "completed"
   | "missed"
   | "at-risk";
@@ -204,6 +265,9 @@ export interface TimelineEntry {
   reasoning?: string;
   requiredAuthority: AuthorityLevel;
   proposedAction?: ToolActionProposal;
+  provenance?: "manual-paste";
+  sourceEvidence?: string;
+  timezone?: string;
 }
 
 export interface TimelineGroup {
@@ -216,6 +280,7 @@ export interface TimelineGroup {
 
 export interface TimelineSnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: CoreViewState;
   currentTime: string;
   currentTimeLabel: string;
@@ -266,6 +331,7 @@ export interface InsightFeedback {
 
 export interface InsightsSnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: CoreViewState;
   summary: string;
   primary: RankedInsight | null;
@@ -300,13 +366,21 @@ export interface ToolActionProposal {
   evidenceRefs: string[];
   requiredAuthority: AuthorityLevel;
   expiresAt: string;
-  status: "prepared" | "pending-approval" | "approved" | "rejected" | "failed";
+  status:
+    | "prepared"
+    | "pending-approval"
+    | "running"
+    | "succeeded"
+    | "approved"
+    | "rejected"
+    | "failed"
+    | "failed-recoverably";
 }
 
 export interface RecordedToolResult {
   id: string;
   proposalId: string;
-  status: "not-run" | "succeeded" | "failed";
+  status: "not-run" | "running" | "succeeded" | "failed";
   recordedAt: string;
   summary: string;
   reversible: boolean;
@@ -323,6 +397,7 @@ export interface ScriptedConversation {
 
 export interface NexusWorkspaceSnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: CoreViewState;
   contextSummary: string;
   contextSignals: ContextSignal[];
@@ -375,6 +450,7 @@ export interface KnowledgeSearchResult {
 
 export interface KnowledgeSnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: CoreViewState;
   summary: string;
   sources: KnowledgeSource[];
@@ -411,10 +487,14 @@ export interface NoteArtifact {
   unresolvedQuestions: string[];
   confidence: number;
   preparedAction?: ToolActionProposal;
+  provenance?: "manual-paste";
+  sourceLabel?: string;
+  tags?: string[];
 }
 
 export interface NotesSnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: CoreViewState;
   summary: string;
   notes: NoteArtifact[];
@@ -452,6 +532,7 @@ export interface SearchFilters {
 
 export interface SearchResponse {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: CoreViewState;
   query: string;
   results: UnifiedSearchResult[];
@@ -498,7 +579,13 @@ export interface AutomationRun {
   id: string;
   automationId: string;
   startedAt: string;
-  outcome: "succeeded" | "skipped" | "failed" | "blocked";
+  outcome:
+    | "pending-approval"
+    | "running"
+    | "succeeded"
+    | "skipped"
+    | "failed"
+    | "blocked";
   summary: string;
   authorityUsed: AuthorityLevel;
   reversible: boolean;
@@ -538,6 +625,7 @@ export interface AutomationDefinition {
 
 export interface AutomationSnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: ControlViewState;
   globallyPaused: boolean;
   summary: string;
@@ -609,6 +697,7 @@ export interface DependencyImpact {
 
 export interface ConnectionSnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: ControlViewState;
   summary: string;
   healthyCount: number;
@@ -662,6 +751,7 @@ export interface PermissionGrant {
 
 export interface PermissionSnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: ControlViewState;
   observationPaused: boolean;
   automationsPaused: boolean;
@@ -718,6 +808,7 @@ export interface MemoryMutationResult {
 
 export interface MemorySnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: ControlViewState;
   summary: string;
   items: MemoryItem[];
@@ -734,10 +825,12 @@ export type ActivityEventType =
   | "rejected-action"
   | "permission-change"
   | "memory-change"
-  | "automation-run";
+  | "automation-run"
+  | "manual-capture";
 
 export type ActivityOutcome =
   | "success"
+  | "running"
   | "pending"
   | "denied"
   | "failed"
@@ -783,6 +876,7 @@ export interface ActivityFilters {
 
 export interface ActivitySnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: ControlViewState;
   summary: string;
   events: ActivityEvent[];
@@ -843,6 +937,7 @@ export interface UserPreferences {
 
 export interface SettingsSnapshot {
   scenario: NexusScenario;
+  state: ProductStateDimensions;
   viewState: ControlViewState;
   summary: string;
   preferences: UserPreferences;
@@ -864,4 +959,84 @@ export interface MockDeletionRequest {
   status: "confirmed" | "cancelled";
   impact: DependencyImpact;
   summary: string;
+}
+
+export type QuickCaptureMode = "note" | "event";
+
+export interface ManualPasteSource {
+  kind: "manual-paste";
+  label?: string;
+}
+
+export interface QuickCaptureDraft {
+  id: string;
+  mode: QuickCaptureMode;
+  rawText: string;
+  source: ManualPasteSource;
+  noteTitle: string;
+  tags: string[];
+  event: {
+    title: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    location: string;
+    description: string;
+  };
+}
+
+export interface CaptureValidationIssue {
+  field:
+    | "rawText"
+    | "noteTitle"
+    | "eventTitle"
+    | "date"
+    | "startTime"
+    | "endTime";
+  code:
+    | "required"
+    | "ambiguous-date"
+    | "invalid-date"
+    | "invalid-time"
+    | "end-before-start";
+  severity: "error" | "review";
+  message: string;
+}
+
+export interface NoteCapturePreview {
+  mode: "note";
+  title: string;
+  body: string;
+  tags: string[];
+  source: ManualPasteSource;
+  provenance: "manual-paste";
+  issues: CaptureValidationIssue[];
+}
+
+export interface EventCapturePreview {
+  mode: "event";
+  title: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  description: string;
+  timezone: string;
+  sourceEvidence: string;
+  source: ManualPasteSource;
+  provenance: "manual-paste";
+  issues: CaptureValidationIssue[];
+}
+
+export type QuickCapturePreview = NoteCapturePreview | EventCapturePreview;
+
+export interface QuickCaptureResult {
+  id: string;
+  mode: QuickCaptureMode;
+  status: "succeeded" | "failed-recoverably" | "blocked";
+  summary: string;
+  createdItemId?: string;
+  activityId?: string;
+  href?: string;
+  recordedAt: string;
 }

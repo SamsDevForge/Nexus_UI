@@ -11,10 +11,21 @@ export const metadata: Metadata = {
 export default async function TimelinePage({
   searchParams,
 }: {
-  searchParams: Promise<{ scenario?: string | string[] }>;
+  searchParams: Promise<{
+    scenario?: string | string[];
+    capture?: string | string[];
+  }>;
 }) {
   const params = await searchParams;
   const scenario = parseNexusScenario(params.scenario);
+  const captureId = Array.isArray(params.capture)
+    ? params.capture[0]
+    : params.capture;
   const snapshot = await timelineService.getTimeline(scenario);
-  return <TimelineExperience initialSnapshot={snapshot} />;
+  return (
+    <TimelineExperience
+      initialSnapshot={snapshot}
+      capturedEntryId={captureId}
+    />
+  );
 }

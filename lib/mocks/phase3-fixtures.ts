@@ -8,6 +8,7 @@ import type {
   PermissionGrant,
   UserPreferences,
 } from "@/lib/domain/contracts";
+import { canonicalScenario } from "@/lib/domain/state-coverage";
 
 export interface Phase3FixtureState {
   scenario: NexusScenario;
@@ -26,31 +27,96 @@ export interface Phase3FixtureState {
 export function controlViewStateForScenario(
   scenario: NexusScenario,
 ): ControlViewState {
-  if (scenario === "loading") return "loading";
-  if (scenario === "first-use") return "empty";
-  if (scenario === "partial-connections") return "partial";
-  if (scenario === "connection-stale") return "stale";
-  if (scenario === "permission-denied") return "permission-denied";
-  if (scenario === "offline") return "offline";
-  if (scenario === "action-failed") return "error";
-  if (scenario === "privacy-paused") return "privacy-paused";
+  const canonical = canonicalScenario(scenario);
+  if (canonical === "loading") return "loading";
+  if (["first-use", "no-connections", "empty"].includes(canonical)) return "empty";
+  if (canonical === "partial-connections") return "partial";
+  if (["stale-source", "rate-limited"].includes(canonical)) return "stale";
+  if (canonical === "permission-revoked") return "permission-denied";
+  if (canonical === "offline") return "offline";
+  if (["error", "action-recoverable-failure"].includes(canonical)) return "error";
+  if (canonical === "privacy-paused") return "privacy-paused";
   return "populated";
 }
 
-export function controlNoticeForScenario(scenario: NexusScenario) {
-  if (scenario === "partial-connections") {
+export function controlViewStateForSurface(
+  scenario: NexusScenario,
+  surface: ControlSurface,
+): ControlViewState {
+  const canonical = canonicalScenario(scenario);
+  if (
+    canonical === "action-recoverable-failure" &&
+    !["automations", "activity"].includes(surface)
+  ) {
+    return "populated";
+  }
+  if (canonical === "rate-limited" && surface === "settings") {
+    return "populated";
+  }
+  if (canonical === "no-connections" && surface === "settings") {
+    return "populated";
+  }
+  return controlViewStateForScenario(scenario);
+}
+
+export type ControlSurface =
+  | "automations"
+  | "connections"
+  | "permissions"
+  | "memory"
+  | "activity"
+  | "settings";
+
+export function controlNoticeForScenario(
+  scenario: NexusScenario,
+  surface?: ControlSurface,
+) {
+  const canonical = canonicalScenario(scenario);
+  if (canonical === "no-connections") {
+    return "No providers are connected. Manual notes, settings, permissions, and Quick Capture remain available.";
+  }
+  if (canonical === "empty") {
+    return "This configured view has no records yet. Controls remain available.";
+  }
+  if (canonical === "partial-connections") {
     return "Calendar and route context are available. Course material and email remain disconnected.";
   }
-  if (scenario === "connection-stale") {
+  if (canonical === "stale-source") {
     return "Notion course material needs reconnection. Dependent preparation is paused.";
   }
-  if (scenario === "permission-denied") {
+  if (canonical === "rate-limited") {
+    if (surface === "settings") return undefined;
+    return "One provider refresh is temporarily limited. Last-known control state remains visible.";
+  }
+  if (canonical === "error") {
+    return "One source refresh failed. Unaffected controls and last-known records remain available.";
+  }
+  if (canonical === "permission-revoked") {
     return "Calendar read permission was revoked. Dependent automations are blocked by policy.";
   }
-  if (scenario === "offline") {
+  if (canonical === "offline") {
     return "Offline: controls show the last prepared state. Provider changes are unavailable.";
   }
-  if (scenario === "action-failed") {
+  if (canonical === "degraded-ai") {
+    if (!surface || !["automations", "memory", "activity"].includes(surface)) {
+      return undefined;
+    }
+    return "Generated assistance is unavailable. Deterministic controls and manual actions remain available.";
+  }
+  if (canonical === "action-pending") {
+    if (!surface || !["automations", "activity"].includes(surface)) return undefined;
+    return "A prepared action is awaiting approval. No external change has occurred.";
+  }
+  if (canonical === "action-running") {
+    if (!surface || !["automations", "activity"].includes(surface)) return undefined;
+    return "An approved demo action is running. A result has not been recorded yet.";
+  }
+  if (canonical === "action-succeeded") {
+    if (!surface || !["automations", "activity"].includes(surface)) return undefined;
+    return "A recorded demo action succeeded. Review its result in Activity.";
+  }
+  if (canonical === "action-recoverable-failure") {
+    if (!surface || !["automations", "activity"].includes(surface)) return undefined;
     return "One prepared action failed safely and can be retried. No provider state changed.";
   }
   if (scenario === "privacy-paused") {
@@ -372,7 +438,7 @@ const connectionSeed: ConnectionRecord[] = [
     ],
     lastSuccessfulSyncAt: "2026-07-24T18:40:00+05:30",
     freshness: "stale",
-    dependentFeatures: ["Knowledge", "Notes", "Class preparation"],
+    dependentFeatures: ["Knowledge", "Nexus Notes", "Class preparation"],
     dependentAutomationIds: ["automation-class-pack"],
     permissionSummary: "Read only from three selected demo pages.",
     retentionSummary: "Extracted note metadata retained for 30 days.",
@@ -525,7 +591,7 @@ const permissionSeed: PermissionGrant[] = [
     modelUse: "allowed-for-purpose",
     notificationsAllowed: false,
     actionAuthority: "prepare",
-    dependentFeatures: ["Knowledge", "Notes"],
+    dependentFeatures: ["Knowledge", "Nexus Notes"],
     dependentAutomations: ["Class preparation pack"],
     sensitive: true,
     status: "reduced",
@@ -775,7 +841,7 @@ const activitySeed: ActivityEvent[] = [
     type: "prepared-action",
     title: "Prepared a Machine Learning note",
     summary: "Created a local draft from two cited course sources.",
-    source: "Notes",
+    source: "Nexus Notes",
     actor: { kind: "nexus", label: "NEXUS note preparation" },
     requiredAuthority: "prepare",
     grantedAuthority: "prepare",
@@ -864,6 +930,7 @@ function clone<T>(value: T): T {
 export function createPhase3FixtureState(
   scenario: NexusScenario,
 ): Phase3FixtureState {
+  const canonical = canonicalScenario(scenario);
   const state: Phase3FixtureState = {
     scenario,
     observationPaused: false,
@@ -878,7 +945,7 @@ export function createPhase3FixtureState(
     preferences: clone(preferencesSeed),
   };
 
-  if (scenario === "first-use" || scenario === "loading") {
+  if (["first-use", "no-connections", "empty", "loading"].includes(canonical)) {
     state.automations = [];
     state.connections = [];
     state.permissions = [];
@@ -886,7 +953,7 @@ export function createPhase3FixtureState(
     state.activity = [];
   }
 
-  if (scenario === "partial-connections") {
+  if (canonical === "partial-connections") {
     state.connections = state.connections.filter(
       (connection) => connection.id !== "connection-notion",
     );
@@ -895,7 +962,7 @@ export function createPhase3FixtureState(
     );
   }
 
-  if (scenario === "connection-stale") {
+  if (canonical === "stale-source") {
     state.connections = state.connections.map((connection) =>
       connection.id === "connection-notion"
         ? { ...connection, status: "reconnect-required" }
@@ -912,7 +979,7 @@ export function createPhase3FixtureState(
     );
   }
 
-  if (scenario === "permission-denied") {
+  if (canonical === "permission-revoked") {
     state.permissions = state.permissions.map((permission) =>
       permission.id === "permission-calendar-read"
         ? {
@@ -963,7 +1030,35 @@ export function createPhase3FixtureState(
     );
   }
 
-  if (scenario === "offline") {
+  if (canonical === "rate-limited") {
+    state.connections = state.connections.map((connection) =>
+      connection.id === "connection-calendar"
+        ? {
+            ...connection,
+            status: "stale",
+            freshness: "stale",
+            healthDetail:
+              "Live refresh is temporarily limited. Last successful sync remains visible.",
+          }
+        : connection,
+    );
+  }
+
+  if (canonical === "error") {
+    state.connections = state.connections.map((connection) =>
+      connection.id === "connection-notion"
+        ? {
+            ...connection,
+            status: "reconnect-required",
+            freshness: "stale",
+            healthDetail:
+              "The latest refresh failed. Last-known records remain available.",
+          }
+        : connection,
+    );
+  }
+
+  if (canonical === "offline") {
     state.connections = state.connections.map((connection) => ({
       ...connection,
       status: "offline",
@@ -972,12 +1067,89 @@ export function createPhase3FixtureState(
     }));
   }
 
-  if (scenario === "action-failed") {
+  if (canonical === "action-recoverable-failure") {
     state.automations = state.automations.map((automation) =>
       automation.id === "automation-deadline-focus"
         ? { ...automation, status: "needs-attention" }
         : automation,
     );
+  }
+
+  if (
+    ["action-pending", "action-running", "action-succeeded"].includes(canonical)
+  ) {
+    const outcome =
+      canonical === "action-pending"
+        ? ("pending-approval" as const)
+        : canonical === "action-running"
+          ? ("running" as const)
+          : ("succeeded" as const);
+    state.automations = state.automations.map((automation, index) =>
+      index === 0
+        ? {
+            ...automation,
+            runHistory: [
+              {
+                id: `run-${canonical}`,
+                automationId: automation.id,
+                startedAt: "2026-07-25T09:18:00+05:30",
+                outcome,
+                summary:
+                  canonical === "action-pending"
+                    ? "Prepared and waiting for explicit approval."
+                    : canonical === "action-running"
+                      ? "Approved; waiting for a recorded result."
+                      : "Recorded result confirms the deterministic action succeeded.",
+                authorityUsed: canonical === "action-pending" ? "prepare" : "ask",
+                reversible: canonical === "action-succeeded",
+              },
+              ...automation.runHistory,
+            ],
+          }
+        : automation,
+    );
+    state.activity.unshift({
+      id: `activity-${canonical}`,
+      occurredAt: "2026-07-25T09:18:00+05:30",
+      dateLabel: "Today",
+      type:
+        canonical === "action-pending"
+          ? "prepared-action"
+          : "approved-action",
+      title:
+        canonical === "action-pending"
+          ? "Focus block awaiting approval"
+          : canonical === "action-running"
+            ? "Focus block action running"
+            : "Focus block recorded successfully",
+      summary:
+        canonical === "action-pending"
+          ? "Nothing changes until the user confirms."
+          : canonical === "action-running"
+            ? "No success is claimed before a result is recorded."
+            : "The deterministic result is the source of truth.",
+      source: "Automations",
+      actor: { kind: "nexus", label: "NEXUS policy" },
+      requiredAuthority: "ask",
+      grantedAuthority:
+        canonical === "action-pending" ? "prepare" : "ask",
+      outcome:
+        canonical === "action-pending"
+          ? "pending"
+          : canonical === "action-running"
+            ? "running"
+            : "success",
+      evidence: [],
+      result:
+        canonical === "action-succeeded"
+          ? "Recorded deterministic result: focus block prepared."
+          : "No completed result recorded yet.",
+      reversible: canonical === "action-succeeded",
+      reversalState:
+        canonical === "action-succeeded" ? "available" : "not-available",
+      relatedHref: "/app/automations",
+      technicalDetail: `phase4:${canonical}`,
+    });
   }
 
   if (scenario === "privacy-paused") {

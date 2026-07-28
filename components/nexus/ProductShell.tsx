@@ -5,11 +5,17 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { GlobalSearch } from "./GlobalSearch";
+import { ProductIcon } from "./ProductIcon";
 import { ProductLandingCubeBackdrop } from "./ProductLandingCubeBackdrop";
+import { QuickCapture } from "./QuickCapture";
 import {
   parseNexusScenario,
   scenarioHref,
 } from "@/lib/mocks/phase2-fixtures";
+import {
+  canonicalScenario,
+  stateDimensionsForScenario,
+} from "@/lib/domain/state-coverage";
 
 const focusModeCookie = "nexus-focus-mode";
 
@@ -57,7 +63,7 @@ function BrandLockup() {
           src="/nexus-logo.svg"
           alt=""
           fill
-          sizes="42px"
+          sizes="18px"
           priority
           unoptimized
         />
@@ -82,6 +88,8 @@ export function ProductShell({
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
   const [focusMode, setFocusMode] = useState(initialFocusMode);
   const [searchOpen, setSearchOpen] = useState(false);
+  const canonical = canonicalScenario(scenario);
+  const productState = stateDimensionsForScenario(scenario);
   const shellClassName = [
     "product-shell",
     sidebarMinimized ? "is-sidebar-minimized" : "",
@@ -90,13 +98,25 @@ export function ProductShell({
     .filter(Boolean)
     .join(" ");
   const shellState =
-    scenario === "privacy-paused"
+    canonical === "privacy-paused"
       ? { label: "Privacy paused", detail: "0 new signals" }
-      : scenario === "offline"
+      : canonical === "offline"
         ? { label: "Offline", detail: "Prepared state" }
-        : scenario === "permission-denied"
+        : canonical === "permission-revoked"
           ? { label: "Limited", detail: "Permission blocked" }
-          : { label: "Observing", detail: "3 live signals" };
+          : canonical === "no-connections"
+            ? { label: "Manual", detail: "No connections" }
+            : canonical === "degraded-ai"
+              ? { label: "Degraded", detail: "Manual tools ready" }
+              : productState.action === "pending-approval"
+                ? { label: "Approval", detail: "Action pending" }
+                : productState.action === "running"
+                  ? { label: "Acting", detail: "Waiting for result" }
+                  : productState.action === "succeeded"
+                    ? { label: "Success", detail: "Result recorded" }
+                    : productState.source === "rate-limited"
+                      ? { label: "Limited", detail: "Last-known data" }
+        : { label: "Observing", detail: "3 live signals" };
 
   const toggleFocusMode = () => {
     const nextFocusMode = !focusMode;
@@ -210,9 +230,7 @@ export function ProductShell({
           title={sidebarMinimized ? "Dive into the technicals" : undefined}
         >
           <span className="technicals-glyph" aria-hidden="true">
-            <i />
-            <i />
-            <i />
+            <ProductIcon name="code-sandbox" size={18} />
           </span>
           <span>
             <b>Dive into the technicals</b>
@@ -328,6 +346,7 @@ export function ProductShell({
         open={searchOpen}
         onOpenChange={setSearchOpen}
       />
+      <QuickCapture key={scenario} scenario={scenario} />
     </div>
   );
 }

@@ -64,7 +64,7 @@ Add fully interactive mock screens for:
 - Insights
 - NEXUS assistant
 - Knowledge
-- Notes
+- Nexus Notes
 - Search
 
 Include:

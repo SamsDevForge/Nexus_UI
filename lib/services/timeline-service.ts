@@ -1,5 +1,7 @@
 import type {
+  EventCapturePreview,
   NexusScenario,
+  TimelineEntry,
   TimelineSnapshot,
 } from "@/lib/domain/contracts";
 
@@ -8,6 +10,10 @@ export interface TimelineService {
     scenario: NexusScenario,
     selectedDay?: string,
   ): Promise<TimelineSnapshot>;
+  scheduleManualEvent(
+    scenario: NexusScenario,
+    preview: EventCapturePreview,
+  ): Promise<TimelineEntry>;
   resolveSuggestion(
     scenario: NexusScenario,
     entryId: string,

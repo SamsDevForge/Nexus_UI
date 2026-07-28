@@ -8,6 +8,9 @@ import type {
 } from "@/lib/domain/contracts";
 import { searchService } from "@/lib/mocks/mock-phase2-services";
 import { scenarioHref } from "@/lib/mocks/phase2-fixtures";
+import { InterfaceAssetIcon } from "@/components/nexus/InterfaceAssetIcon";
+import { NexusNotesMark } from "@/components/nexus/NexusNotesMark";
+import { ProductIcon } from "@/components/nexus/ProductIcon";
 
 export function GlobalSearch({
   scenario,
@@ -169,7 +172,35 @@ export function GlobalSearch({
                 onOpenChange(false);
               }}
             >
-              <span className={`command-result-type is-${result.type}`} aria-hidden="true" />
+              {result.type === "note" ? (
+                <NexusNotesMark
+                  className="command-result-type is-note"
+                  size={24}
+                />
+              ) : result.type === "email-derived" ? (
+                <InterfaceAssetIcon
+                  kind="email"
+                  className="command-result-type is-email-derived"
+                  size={24}
+                />
+              ) : result.type === "knowledge" ? (
+                <InterfaceAssetIcon
+                  kind="file"
+                  className="command-result-type is-knowledge"
+                  size={24}
+                />
+              ) : result.type === "event" ? (
+                <ProductIcon
+                  name="date-search"
+                  className="command-result-type is-event"
+                  size={24}
+                />
+              ) : (
+                <span
+                  className={`command-result-type is-${result.type}`}
+                  aria-hidden="true"
+                />
+              )}
               <span>
                 <b>{result.title}</b>
                 <small>{result.excerpt}</small>

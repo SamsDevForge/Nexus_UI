@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { TODAY_SCENARIOS } from "@/lib/mocks/today-fixtures";
 import { scenarioHref } from "@/lib/mocks/phase2-fixtures";
+import {
+  PHASE4_SCENARIO_BY_STATE,
+  ROUTE_STATE_COVERAGE,
+} from "@/lib/domain/state-coverage";
 
 export const metadata: Metadata = {
   title: "Technicals",
@@ -12,7 +16,7 @@ export const metadata: Metadata = {
 const implementationFacts = [
   {
     label: "Decision data",
-    value: "Thirteen typed snapshots",
+    value: "Separate state dimensions",
     detail: "Provider-neutral",
   },
   {
@@ -23,7 +27,7 @@ const implementationFacts = [
   {
     label: "Live connections",
     value: "Not connected yet",
-    detail: "Phase 3 mock boundary",
+    detail: "Phase 4 mock boundary",
   },
   {
     label: "External actions",
@@ -141,6 +145,103 @@ export default function TechnicalsPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="scenario-lab" aria-labelledby="coverage-matrix-heading">
+        <div className="technical-section-heading">
+          <div>
+            <p className="section-kicker">Phase 4 coverage</p>
+            <h2 id="coverage-matrix-heading">Route-to-state applicability matrix</h2>
+          </div>
+          <span>{ROUTE_STATE_COVERAGE.length} product experiences</span>
+        </div>
+        <p className="technical-boundary-note">
+          Each row separates applicable state coverage from intentionally
+          non-applicable conditions. Implemented states exactly cover the
+          applicable cells.
+        </p>
+        <div
+          className="state-coverage-table"
+          role="table"
+          aria-label="Phase 4 state coverage"
+        >
+          <div className="state-coverage-header" role="row">
+            <span role="columnheader">Route</span>
+            <span role="columnheader">Applicable and implemented</span>
+            <span role="columnheader">Boundary and recovery</span>
+          </div>
+          {ROUTE_STATE_COVERAGE.map((entry) => (
+            <div className="state-coverage-row" role="row" key={entry.route}>
+              <span role="cell">
+                <b>{entry.label}</b>
+                <code>{entry.route}</code>
+              </span>
+              <span role="cell">
+                <small>
+                  {entry.implemented.length}/{entry.applicable.length} implemented
+                </small>
+                <span className="state-coverage-chips">
+                  {entry.applicable.map((state) => (
+                    <Link
+                      key={state}
+                      href={scenarioHref(
+                        entry.route,
+                        PHASE4_SCENARIO_BY_STATE[state],
+                      )}
+                    >
+                      {state}
+                    </Link>
+                  ))}
+                </span>
+              </span>
+              <span role="cell">
+                <b>{entry.service}</b>
+                <p>{entry.recovery}</p>
+                {Object.keys(entry.nonApplicable).length ? (
+                  <details>
+                    <summary>Why some states do not apply</summary>
+                    {Object.entries(entry.nonApplicable).map(([state, reason]) => (
+                      <p key={state}>
+                        <strong>{state}</strong> · {reason}
+                      </p>
+                    ))}
+                  </details>
+                ) : null}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="scenario-lab" aria-labelledby="capture-boundary-heading">
+        <div className="technical-section-heading">
+          <div>
+            <p className="section-kicker">Manual input boundary</p>
+            <h2 id="capture-boundary-heading">
+              Quick Capture composes four existing services
+            </h2>
+          </div>
+          <span>Session-only · plain text · no clipboard read</span>
+        </div>
+        <div className="technical-permission-model">
+          {[
+            "NotesService",
+            "TimelineService",
+            "SettingsService",
+            "ActivityService",
+          ].map((service, index) => (
+            <div key={service}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <b>{service}</b>
+            </div>
+          ))}
+        </div>
+        <p className="technical-boundary-note">
+          The user pastes text manually. Deterministic parsing prepares an
+          editable preview, ambiguous scheduling details stay unresolved, and
+          an event requires explicit confirmation. Captured items reset with
+          the scenario or browser session.
+        </p>
       </section>
 
       <section className="scenario-lab" aria-labelledby="control-services-heading">

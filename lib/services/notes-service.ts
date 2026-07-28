@@ -1,5 +1,6 @@
 import type {
   NoteArtifact,
+  NoteCapturePreview,
   NoteReviewState,
   NotesSnapshot,
   NexusScenario,
@@ -7,6 +8,10 @@ import type {
 
 export interface NotesService {
   getNotes(scenario: NexusScenario): Promise<NotesSnapshot>;
+  createManualCapture(
+    scenario: NexusScenario,
+    preview: NoteCapturePreview,
+  ): Promise<NoteArtifact>;
   updateNote(
     noteId: string,
     update: { body?: string; state?: NoteReviewState },

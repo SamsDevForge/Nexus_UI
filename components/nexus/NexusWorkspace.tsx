@@ -92,7 +92,11 @@ export function NexusWorkspace({
         notice={initialSnapshot.notice}
         tone={initialSnapshot.viewState === "error" ? "danger" : "warning"}
       />
-      <BlockingState state={initialSnapshot.viewState} noun="assistant workspace" />
+      <BlockingState
+        state={initialSnapshot.viewState}
+        noun="assistant workspace"
+        scenario={initialSnapshot.scenario}
+      />
 
       {selected ? (
         <>
@@ -192,6 +196,10 @@ export function NexusWorkspace({
                       <button className="primary-button" type="button" onClick={() => resolve("retry")}>
                         Retry safely
                       </button>
+                    ) : selected.toolResult?.status === "running" ? (
+                      <span className="mock-boundary-badge">Running · result pending</span>
+                    ) : selected.toolResult?.status === "succeeded" ? (
+                      <span className="mock-boundary-badge">Succeeded · result recorded</span>
                     ) : (
                       <>
                         <button className="primary-button" type="button" onClick={() => resolve("approve")}>

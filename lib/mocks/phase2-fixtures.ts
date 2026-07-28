@@ -18,6 +18,10 @@ import type {
   UnifiedSearchResult,
   UnifiedSearchResultType,
 } from "@/lib/domain/contracts";
+import {
+  canonicalScenario,
+  stateDimensionsForScenario,
+} from "@/lib/domain/state-coverage";
 
 export const DEFAULT_NEXUS_SCENARIO: NexusScenario = "rain-and-traffic";
 
@@ -25,14 +29,25 @@ export function parseNexusScenario(value?: string | string[]): NexusScenario {
   const candidate = Array.isArray(value) ? value[0] : value;
   const scenarios: NexusScenario[] = [
     "first-use",
+    "no-connections",
     "loading",
+    "empty",
+    "error",
     "student-normal-day",
     "rain-and-traffic",
     "deadline-risk",
     "partial-connections",
+    "rate-limited",
+    "stale-source",
     "connection-stale",
+    "permission-revoked",
     "permission-denied",
     "offline",
+    "degraded-ai",
+    "action-pending",
+    "action-running",
+    "action-succeeded",
+    "action-recoverable-failure",
     "action-failed",
     "privacy-paused",
     "reduced-motion",
@@ -48,12 +63,13 @@ export function scenarioHref(path: string, scenario: NexusScenario) {
 }
 
 function viewStateForScenario(scenario: NexusScenario): CoreViewState {
-  if (scenario === "loading") return "loading";
-  if (scenario === "first-use") return "empty";
-  if (scenario === "connection-stale") return "stale";
-  if (scenario === "permission-denied") return "permission-denied";
-  if (scenario === "offline") return "offline";
-  if (scenario === "action-failed") return "error";
+  const canonical = canonicalScenario(scenario);
+  if (canonical === "loading") return "loading";
+  if (["first-use", "no-connections", "empty"].includes(canonical)) return "empty";
+  if (["stale-source", "rate-limited"].includes(canonical)) return "stale";
+  if (canonical === "permission-revoked") return "permission-denied";
+  if (canonical === "offline") return "offline";
+  if (["error", "action-recoverable-failure"].includes(canonical)) return "error";
   return "populated";
 }
 
@@ -128,12 +144,13 @@ const baseSourceHealth: SourceHealth[] = [
 ];
 
 function sourceHealthForScenario(scenario: NexusScenario): SourceHealth[] {
-  if (scenario === "permission-denied") {
+  const canonical = canonicalScenario(scenario);
+  if (canonical === "permission-revoked") {
     return baseSourceHealth.map((health) =>
       health.id === "health-calendar"
         ? {
             ...health,
-            state: "permission-denied",
+            state: "revoked",
             freshness: "disconnected",
             detail: "Calendar read access is paused.",
           }
@@ -141,7 +158,7 @@ function sourceHealthForScenario(scenario: NexusScenario): SourceHealth[] {
     );
   }
 
-  if (scenario === "connection-stale") {
+  if (canonical === "stale-source") {
     return baseSourceHealth.map((health) =>
       health.id === "health-knowledge"
         ? {
@@ -154,7 +171,42 @@ function sourceHealthForScenario(scenario: NexusScenario): SourceHealth[] {
     );
   }
 
-  if (scenario === "offline") {
+  if (canonical === "rate-limited") {
+    return baseSourceHealth.map((health) =>
+      health.id === "health-route"
+        ? {
+            ...health,
+            state: "rate-limited",
+            freshness: "stale",
+            detail: "Live route refresh is temporarily limited. Last updated at 9:07 AM.",
+          }
+        : health,
+    );
+  }
+
+  if (canonical === "error") {
+    return baseSourceHealth.map((health) =>
+      health.id === "health-knowledge"
+        ? {
+            ...health,
+            state: "error",
+            freshness: "stale",
+            detail: "Knowledge refresh failed. Last-known local content remains available.",
+          }
+        : health,
+    );
+  }
+
+  if (canonical === "no-connections") {
+    return baseSourceHealth.map((health) => ({
+      ...health,
+      state: "disconnected",
+      freshness: "disconnected",
+      detail: "No provider is connected. Manual NEXUS content remains available.",
+    }));
+  }
+
+  if (canonical === "offline") {
     return baseSourceHealth.map((health) => ({
       ...health,
       state: "offline",
@@ -167,20 +219,45 @@ function sourceHealthForScenario(scenario: NexusScenario): SourceHealth[] {
 }
 
 function noticeForScenario(scenario: NexusScenario) {
-  if (scenario === "connection-stale") {
+  const canonical = canonicalScenario(scenario);
+  if (canonical === "stale-source") {
     return "Knowledge material is 14 hours behind. Calendar and local notes remain usable.";
   }
-  if (scenario === "partial-connections") {
+  if (canonical === "partial-connections") {
     return "Calendar and local notes are available. Email and selected course pages remain disconnected.";
   }
-  if (scenario === "permission-denied") {
-    return "Calendar access is paused. NEXUS will not infer missing event times.";
+  if (canonical === "no-connections") {
+    return "No providers are connected. Manual notes and Quick Capture remain available.";
   }
-  if (scenario === "offline") {
+  if (canonical === "empty") {
+    return "Nothing matches this view yet. Existing connections and controls remain available.";
+  }
+  if (canonical === "rate-limited") {
+    return "Live route refresh is temporarily limited. Last-known data from 9:07 AM remains inspectable.";
+  }
+  if (canonical === "error") {
+    return "One source could not refresh. Last-known content remains available and recovery stays local to that source.";
+  }
+  if (canonical === "permission-revoked") {
+    return "Calendar permission was revoked. Dependent actions are blocked until the minimum grant is restored.";
+  }
+  if (canonical === "offline") {
     return "Offline: showing local results prepared at 8:54 AM. Live sources are unavailable.";
   }
-  if (scenario === "action-failed") {
-    return "A prepared demo action failed safely. No calendar or provider state changed.";
+  if (canonical === "degraded-ai") {
+    return "Generated assistance is unavailable. Deterministic context, manual notes, search, and Quick Capture still work.";
+  }
+  if (canonical === "action-pending") {
+    return "One prepared action is awaiting approval. Nothing changes until you confirm it.";
+  }
+  if (canonical === "action-running") {
+    return "The approved demo action is running. Its result has not been recorded yet.";
+  }
+  if (canonical === "action-succeeded") {
+    return "The recorded demo action succeeded. Activity contains the completed result.";
+  }
+  if (canonical === "action-recoverable-failure") {
+    return "A prepared demo action failed safely and can be retried. No provider state changed.";
   }
   if (scenario === "privacy-paused") {
     return "Privacy pause is active. NEXUS is not reading new provider context.";
@@ -354,6 +431,7 @@ export function buildTimelineSnapshot(
   scenario: NexusScenario,
   selectedDay = "2026-07-25",
 ): TimelineSnapshot {
+  const canonical = canonicalScenario(scenario);
   const viewState = viewStateForScenario(scenario);
   const hideSchedule =
     viewState === "loading" ||
@@ -365,7 +443,7 @@ export function buildTimelineSnapshot(
     : timelineGroups.map((group) => ({
         ...group,
         entries: group.entries.map((entry) => {
-          if (scenario === "student-normal-day" && entry.id === "timeline-campus-travel") {
+          if (canonical === "student-normal-day" && entry.id === "timeline-campus-travel") {
             return {
               ...entry,
               timeLabel: "9:30",
@@ -374,8 +452,41 @@ export function buildTimelineSnapshot(
               confidence: 0.94,
             };
           }
-          if (scenario === "offline") {
+          if (canonical === "offline") {
             return { ...entry, freshness: "stale" as const };
+          }
+          if (entry.id === "timeline-networks-focus") {
+            const action = stateDimensionsForScenario(scenario).action;
+            if (action === "running") {
+              return {
+                ...entry,
+                status: "running" as const,
+                proposedAction: {
+                  ...entry.proposedAction!,
+                  status: "running" as const,
+                },
+              };
+            }
+            if (action === "succeeded") {
+              return {
+                ...entry,
+                status: "succeeded" as const,
+                proposedAction: {
+                  ...entry.proposedAction!,
+                  status: "succeeded" as const,
+                },
+              };
+            }
+            if (action === "failed-recoverably") {
+              return {
+                ...entry,
+                status: "failed" as const,
+                proposedAction: {
+                  ...entry.proposedAction!,
+                  status: "failed-recoverably" as const,
+                },
+              };
+            }
           }
           return entry;
         }),
@@ -383,12 +494,13 @@ export function buildTimelineSnapshot(
 
   return {
     scenario,
+    state: stateDimensionsForScenario(scenario),
     viewState,
     currentTime: "2026-07-25T09:08:00+05:30",
     currentTimeLabel: "9:08 AM",
     selectedDay,
     summary:
-      scenario === "deadline-risk"
+      canonical === "deadline-risk"
         ? "One protected block keeps the Networks assignment out of the danger zone."
         : "Confirmed commitments, preparation and proposed changes in one time order.",
     groups,
@@ -510,16 +622,18 @@ const insightHistory: RankedInsight[] = [
 ];
 
 export function buildInsightsSnapshot(scenario: NexusScenario): InsightsSnapshot {
+  const canonical = canonicalScenario(scenario);
   const viewState = viewStateForScenario(scenario);
   const hideInsights =
     viewState === "loading" ||
     viewState === "empty" ||
     viewState === "permission-denied";
   const primary =
-    scenario === "deadline-risk" ? deadlineInsight() : departureInsight();
+    canonical === "deadline-risk" ? deadlineInsight() : departureInsight();
 
   return {
     scenario,
+    state: stateDimensionsForScenario(scenario),
     viewState,
     summary: hideInsights
       ? "NEXUS needs permitted, current sources before ranking recommendations."
@@ -669,6 +783,7 @@ const conversationScripts = [
 export function buildNexusWorkspaceSnapshot(
   scenario: NexusScenario,
 ): NexusWorkspaceSnapshot {
+  const canonical = canonicalScenario(scenario);
   const viewState = viewStateForScenario(scenario);
   const hideConversation =
     viewState === "loading" ||
@@ -677,7 +792,50 @@ export function buildNexusWorkspaceSnapshot(
   const scripts = hideConversation
     ? []
     : conversationScripts.map((script) => {
-        if (scenario === "action-failed" && script.id === "script-focus") {
+        if (
+          ["action-pending", "action-running", "action-succeeded"].includes(
+            canonical,
+          ) &&
+          script.id === "script-focus"
+        ) {
+          const status =
+            canonical === "action-running"
+              ? ("running" as const)
+              : canonical === "action-succeeded"
+                ? ("succeeded" as const)
+                : ("not-run" as const);
+          return {
+            ...script,
+            proposal: script.proposal
+              ? {
+                  ...script.proposal,
+                  status:
+                    canonical === "action-running"
+                      ? ("running" as const)
+                      : canonical === "action-succeeded"
+                        ? ("succeeded" as const)
+                        : ("pending-approval" as const),
+                }
+              : undefined,
+            toolResult: {
+              id: `tool-result-focus-${canonical}`,
+              proposalId: focusProposal.id,
+              status,
+              recordedAt: "2026-07-25T09:12:02+05:30",
+              summary:
+                canonical === "action-pending"
+                  ? "No tool was run. Explicit approval is still required."
+                  : canonical === "action-running"
+                    ? "The action is running. No completed result exists yet."
+                    : "The recorded deterministic result confirms success.",
+              reversible: canonical === "action-succeeded",
+            },
+          };
+        }
+        if (
+          canonical === "action-recoverable-failure" &&
+          script.id === "script-focus"
+        ) {
           return {
             ...script,
             messages: script.messages.map((message) =>
@@ -705,9 +863,10 @@ export function buildNexusWorkspaceSnapshot(
 
   return {
     scenario,
+    state: stateDimensionsForScenario(scenario),
     viewState,
     contextSummary:
-      scenario === "deadline-risk"
+      canonical === "deadline-risk"
         ? "Packet routing analysis is 42% complete, due Monday, and has one viable 90-minute block today."
         : "A 10:00 AM ML lecture, a rain-affected commute, and one Networks deadline shape the day.",
     contextSignals: hideConversation
@@ -732,7 +891,7 @@ export function buildNexusWorkspaceSnapshot(
             label: "Route",
             value: "+20 min",
             source: "Route estimate",
-            freshness: scenario === "offline" ? "stale" : "live",
+            freshness: canonical === "offline" ? "stale" : "live",
           },
         ],
     threads: hideConversation
@@ -752,7 +911,10 @@ export function buildNexusWorkspaceSnapshot(
           },
         ],
     scripts,
-    selectedScriptId: scenario === "deadline-risk" ? "script-focus" : "script-departure",
+    selectedScriptId:
+      ["deadline-risk", "action-pending", "action-running", "action-succeeded", "action-recoverable-failure"].includes(canonical)
+        ? "script-focus"
+        : "script-departure",
     sourceHealth: sourceHealthForScenario(scenario),
     notice: noticeForScenario(scenario),
   };
@@ -764,7 +926,7 @@ const knowledgeDocuments: KnowledgeDocument[] = [
     title: "ML Systems · Lecture 06",
     course: "Machine Learning Systems",
     sourceId: "source-internal",
-    sourceLabel: "Internal NEXUS notes",
+    sourceLabel: "Nexus Notes",
     kind: "internal-note",
     updatedAt: "2026-07-24T18:40:00+05:30",
     freshness: "fresh",
@@ -826,36 +988,54 @@ const knowledgeDocuments: KnowledgeDocument[] = [
 ];
 
 export function buildKnowledgeSnapshot(scenario: NexusScenario): KnowledgeSnapshot {
+  const canonical = canonicalScenario(scenario);
   const viewState = viewStateForScenario(scenario);
+  const noConnections = canonical === "no-connections";
   const hideKnowledge =
     viewState === "loading" ||
-    viewState === "empty" ||
+    (viewState === "empty" && !noConnections) ||
     viewState === "permission-denied";
   const documents = hideKnowledge
     ? []
-    : knowledgeDocuments.map((document) =>
-        scenario === "connection-stale" && document.sourceId === "source-notion"
+    : knowledgeDocuments
+        .filter((document) => !noConnections || document.kind === "internal-note")
+        .map((document) =>
+        canonical === "stale-source" && document.sourceId === "source-notion"
           ? { ...document, freshness: "stale" as const }
-          : scenario === "offline"
+          : canonical === "offline"
             ? { ...document, freshness: "stale" as const }
             : document,
       );
 
   return {
     scenario,
-    viewState,
+    state: stateDimensionsForScenario(scenario),
+    viewState: noConnections ? "populated" : viewState,
     summary: hideKnowledge
       ? "Knowledge retrieval starts only after source material is permitted."
       : "Permitted course material, recent notes and related evidence in one view.",
     sources: hideKnowledge
       ? []
-      : [
+      : noConnections
+        ? [
+            {
+              id: "source-internal",
+              name: "Nexus Notes",
+              kind: "internal-note",
+              status: "available",
+              freshness: "fresh",
+              permission: "Local demo content",
+              documentCount: documents.length,
+              detail: "Manual content remains available without provider connections.",
+            } as const,
+          ]
+        : [
           {
             id: "source-notion",
             name: "Notion demo",
             kind: "notion",
-            status: scenario === "connection-stale" ? "stale" : "available",
-            freshness: scenario === "connection-stale" ? "stale" : "fresh",
+            status: canonical === "stale-source" ? "stale" : "available",
+            freshness: canonical === "stale-source" ? "stale" : "fresh",
             permission: "Selected course pages",
             documentCount: 1,
             detail: "Future connector shape; no account is connected.",
@@ -865,7 +1045,7 @@ export function buildKnowledgeSnapshot(scenario: NexusScenario): KnowledgeSnapsh
             name: "Google Drive demo",
             kind: "drive",
             status: "available",
-            freshness: scenario === "offline" ? "stale" : "fresh",
+            freshness: canonical === "offline" ? "stale" : "fresh",
             permission: "Selected document previews",
             documentCount: 1,
             detail: "Deterministic document fixture.",
@@ -875,14 +1055,14 @@ export function buildKnowledgeSnapshot(scenario: NexusScenario): KnowledgeSnapsh
             name: "Email attachment demo",
             kind: "email-attachment",
             status: "available",
-            freshness: scenario === "offline" ? "stale" : "fresh",
+            freshness: canonical === "offline" ? "stale" : "fresh",
             permission: "Attachment excerpt only",
             documentCount: 1,
             detail: "No mailbox access exists.",
           },
           {
             id: "source-internal",
-            name: "Internal NEXUS notes",
+            name: "Nexus Notes",
             kind: "internal-note",
             status: "available",
             freshness: "fresh",
@@ -1011,19 +1191,26 @@ const notes: NoteArtifact[] = [
 ];
 
 export function buildNotesSnapshot(scenario: NexusScenario): NotesSnapshot {
+  const canonical = canonicalScenario(scenario);
+  const noConnections = canonical === "no-connections";
   const viewState = viewStateForScenario(scenario);
   const hideNotes =
     viewState === "loading" ||
-    viewState === "empty" ||
+    (viewState === "empty" && !noConnections) ||
     viewState === "permission-denied";
 
   return {
     scenario,
-    viewState,
+    state: stateDimensionsForScenario(scenario),
+    viewState: noConnections ? "populated" : viewState,
     summary: hideNotes
       ? "NEXUS cannot prepare factual notes without permitted source material."
       : "Review source-grounded drafts before any future provider preparation.",
-    notes: hideNotes ? [] : notes,
+    notes: hideNotes
+      ? []
+      : noConnections
+        ? notes.filter((note) => note.citations.length === 0)
+        : notes,
     sourceHealth: sourceHealthForScenario(scenario),
     notice: noticeForScenario(scenario),
   };
@@ -1083,7 +1270,7 @@ const unifiedResults: UnifiedSearchResult[] = [
     type: "knowledge",
     title: "ML Systems · Lecture 06",
     excerpt: "Serving-time pipelines, skew checks, and rollback thresholds.",
-    source: "Internal NEXUS notes",
+    source: "Nexus Notes",
     freshness: "fresh",
     updatedAt: "2026-07-24T18:40:00+05:30",
     href: "/app/knowledge",
@@ -1095,7 +1282,7 @@ const unifiedResults: UnifiedSearchResult[] = [
     type: "note",
     title: "Packet routing analysis",
     excerpt: "Draft structure, two citations, and three action items.",
-    source: "Internal NEXUS notes",
+    source: "Nexus Notes",
     freshness: "fresh",
     updatedAt: "2026-07-25T08:42:00+05:30",
     href: "/app/notes",
@@ -1217,11 +1404,12 @@ export function buildSearchResponse(
   query = "",
   filters: Partial<SearchFilters> = {},
 ): SearchResponse {
+  const canonical = canonicalScenario(scenario);
   const viewState = viewStateForScenario(scenario);
   const normalized = query.trim().toLowerCase();
   const selectedTypes = filters.types ?? [];
   const selectedSources = filters.sources ?? [];
-  const restrictedScenario = scenario === "permission-denied";
+  const restrictedScenario = canonical === "permission-revoked";
 
   let results = unifiedResults.filter((result) => {
     if (selectedTypes.length > 0 && !selectedTypes.includes(result.type)) return false;
@@ -1240,9 +1428,15 @@ export function buildSearchResponse(
 
   if (restrictedScenario) {
     results = unifiedResults.filter((result) => result.permission === "restricted");
-  } else if (scenario === "first-use" || scenario === "loading") {
+  } else if (["first-use", "empty", "loading"].includes(canonical)) {
     results = [];
-  } else if (scenario === "offline") {
+  } else if (canonical === "no-connections") {
+    results = results.filter((result) =>
+      ["note", "control"].includes(result.type),
+    );
+  } else if (canonical === "degraded-ai") {
+    results = results.filter((result) => result.type !== "conversation");
+  } else if (canonical === "offline") {
     results = results
       .filter((result) =>
         ["conversation", "knowledge", "note"].includes(result.type),
@@ -1263,7 +1457,8 @@ export function buildSearchResponse(
 
   return {
     scenario,
-    viewState,
+    state: stateDimensionsForScenario(scenario),
+    viewState: canonical === "no-connections" ? "populated" : viewState,
     query,
     results,
     recentSearches: [
@@ -1273,7 +1468,7 @@ export function buildSearchResponse(
     ],
     availableTypes,
     availableSources: [...new Set(unifiedResults.map((result) => result.source))],
-    localOnly: scenario === "offline",
+    localOnly: ["offline", "no-connections"].includes(canonical),
     notice: noticeForScenario(scenario),
   };
 }

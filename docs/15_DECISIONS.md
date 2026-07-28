@@ -160,7 +160,7 @@ rather than weakening its presence.
 
 ## D-020 — Phase 2 core screens use six provider-neutral services
 
-Timeline, Insights, NEXUS, Knowledge, Notes, and Search depend on
+Timeline, Insights, NEXUS, Knowledge, Nexus Notes, and Search depend on
 `TimelineService`, `InsightsService`, `NexusService`, `KnowledgeService`,
 `NotesService`, and `SearchService`. Their deterministic Phase 2 adapters share
 canonical contracts while keeping fixtures outside page and component modules.
@@ -179,11 +179,11 @@ without introducing persistence or backend state.
 The scenario control remains a prototype concern surfaced through Technicals.
 It is not a user preference or future production URL contract.
 
-## D-022 — Search is global and Notes is knowledge-adjacent
+## D-022 — Search is global and Nexus Notes is knowledge-adjacent
 
 Unified Search is available from every product route through `Ctrl/Cmd + K` and
 a dedicated `/app/search` experience instead of taking another permanent
-sidebar slot. Notes is discoverable from Knowledge, Search, and contextual
+sidebar slot. Nexus Notes is discoverable from Knowledge, Search, and contextual
 shortcuts without changing the locked daily-versus-control navigation groups.
 
 ## D-023 — Phase 3 controls share one provider-neutral policy model
@@ -210,3 +210,33 @@ The device preference is stored in a first-party cookie so server rendering can
 honour it before the product shell is produced. This avoids mounting WebGL,
 allocating a renderer, or briefly showing the cube when Focus mode was already
 enabled.
+
+## D-025 — Product glyphs use a native NEXUS geometry language
+
+Interface concepts use a shared semantic asset registry plus CSS-authored
+nodes, facets, rails, and signal geometry rather than emoji or letter
+placeholders. Provider marks appear only when provider identity matters: the
+supplied Google Drive and Notion vectors identify their corresponding sources.
+Internal concepts keep the shared ice-blue geometry language, while Nexus Notes
+uses its supplied stacked-network mark as a dedicated native feature identity.
+The supplied transfer, email, file, folder, date, technical, and save vectors
+represent their matching interface objects; the transfer mark rotates 180
+degrees when its meaning is upload. Folder marks identify grouped collections
+rather than individual files. Internet, GitHub, editor, music, and mobile-store
+assets remain registered for matching future surfaces and are not used as
+decoration on unrelated screens.
+
+The supplied NEXUS SVG remains the brand asset. Its transparent outer canvas is
+normalized to the complete cube bounds, and product chrome renders that full
+mark with its natural proportions, without zoom, blend, crop, or a glass tile.
+
+## D-026 — Quick Capture is manual, explicit, and session-bounded
+
+Quick Capture is a persistent manual-input bridge inside the product shell. It
+accepts user-pasted plain text from unconnected apps and prepares either a note
+or an editable event. It never reads the clipboard automatically, guesses
+ambiguous scheduling details, or bypasses action confirmation.
+
+Phase 4 routes captured items through the provider-neutral Notes, Timeline,
+Settings, and Activity boundaries. Results persist only for the active
+deterministic demo session. Durable storage begins in a later backend phase.

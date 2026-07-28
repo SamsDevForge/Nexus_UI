@@ -1,12 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import type {
   AuthorityLevel,
   CoreViewState,
   Evidence,
   FreshnessState,
   SourceHealth,
+  NexusScenario,
 } from "@/lib/domain/contracts";
+import { canonicalScenario } from "@/lib/domain/state-coverage";
+import { scenarioHref } from "@/lib/mocks/phase2-fixtures";
 
 const freshnessLabels: Record<FreshnessState, string> = {
   live: "Live",
@@ -20,11 +24,13 @@ export function PhaseHeader({
   title,
   summary,
   action,
+  mark,
 }: {
   kicker: string;
   title: string;
   summary: string;
   action?: React.ReactNode;
+  mark?: React.ReactNode;
 }) {
   return (
     <header className="phase2-heading">
@@ -33,7 +39,14 @@ export function PhaseHeader({
           <span aria-hidden="true" />
           {kicker}
         </p>
-        <h1>{title}</h1>
+        {mark ? (
+          <div className="phase2-title-lockup">
+            {mark}
+            <h1>{title}</h1>
+          </div>
+        ) : (
+          <h1>{title}</h1>
+        )}
         <p>{summary}</p>
       </div>
       {action ? <div className="phase2-heading-action">{action}</div> : null}
@@ -51,7 +64,9 @@ export function ScenarioBanner({
   if (!notice) return null;
   return (
     <div className={`phase2-notice is-${tone}`} role="status">
-      <span aria-hidden="true">{tone === "danger" ? "!" : "i"}</span>
+      <span className={`notice-glyph is-${tone}`} aria-hidden="true">
+        <i />
+      </span>
       <p>{notice}</p>
     </div>
   );
@@ -60,9 +75,11 @@ export function ScenarioBanner({
 export function BlockingState({
   state,
   noun,
+  scenario = "rain-and-traffic",
 }: {
   state: CoreViewState;
   noun: string;
+  scenario?: NexusScenario;
 }) {
   if (!["loading", "empty", "permission-denied"].includes(state)) return null;
 
@@ -79,27 +96,65 @@ export function BlockingState({
   }
 
   const denied = state === "permission-denied";
+  const canonical = canonicalScenario(scenario);
+  const noConnections = canonical === "no-connections";
+  const configuredEmpty = canonical === "empty";
   return (
     <section className="phase2-state" aria-labelledby={`${noun}-state-title`}>
-      <span className="phase2-state-glyph" aria-hidden="true">
-        {denied ? "×" : "+"}
+      <span
+        className={
+          denied
+            ? "phase2-state-glyph is-denied"
+            : "phase2-state-glyph is-empty"
+        }
+        aria-hidden="true"
+      >
+        <i />
+        <i />
+        <i />
       </span>
       <p className="section-kicker">
-        {denied ? "Permission boundary" : "No permitted sources yet"}
+        {denied
+          ? "Permission boundary"
+          : noConnections
+            ? "Manual tools remain available"
+            : configuredEmpty
+              ? "No items in this view"
+              : "No permitted sources yet"}
       </p>
       <h2 id={`${noun}-state-title`}>
         {denied
           ? `NEXUS cannot verify this ${noun}.`
-          : `Build your first ${noun} from one source.`}
+          : noConnections
+            ? `Use ${noun} without connecting another app.`
+            : configuredEmpty
+              ? `There is nothing to show in this ${noun} yet.`
+              : `Build your first ${noun} from one source.`}
       </h2>
       <p>
         {denied
           ? "Restore the minimum read permission to continue. Missing information will not be invented."
-          : "Calendar or permitted course material is enough to begin. Connections remain simulated in Phase 2."}
+          : noConnections
+            ? "Quick Capture and manual Nexus Notes remain available. Provider-derived content stays absent."
+            : configuredEmpty
+              ? "Your configuration is intact. Try another view or add something manually with Quick Capture."
+              : "Calendar or permitted course material is enough to begin. Connections remain simulated in Phase 2."}
       </p>
-      <button className="primary-button" type="button">
-        {denied ? "Review permission" : "See connection plan"}
-      </button>
+      <Link
+        className="primary-button"
+        href={scenarioHref(
+          denied ? "/app/settings/permissions" : "/app/connections",
+          scenario,
+        )}
+      >
+        {denied
+          ? "Review permission"
+          : noConnections
+            ? "Review connections"
+            : configuredEmpty
+              ? "Check sources"
+              : "See connection plan"}
+      </Link>
     </section>
   );
 }
@@ -140,7 +195,9 @@ export function MetaLine({
       </span>
       <span>{freshnessLabels[freshness]}</span>
       {typeof confidence === "number" ? (
-        <span>{Math.round(confidence * 100)}% confidence</span>
+        <span className="is-confidence">
+          <b>{Math.round(confidence * 100)}%</b> confidence
+        </span>
       ) : null}
       {authority ? <span>Authority: {authority}</span> : null}
     </div>

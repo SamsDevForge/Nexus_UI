@@ -1,12 +1,20 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { InterfaceAssetIcon } from "@/components/nexus/InterfaceAssetIcon";
+import { NexusNotesMark } from "@/components/nexus/NexusNotesMark";
+import {
+  ProductIcon,
+  timelineStatusIcon,
+} from "@/components/nexus/ProductIcon";
 import type {
   Evidence,
   FreshnessState,
   SystemState,
   TodaySnapshot,
 } from "@/lib/domain/contracts";
+import { scenarioHref } from "@/lib/mocks/phase2-fixtures";
 
 const systemLabels: Record<SystemState, string> = {
   dormant: "Dormant",
@@ -61,8 +69,11 @@ function StatusNotice({
 }) {
   return (
     <section className={`status-notice notice-${notice.tone}`} aria-live="polite">
-      <span className="notice-symbol" aria-hidden="true">
-        {notice.tone === "danger" ? "!" : "i"}
+      <span
+        className={`notice-symbol notice-glyph is-${notice.tone}`}
+        aria-hidden="true"
+      >
+        <i />
       </span>
       <div>
         <strong>{notice.title}</strong>
@@ -102,19 +113,37 @@ function LoadingToday() {
   );
 }
 
-function FirstUseState() {
-  const [message, setMessage] = useState("");
+function FirstUseState({ snapshot }: { snapshot: TodaySnapshot }) {
+  const noConnections = snapshot.state.configuration === "no-connections";
+  const configuredEmpty =
+    snapshot.state.configuration === "configured" &&
+    snapshot.state.data === "empty";
 
   return (
     <section className="full-state-panel" aria-labelledby="first-use-title">
       <div className="empty-core" aria-hidden="true">
         <span />
       </div>
-      <p className="section-kicker">Your context starts with one source</p>
-      <h2 id="first-use-title">Make Today useful in under a minute.</h2>
+      <p className="section-kicker">
+        {noConnections
+          ? "Manual input stays available"
+          : configuredEmpty
+            ? "Your configuration is ready"
+            : "Your context starts with one source"}
+      </p>
+      <h2 id="first-use-title">
+        {noConnections
+          ? "Capture what matters without a connection."
+          : configuredEmpty
+            ? "Nothing needs attention in Today yet."
+            : "Make Today useful in under a minute."}
+      </h2>
       <p>
-        Connect your calendar or add a timetable. NEXUS will only read the
-        schedule you approve and will begin in Suggest mode.
+        {noConnections
+          ? "Quick Capture and manual Nexus Notes still work. Provider-derived events and insights remain absent."
+          : configuredEmpty
+            ? "Your sources and controls remain available. Add a manual note or review another product view."
+            : "Connect your calendar or add a timetable. NEXUS will only read the schedule you approve and will begin in Suggest mode."}
       </p>
       <div className="state-steps" aria-label="Getting started">
         <span>
@@ -128,33 +157,29 @@ function FirstUseState() {
         </span>
       </div>
       <div className="state-actions">
-        <button
+        <Link
           className="primary-button"
-          type="button"
-          onClick={() => setMessage("Calendar connection is mocked in Phase 1.")}
+          href={scenarioHref("/app/connections", snapshot.scenario)}
         >
-          Connect calendar
-        </button>
-        <button
+          {configuredEmpty ? "Check sources" : "Review connections"}
+        </Link>
+        <Link
           className="quiet-button"
-          type="button"
-          onClick={() => setMessage("Timetable entry is mocked in Phase 1.")}
+          href={scenarioHref("/app/notes", snapshot.scenario)}
         >
-          Add timetable manually
-        </button>
+          Open Nexus Notes
+        </Link>
       </div>
-      {message ? <p className="inline-feedback">{message}</p> : null}
     </section>
   );
 }
 
-function PermissionState() {
-  const [message, setMessage] = useState("");
-
+function PermissionState({ scenario }: { scenario: TodaySnapshot["scenario"] }) {
   return (
     <section className="full-state-panel permission-panel" aria-labelledby="permission-title">
       <span className="permission-glyph" aria-hidden="true">
-        ×
+        <i />
+        <i />
       </span>
       <p className="section-kicker">Calendar access paused</p>
       <h2 id="permission-title">NEXUS cannot verify what’s next.</h2>
@@ -172,14 +197,12 @@ function PermissionState() {
           Create, move or delete events
         </span>
       </div>
-      <button
+      <Link
         className="primary-button"
-        type="button"
-        onClick={() => setMessage("Permission review opened in mock mode.")}
+        href={scenarioHref("/app/settings/permissions", scenario)}
       >
         Review permission
-      </button>
-      {message ? <p className="inline-feedback">{message}</p> : null}
+      </Link>
     </section>
   );
 }
@@ -328,7 +351,7 @@ function TodayDetails({ snapshot }: { snapshot: TodaySnapshot }) {
             <h2 id="next-event-heading">{snapshot.nextEvent?.title}</h2>
           </div>
           <span className="event-confirmed">
-            <i aria-hidden="true" /> Confirmed
+            <ProductIcon name="date-check" size={14} /> Confirmed
           </span>
         </div>
         <div className="event-route">
@@ -367,7 +390,11 @@ function TodayDetails({ snapshot }: { snapshot: TodaySnapshot }) {
             {snapshot.timeline.map((item) => (
               <article className="timeline-row" key={item.id}>
                 <time>{item.time}</time>
-                <span className={`timeline-node node-${item.status}`} aria-hidden="true" />
+                <ProductIcon
+                  name={timelineStatusIcon(item.status)}
+                  className={`timeline-node node-${item.status}`}
+                  size={24}
+                />
                 <div>
                   <strong>{item.title}</strong>
                   <p>{item.detail}</p>
@@ -408,8 +435,28 @@ function TodayDetails({ snapshot }: { snapshot: TodaySnapshot }) {
         <div className="prepared-list">
           {snapshot.preparedAssets.map((asset) => (
             <article className="prepared-row" key={asset.id}>
-              <span className="asset-mark" aria-hidden="true">
-                {asset.kind === "offline-pack" ? "↓" : "·"}
+              <span
+                className={`asset-mark is-${asset.kind}`}
+                aria-hidden="true"
+              >
+                {asset.kind === "offline-pack" ? (
+                  <InterfaceAssetIcon
+                    kind="download"
+                    className="prepared-asset-icon"
+                    size={26}
+                  />
+                ) : asset.kind === "file" ? (
+                  <InterfaceAssetIcon
+                    kind="file"
+                    className="prepared-asset-icon"
+                    size={24}
+                  />
+                ) : (
+                  <NexusNotesMark
+                    className="prepared-asset-icon"
+                    size={26}
+                  />
+                )}
               </span>
               <div>
                 <strong>{asset.name}</strong>
@@ -486,8 +533,12 @@ export function TodayExperience({
       ) : null}
 
       {snapshot.viewState === "loading" ? <LoadingToday /> : null}
-      {snapshot.viewState === "first-use" ? <FirstUseState /> : null}
-      {snapshot.viewState === "permission-denied" ? <PermissionState /> : null}
+      {snapshot.viewState === "first-use" ? (
+        <FirstUseState snapshot={snapshot} />
+      ) : null}
+      {snapshot.viewState === "permission-denied" ? (
+        <PermissionState scenario={snapshot.scenario} />
+      ) : null}
 
       {snapshot.insight && snapshot.nextEvent ? (
         <>

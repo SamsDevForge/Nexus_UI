@@ -2,9 +2,10 @@
 
 ## Current phase
 
-Phase 0 through Phase 3 implemented: repository foundation, shared product
-design system, application shell, complete mocked core product experience, and
-complete control and configuration surfaces.
+Phase 0 through Phase 4 implemented: repository foundation, shared product
+design system, application shell, complete mocked core product experience,
+complete control and configuration surfaces, cross-product state coverage, and
+Quick Capture.
 
 ## Completed
 
@@ -69,8 +70,8 @@ complete control and configuration surfaces.
   authority, recorded mock tool result, failure, and retry
 - Complete interactive `/app/knowledge` experience with source categories,
   source health, recent and related material, permission boundaries, evidence
-  excerpts, document previews, and routes to Notes and Search
-- Complete interactive `/app/notes` experience with grouped drafts, review
+  excerpts, document previews, and routes to Nexus Notes and Search
+- Complete interactive `/app/notes` Nexus Notes experience with grouped drafts, review
   states, citations, action items, unresolved questions, local editing,
   review, regeneration, preparation approval, and manual internal notes
 - Complete `/app/search` experience with recent searches, type and source
@@ -83,7 +84,7 @@ complete control and configuration surfaces.
   `SearchService` boundaries with isolated deterministic fixtures
 - Shared scenario query preserved across core navigation and coherent
   deadline-risk content across Today, Timeline, Insights, NEXUS, Knowledge,
-  Notes, and Search
+  Nexus Notes, and Search
 - `/app/technicals` extended with all Phase 2 service boundaries and scenario
   routes
 - Desktop visual verification at 1440 × 900 for all six Phase 2 routes and
@@ -141,6 +142,66 @@ complete control and configuration surfaces.
   Next.js production build, and `git diff --check`
 - Shared top-bar Focus mode can remove the cube and halo from the render tree,
   persists on the device, and restores the unchanged locked cube when disabled
+- Confidence values now use high-contrast glass readouts; shared states,
+  search, prepared assets, source filters, and Knowledge material use custom
+  NEXUS geometry glyphs; the sidebar logo tile and navigation-hover clipping
+  have been removed
+- Knowledge uses the supplied Google Drive and Notion vectors wherever those
+  providers are identified; internal notes and prepared packs use redesigned
+  NEXUS-native marks across list, related-material, and preview contexts
+- The supplied transparent cube logo now renders at its natural proportions
+  without cover cropping, zoom transforms, blend modes, or a background tile
+- Native notes are branded Nexus Notes and use the supplied stacked-network
+  logo in their page identity, Knowledge sources, and search results
+- Supplied transfer, email, and file vectors now replace improvised object
+  glyphs; downloads use the transfer mark directly and uploads use its
+  180-degree orientation
+- Nexus Notes collection headings use the supplied bookmarked-folder mark,
+  while individual note and file identities remain distinct
+- The supplied icon base is normalized behind one typed registry; date-state
+  marks now identify Today and Timeline states, calendar search marks identify
+  event results, and matching save and code-sandbox marks replace improvised
+  controls without forcing unused provider or platform assets into the UI
+- Canonical Phase 4 state dimensions separate data availability, source
+  health, intelligence availability, action lifecycle, and
+  onboarding/configuration instead of expanding one monolithic view-state
+  union
+- Deterministic scenarios now cover first use, no connections, partial
+  connections, loading, configured empty, regional error, rate limiting,
+  stale source, revoked permission, offline, degraded AI, pending action,
+  running action, recorded success, and recoverable action failure
+- Every existing product experience has an explicit route-to-state
+  applicability record with implemented cells, responsible mock boundary,
+  recovery interaction, and a reason for intentionally non-applicable states
+- `/app/technicals` now displays the development-only Phase 4 state coverage
+  matrix and links each applicable cell to its deterministic scenario
+- Persistent Quick Capture launcher added to the authenticated product shell
+  using `public/icons/nexus-notepad.svg`, with a compact desktop panel and a
+  safe-area-aware narrow bottom sheet
+- Quick Capture accepts manually pasted plain text and an optional source
+  label, then prepares either an editable Nexus Note or an editable event
+- Manual notes are previewed and created through `NotesService`; events use
+  deterministic unambiguous extraction, Settings timezone, explicit preview
+  and confirmation, and `TimelineService`
+- Ambiguous numeric dates and missing scheduling fields are never guessed;
+  validation keeps them editable and blocks confirmation until corrected
+- Captured items carry manual-paste provenance, appear immediately in Nexus
+  Notes or Timeline, and create human-readable `ActivityService` entries
+- Quick Capture remains useful with no connections or degraded AI, preserves
+  editable previews offline without claiming durable results, respects revoked
+  event authority, protects unsaved drafts, traps and restores focus, and
+  honours reduced motion
+- Phase 4 validation passed: TypeScript, ESLint, 45 deterministic tests, Next.js
+  production build, Sites/vinext production build, and `git diff --check`
+- Production-preview browser verification covered every product route at
+  1024 × 768, the approved Today layout and Quick Capture at 1440 × 900, and
+  the 390 × 844 narrow layout. Every canonical Phase 4 state was exercised on
+  at least one applicable route; all checked viewports had no horizontal
+  overflow and the browser console remained error-free.
+- Quick Capture browser verification covered launcher focus restoration,
+  unsaved-draft confirmation, note preview/save and Nexus Notes provenance,
+  editable event extraction, explicit event confirmation, and the recorded
+  Timeline result.
 
 ## Current implementation assumptions
 
@@ -148,11 +209,13 @@ complete control and configuration surfaces.
 - Core student data is deterministic and set in Bengaluru/IST.
 - Phase 3 control state is deterministic and session-local; persistence starts
   in the later backend and identity phase.
+- Quick Capture notes, events, and Activity records persist only for the active
+  deterministic browser demo session and reset on scenario change or reload.
 
 ## Mock/live status
 
 - UI: landing, application shell, Today, Timeline, Insights, NEXUS, Knowledge,
-  Notes, Search, Automations, Connections, Permission Centre, Memory, Activity,
+  Nexus Notes, Search, Automations, Connections, Permission Centre, Memory, Activity,
   Settings, and Technicals implemented
 - Backend: not implemented
 - Integrations: not implemented
@@ -165,6 +228,10 @@ approval, and action results remain deterministic mocks behind provider-neutral
 service boundaries. No model, provider, notification service, or external tool
 is called.
 
+Quick Capture does not read the clipboard, call a model or parser service, or
+write to a calendar provider. It renders pasted markup as plain text and uses
+only bounded deterministic extraction for clearly formatted scheduling fields.
+
 ## Known limitations
 
 - No live providers, authentication, backend, OAuth, or model calls exist.
@@ -173,6 +240,9 @@ is called.
 - Phase 3 connection setup, sync, reconnect, disconnect, export, deletion,
   notification, retry, and reversal operations are interface-complete
   simulations; they do not contact providers or change real data.
+- Quick Capture session results disappear on reload and are not shared across
+  tabs or devices. File attachments, rich text, voice input, automatic
+  clipboard monitoring, and durable persistence remain out of scope.
 - Unified search covers the deterministic Phase 2 fixture corpus, not a live
   index or RAG system.
 - The supplied `.svg` contains an embedded PNG rather than native vector paths,
@@ -182,7 +252,8 @@ is called.
 
 ## Next phase
 
-Phase 4 — Complete UI State Coverage: add the exhaustive cross-product
-first-use, no-connections, partial, loading, empty, rate-limited, stale,
-revoked, offline, degraded-AI, pending, running, succeeded, and recoverable
-failure state matrix. Do not connect live services yet.
+Phase 5 — Responsive, Accessible, and Motion-Complete Website: complete the
+desktop, laptop, tablet, and narrow-width audit; keyboard and semantic
+accessibility; contrast; reduced-motion behaviour; performance budgets; final
+cube-state language; and the landing-to-product transition. Do not begin live
+integrations.

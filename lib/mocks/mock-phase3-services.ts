@@ -23,10 +23,15 @@ import type {
 } from "@/lib/services/settings-service";
 import {
   controlNoticeForScenario,
-  controlViewStateForScenario,
+  controlViewStateForSurface,
   createPhase3FixtureState,
   type Phase3FixtureState,
 } from "@/lib/mocks/phase3-fixtures";
+import { stateDimensionsForScenario } from "@/lib/domain/state-coverage";
+import {
+  addSessionActivity,
+  getMockSessionState,
+} from "@/lib/mocks/mock-session-state";
 
 const NOW = "2026-07-25T09:20:00+05:30";
 
@@ -115,7 +120,8 @@ function createAutomationService(state: Phase3FixtureState): AutomationService {
       ).length;
       return clone({
         scenario: state.scenario,
-        viewState: controlViewStateForScenario(state.scenario),
+        state: stateDimensionsForScenario(state.scenario),
+        viewState: controlViewStateForSurface(state.scenario, "automations"),
         globallyPaused: state.automationsPaused,
         summary: state.automationsPaused
           ? "Every proactive recipe is paused at the policy gate."
@@ -126,7 +132,7 @@ function createAutomationService(state: Phase3FixtureState): AutomationService {
         ).length,
         automations: state.automations,
         templates: state.templates,
-        notice: controlNoticeForScenario(state.scenario),
+        notice: controlNoticeForScenario(state.scenario, "automations"),
       });
     },
     async createFromTemplate(templateId) {
@@ -333,7 +339,8 @@ function createConnectionService(state: Phase3FixtureState): ConnectionService {
     async getConnections() {
       return clone({
         scenario: state.scenario,
-        viewState: controlViewStateForScenario(state.scenario),
+        state: stateDimensionsForScenario(state.scenario),
+        viewState: controlViewStateForSurface(state.scenario, "connections"),
         summary:
           "Provider capability, NEXUS purpose, retention, and action authority remain separate.",
         healthyCount: state.connections.filter(
@@ -346,7 +353,7 @@ function createConnectionService(state: Phase3FixtureState): ConnectionService {
         ).length,
         connections: state.connections,
         availableSetups: state.availableSetups,
-        notice: controlNoticeForScenario(state.scenario),
+        notice: controlNoticeForScenario(state.scenario, "connections"),
       });
     },
     async setupConnection(connectionId) {
@@ -485,13 +492,14 @@ function createPermissionService(state: Phase3FixtureState): PermissionService {
     async getPermissions() {
       return clone({
         scenario: state.scenario,
-        viewState: controlViewStateForScenario(state.scenario),
+        state: stateDimensionsForScenario(state.scenario),
+        viewState: controlViewStateForSurface(state.scenario, "permissions"),
         observationPaused: state.observationPaused,
         automationsPaused: state.automationsPaused,
         summary:
           "Provider scope, read purpose, retention, future model use, notifications, and action authority are controlled separately.",
         grants: state.permissions,
-        notice: controlNoticeForScenario(state.scenario),
+        notice: controlNoticeForScenario(state.scenario, "permissions"),
       });
     },
     async updatePermission(permissionId, update) {
@@ -660,11 +668,12 @@ function createMemoryService(state: Phase3FixtureState): MemoryService {
     async getMemory() {
       return clone({
         scenario: state.scenario,
-        viewState: controlViewStateForScenario(state.scenario),
+        state: stateDimensionsForScenario(state.scenario),
+        viewState: controlViewStateForSurface(state.scenario, "memory"),
         summary:
           "Every memory explains its origin, usefulness, sensitivity, verification, and expiry.",
         items: state.memories,
-        notice: controlNoticeForScenario(state.scenario),
+        notice: controlNoticeForScenario(state.scenario, "memory"),
       });
     },
     async confirmMemory(memoryId) {
@@ -821,17 +830,64 @@ function matchesActivityFilters(
 function createActivityService(state: Phase3FixtureState): ActivityService {
   return {
     async getActivity(_scenario, filters = {}) {
+      const captured = getMockSessionState(state.scenario).activity;
+      const events = [...captured, ...state.activity].filter((event) =>
+        matchesActivityFilters(event, filters),
+      );
       return clone({
         scenario: state.scenario,
-        viewState: controlViewStateForScenario(state.scenario),
+        state: stateDimensionsForScenario(state.scenario),
+        viewState: controlViewStateForSurface(state.scenario, "activity"),
         summary:
           "A human-readable record of what NEXUS read, proposed, asked, attempted, or changed.",
-        events: state.activity.filter((event) =>
-          matchesActivityFilters(event, filters),
-        ),
-        availableSources: [...new Set(state.activity.map((event) => event.source))],
-        notice: controlNoticeForScenario(state.scenario),
+        events,
+        availableSources: [
+          ...new Set([...captured, ...state.activity].map((event) => event.source)),
+        ],
+        notice: controlNoticeForScenario(state.scenario, "activity"),
       });
+    },
+    async recordManualCapture(input) {
+      const recorded: ActivityEvent = {
+        id: `activity-capture-${getMockSessionState(input.scenario).activity.length + 1}`,
+        occurredAt: NOW,
+        dateLabel: "Today",
+        type: "manual-capture",
+        title: input.title,
+        summary: input.summary,
+        source: "Quick Capture",
+        actor: { kind: "user", label: "Aadi Sharma" },
+        requiredAuthority: input.mode === "event" ? "ask" : "prepare",
+        grantedAuthority: input.mode === "event" ? "ask" : "prepare",
+        outcome: input.outcome,
+        evidence: [
+          {
+            id: `evidence-${input.createdItemId}`,
+            source: "Manual paste",
+            detail: "The user pasted plain text and reviewed the prepared result.",
+            observedAt: NOW,
+            freshness: "fresh",
+          },
+        ],
+        result:
+          input.outcome === "success"
+            ? "Recorded in the active deterministic demo session."
+            : "No note or event was recorded. The draft can be retried.",
+        failure:
+          input.outcome === "failed"
+            ? {
+                code: "CAPTURE_RETRY_AVAILABLE",
+                message: "The manual capture did not complete.",
+                recoverable: true,
+              }
+            : undefined,
+        reversible: false,
+        reversalState: "not-available",
+        relatedHref: input.relatedHref,
+        technicalDetail: `manual-paste:${input.mode}:${input.createdItemId}`,
+      };
+      addSessionActivity(input.scenario, recorded);
+      return clone(recorded);
     },
     async retryEvent(eventId) {
       const current = findOrThrow(state.activity, eventId, "activity event");
@@ -879,11 +935,12 @@ function createSettingsService(state: Phase3FixtureState): SettingsService {
     async getSettings() {
       return clone({
         scenario: state.scenario,
-        viewState: controlViewStateForScenario(state.scenario),
+        state: stateDimensionsForScenario(state.scenario),
+        viewState: controlViewStateForSurface(state.scenario, "settings"),
         summary:
           "Everyday preferences stay separate from privacy, permission, and account-level controls.",
         preferences: state.preferences,
-        notice: controlNoticeForScenario(state.scenario),
+        notice: controlNoticeForScenario(state.scenario, "settings"),
       });
     },
     async saveSection(_section, update) {

@@ -8,6 +8,10 @@ import type {
   TodayScenario,
   TodaySnapshot,
 } from "@/lib/domain/contracts";
+import {
+  canonicalScenario,
+  stateDimensionsForScenario,
+} from "@/lib/domain/state-coverage";
 
 export const TODAY_SCENARIOS: ReadonlyArray<{
   value: TodayScenario;
@@ -35,6 +39,31 @@ export const TODAY_SCENARIOS: ReadonlyArray<{
     description: "Calendar is available while email and course pages remain disconnected.",
   },
   {
+    value: "no-connections",
+    label: "No connections",
+    description: "Provider content is absent while manual capture remains available.",
+  },
+  {
+    value: "empty",
+    label: "Empty",
+    description: "Configured sources have no items for the selected view.",
+  },
+  {
+    value: "error",
+    label: "Source error",
+    description: "One affected region fails while safe last-known context remains visible.",
+  },
+  {
+    value: "rate-limited",
+    label: "Rate limited",
+    description: "Last-known data stays visible while one source cools down.",
+  },
+  {
+    value: "stale-source",
+    label: "Stale source",
+    description: "Last-known source data is clearly distinguished from current data.",
+  },
+  {
     value: "connection-stale",
     label: "Stale source",
     description: "A connected source that needs refreshing.",
@@ -55,6 +84,11 @@ export const TODAY_SCENARIOS: ReadonlyArray<{
     description: "Calendar access is paused without inventing context.",
   },
   {
+    value: "permission-revoked",
+    label: "Permission revoked",
+    description: "Dependent reads and actions are blocked with a recovery path.",
+  },
+  {
     value: "offline",
     label: "Offline",
     description: "The last prepared view, clearly marked as not live.",
@@ -63,6 +97,31 @@ export const TODAY_SCENARIOS: ReadonlyArray<{
     value: "action-failed",
     label: "Action failed",
     description: "A recoverable preparation failure and retry path.",
+  },
+  {
+    value: "degraded-ai",
+    label: "Degraded AI",
+    description: "Deterministic and manual features remain available.",
+  },
+  {
+    value: "action-pending",
+    label: "Action pending",
+    description: "A prepared action waits for explicit approval.",
+  },
+  {
+    value: "action-running",
+    label: "Action running",
+    description: "An approved action has no recorded result yet.",
+  },
+  {
+    value: "action-succeeded",
+    label: "Action succeeded",
+    description: "A recorded result confirms the completed demo action.",
+  },
+  {
+    value: "action-recoverable-failure",
+    label: "Recoverable action failure",
+    description: "A safe failure keeps a reviewed retry path.",
   },
   {
     value: "privacy-paused",
@@ -202,6 +261,7 @@ const signals: ContextSignal[] = [
 function baseSnapshot(scenario: TodayScenario): TodaySnapshot {
   return {
     scenario,
+    state: stateDimensionsForScenario(scenario),
     viewState: "populated",
     systemState: "insight-ready",
     greeting: "Good morning, Aadi.",
@@ -256,8 +316,9 @@ function baseSnapshot(scenario: TodayScenario): TodaySnapshot {
 
 export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
   const snapshot = baseSnapshot(scenario);
+  const canonical = canonicalScenario(scenario);
 
-  if (scenario === "student-normal-day") {
+  if (canonical === "student-normal-day") {
     return {
       ...snapshot,
       systemState: "observing",
@@ -286,7 +347,7 @@ export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
     };
   }
 
-  if (scenario === "deadline-risk") {
+  if (canonical === "deadline-risk") {
     return {
       ...snapshot,
       systemState: "approval-needed",
@@ -325,7 +386,7 @@ export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
     };
   }
 
-  if (scenario === "connection-stale") {
+  if (canonical === "stale-source") {
     return {
       ...snapshot,
       systemState: "degraded",
@@ -344,7 +405,7 @@ export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
     };
   }
 
-  if (scenario === "partial-connections") {
+  if (canonical === "partial-connections") {
     return {
       ...snapshot,
       systemState: "degraded",
@@ -363,7 +424,7 @@ export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
     };
   }
 
-  if (scenario === "first-use") {
+  if (canonical === "first-use") {
     return {
       ...snapshot,
       viewState: "first-use",
@@ -379,7 +440,50 @@ export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
     };
   }
 
-  if (scenario === "loading") {
+  if (canonical === "no-connections") {
+    return {
+      ...snapshot,
+      viewState: "first-use",
+      systemState: "dormant",
+      summary:
+        "No providers are connected. Manual Nexus Notes and Quick Capture remain available.",
+      insight: null,
+      nextEvent: null,
+      timeline: [],
+      deadlines: [],
+      preparedAssets: [],
+      signals: [],
+      connections: [],
+      notice: {
+        tone: "info",
+        title: "Manual input still works",
+        detail:
+          "Paste text into Quick Capture or write a Nexus Note without connecting another app.",
+      },
+    };
+  }
+
+  if (canonical === "empty") {
+    return {
+      ...snapshot,
+      viewState: "first-use",
+      systemState: "observing",
+      summary: "Your sources are configured, but nothing needs attention in this view.",
+      insight: null,
+      nextEvent: null,
+      timeline: [],
+      deadlines: [],
+      preparedAssets: [],
+      signals: [],
+      notice: {
+        tone: "info",
+        title: "Nothing here yet",
+        detail: "Connections and controls remain available. Try another route or capture a note.",
+      },
+    };
+  }
+
+  if (canonical === "loading") {
     return {
       ...snapshot,
       viewState: "loading",
@@ -393,7 +497,7 @@ export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
     };
   }
 
-  if (scenario === "permission-denied") {
+  if (canonical === "permission-revoked") {
     return {
       ...snapshot,
       viewState: "permission-denied",
@@ -413,7 +517,40 @@ export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
     };
   }
 
-  if (scenario === "offline") {
+  if (canonical === "rate-limited") {
+    return {
+      ...snapshot,
+      systemState: "degraded",
+      notice: {
+        tone: "warning",
+        title: "Route refresh is temporarily limited",
+        detail:
+          "The last route estimate from 9:07 AM remains visible. Retry after the source cooldown.",
+      },
+      signals: snapshot.signals.map((signal) =>
+        signal.id === "signal-traffic"
+          ? { ...signal, freshness: "stale" as const }
+          : signal,
+      ),
+    };
+  }
+
+  if (canonical === "error") {
+    return {
+      ...snapshot,
+      viewState: "error",
+      systemState: "degraded",
+      notice: {
+        tone: "danger",
+        title: "Course material did not refresh",
+        detail:
+          "Today and Timeline remain available. Retry the affected knowledge source without changing other data.",
+      },
+      preparedAssets: preparedAssets.slice(0, 1),
+    };
+  }
+
+  if (canonical === "offline") {
     return {
       ...snapshot,
       viewState: "offline",
@@ -431,7 +568,61 @@ export function buildTodaySnapshot(scenario: TodayScenario): TodaySnapshot {
     };
   }
 
-  if (scenario === "action-failed") {
+  if (canonical === "degraded-ai") {
+    return {
+      ...snapshot,
+      systemState: "degraded",
+      summary:
+        "Generated assistance is unavailable. Deterministic timing and manual tools remain available.",
+      notice: {
+        tone: "warning",
+        title: "Generated assistance is paused",
+        detail:
+          "You can still inspect source facts, use Timeline, write notes, search, and use Quick Capture.",
+      },
+    };
+  }
+
+  if (canonical === "action-pending") {
+    return {
+      ...snapshot,
+      systemState: "approval-needed",
+      notice: {
+        tone: "info",
+        title: "Approval required",
+        detail:
+          "The focus block is prepared and awaiting your confirmation. Nothing has changed yet.",
+      },
+    };
+  }
+
+  if (canonical === "action-running") {
+    return {
+      ...snapshot,
+      systemState: "processing",
+      notice: {
+        tone: "info",
+        title: "Action running",
+        detail:
+          "The approved demo action is in progress. NEXUS will wait for a recorded result before claiming success.",
+      },
+    };
+  }
+
+  if (canonical === "action-succeeded") {
+    return {
+      ...snapshot,
+      systemState: "success",
+      notice: {
+        tone: "info",
+        title: "Action recorded",
+        detail:
+          "The demo focus block completed successfully. The recorded result is available in Activity.",
+      },
+    };
+  }
+
+  if (canonical === "action-recoverable-failure") {
     return {
       ...snapshot,
       viewState: "error",

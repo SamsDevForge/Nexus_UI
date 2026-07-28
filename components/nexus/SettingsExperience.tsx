@@ -10,6 +10,7 @@ import type {
 } from "@/lib/domain/contracts";
 import { createMockPhase3Services } from "@/lib/mocks/mock-phase3-services";
 import { scenarioHref } from "@/lib/mocks/phase2-fixtures";
+import { InterfaceAssetIcon } from "@/components/nexus/InterfaceAssetIcon";
 import type { SettingsSection } from "@/lib/services/settings-service";
 import {
   ControlDialog,
@@ -722,12 +723,17 @@ export function SettingsExperience({
               </header>
               <div className="data-control-list">
                 <div>
-                  <span className="data-control-glyph" aria-hidden="true" />
+                  <InterfaceAssetIcon
+                    kind="download"
+                    className="data-transfer-glyph"
+                    size={26}
+                  />
                   <span>
                     <b>Export NEXUS data</b>
                     <p>Prepare a mock manifest of profile, memory, permissions, and activity.</p>
                   </span>
                   <button
+                    className="icon-button"
                     type="button"
                     onClick={async () => {
                       const result = await service.requestExport();
@@ -735,6 +741,11 @@ export function SettingsExperience({
                       setDialog("export");
                     }}
                   >
+                    <InterfaceAssetIcon
+                      kind="download"
+                      className="button-transfer-icon"
+                      size={16}
+                    />
                     Request export
                   </button>
                 </div>

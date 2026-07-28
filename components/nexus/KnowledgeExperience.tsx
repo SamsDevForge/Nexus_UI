@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type {
@@ -17,6 +18,32 @@ import {
 } from "@/components/nexus/Phase2Shared";
 
 type SourceFilter = "all" | KnowledgeSourceKind;
+
+const providerLogoByKind: Partial<Record<KnowledgeSourceKind, string>> = {
+  drive: "/provider-google-drive.svg",
+  "email-attachment": "/icon-email.svg",
+  "internal-note": "/nexus-notes-logo.svg",
+  "lecture-material": "/icon-file.svg",
+  notion: "/provider-notion.svg",
+};
+
+function KnowledgeKindMark({ kind }: { kind: KnowledgeSourceKind }) {
+  const providerLogo = providerLogoByKind[kind];
+
+  return (
+    <span className={`knowledge-kind-mark is-${kind}`} aria-hidden="true">
+      {providerLogo ? (
+        <Image src={providerLogo} alt="" width={22} height={22} />
+      ) : (
+        <>
+          <i />
+          <i />
+          <i />
+        </>
+      )}
+    </span>
+  );
+}
 
 export function KnowledgeExperience({
   initialSnapshot,
@@ -62,7 +89,11 @@ export function KnowledgeExperience({
         notice={initialSnapshot.notice}
         tone={initialSnapshot.viewState === "error" ? "danger" : "warning"}
       />
-      <BlockingState state={initialSnapshot.viewState} noun="knowledge view" />
+      <BlockingState
+        state={initialSnapshot.viewState}
+        noun="knowledge view"
+        scenario={initialSnapshot.scenario}
+      />
 
       {initialSnapshot.sources.length > 0 ? (
         <>
@@ -84,9 +115,7 @@ export function KnowledgeExperience({
                     setFilter((current) => (current === source.kind ? "all" : source.kind))
                   }
                 >
-                  <span className={`source-glyph source-${source.kind}`} aria-hidden="true">
-                    {source.name.slice(0, 1)}
-                  </span>
+                  <KnowledgeKindMark kind={source.kind} />
                   <span>
                     <b>{source.name}</b>
                     <small>{source.permission}</small>
@@ -118,7 +147,7 @@ export function KnowledgeExperience({
                     key={document.id}
                     onClick={() => setSelected(document)}
                   >
-                    <span className={`document-kind is-${document.kind}`} aria-hidden="true" />
+                    <KnowledgeKindMark kind={document.kind} />
                     <span>
                       <small>{document.course}</small>
                       <b>{document.title}</b>
@@ -136,8 +165,11 @@ export function KnowledgeExperience({
                 <p className="section-kicker">Related material</p>
                 {initialSnapshot.related.map((document) => (
                   <button type="button" key={document.id} onClick={() => setSelected(document)}>
-                    <span>{document.course}</span>
-                    <b>{document.title}</b>
+                    <KnowledgeKindMark kind={document.kind} />
+                    <span className="knowledge-related-copy">
+                      <small>{document.course}</small>
+                      <b>{document.title}</b>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -146,7 +178,7 @@ export function KnowledgeExperience({
             {selected ? (
               <aside className="knowledge-preview" aria-label={`${selected.title} preview`}>
                 <div className="knowledge-preview-heading">
-                  <span className={`document-kind is-${selected.kind}`} aria-hidden="true" />
+                  <KnowledgeKindMark kind={selected.kind} />
                   <div>
                     <p className="section-kicker">{selected.course}</p>
                     <h2>{selected.title}</h2>
@@ -175,7 +207,7 @@ export function KnowledgeExperience({
                       className="primary-button"
                       href={scenarioHref("/app/notes", initialSnapshot.scenario)}
                     >
-                      Open in Notes
+                      Open in Nexus Notes
                     </Link>
                   ) : null}
                   <Link

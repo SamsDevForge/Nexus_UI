@@ -287,6 +287,69 @@ Each screen must be testable in:
 - Offline state
 - Reduced-motion state
 
+## Phase 4 route-to-state applicability
+
+The canonical state concerns are separate: data availability, source health,
+intelligence availability, action lifecycle, and onboarding/configuration.
+Scenario names select a deterministic combination of those concerns; screens
+do not depend on one giant state union.
+
+Read-state set:
+
+`first-use`, `no-connections`, `partial-connections`, `loading`, `empty`,
+`error`, `rate-limited`, `stale-source`, `revoked-permission`, `offline`, and
+`degraded-ai`.
+
+Action-state set:
+
+`action-pending`, `action-running`, `action-succeeded`, and
+`action-failed-recoverable`.
+
+| Product experience | Applicable Phase 4 states | Intentionally non-applicable |
+| --- | --- | --- |
+| Today | All read and action states | None |
+| Timeline | All read and action states | None |
+| Insights | All read and action states | None |
+| NEXUS | All read and action states | None |
+| Knowledge | All read states | Action execution belongs to Notes or Activity |
+| Nexus Notes | All read and action states | None |
+| Search / command palette | All read states | Search finds destinations; it does not execute actions |
+| Automations | All read and action states | None |
+| Connections | Read states except degraded AI | Connection health uses sync/reconnect states; it does not depend on generated intelligence |
+| Permission Centre | Read states except degraded AI | Permission changes have dedicated confirmations and remain deterministic |
+| Memory | All read states | Memory edits use correction, confirmation, and restoration rather than background action lifecycle |
+| Activity | All read and action states | None |
+| Settings | First use, no connections, partial, loading, empty, error, stale, revoked, and offline | Device-local settings are not provider-rate-limited or AI-dependent; sensitive changes use dedicated confirmations |
+| Technicals | All read and action states | None; it is the coverage registry |
+
+The development-only matrix on `/app/technicals` is the executable display of
+this table. It names the responsible mock service, recovery interaction,
+implemented cells, and the reason for every non-applicable cell.
+
+## Quick Capture
+
+Quick Capture is a persistent manual-input bridge in the authenticated product
+shell. A user pastes plain text and chooses either:
+
+1. Save as a session-only Nexus Note.
+2. Prepare and explicitly confirm a session-only Timeline event.
+
+It appears as a compact bottom-right launcher on desktop and a bottom sheet
+above compact navigation and safe-area insets on narrow screens. It is absent
+from the public landing and any route outside the product shell. Full-screen
+critical dialogs render above it.
+
+Quick Capture accepts an optional source label, records `manual-paste`
+provenance, and creates a human-readable Activity result. It never reads the
+clipboard automatically. Event extraction is deterministic and limited to
+unambiguous dates, times, and labelled locations. Ambiguous numeric dates and
+missing required fields remain unresolved until the user edits them. An event
+is never scheduled without an explicit preview and confirmation.
+
+Captured notes, events, and Activity entries share the deterministic demo
+session and reset when the selected scenario changes or the browser session is
+reloaded. No provider, model, database, or durable browser storage is involved.
+
 ## Content language
 
 - Lead with the decision, not the data dump.

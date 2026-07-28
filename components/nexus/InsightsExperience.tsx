@@ -123,7 +123,11 @@ export function InsightsExperience({
         notice={initialSnapshot.notice}
         tone={initialSnapshot.viewState === "error" ? "danger" : "warning"}
       />
-      <BlockingState state={initialSnapshot.viewState} noun="insight stream" />
+      <BlockingState
+        state={initialSnapshot.viewState}
+        noun="insight stream"
+        scenario={initialSnapshot.scenario}
+      />
 
       {initialSnapshot.primary ? (
         <>
@@ -182,10 +186,30 @@ export function InsightsExperience({
                   <button
                     className="primary-button"
                     type="button"
-                    disabled={!initialSnapshot.primary.proposedAction}
-                    onClick={() => setApproval(initialSnapshot.primary?.id ?? null)}
+                    disabled={
+                      !initialSnapshot.primary.proposedAction ||
+                      ["running", "succeeded"].includes(
+                        initialSnapshot.state.action,
+                      )
+                    }
+                    onClick={() => {
+                      if (initialSnapshot.state.action === "failed-recoverably") {
+                        setFeedback(
+                          "The recorded failure is recoverable. Retry from Activity after reviewing the evidence.",
+                        );
+                        return;
+                      }
+                      setApproval(initialSnapshot.primary?.id ?? null);
+                    }}
                   >
-                    {initialSnapshot.primary.proposedAction?.label ?? "Suggestion only"}
+                    {initialSnapshot.state.action === "running"
+                      ? "Action running"
+                      : initialSnapshot.state.action === "succeeded"
+                        ? "Result recorded"
+                        : initialSnapshot.state.action === "failed-recoverably"
+                          ? "Review failure"
+                          : initialSnapshot.primary.proposedAction?.label ??
+                            "Suggestion only"}
                   </button>
                   <button
                     className="quiet-button"

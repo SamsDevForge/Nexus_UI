@@ -20,10 +20,92 @@ import {
   findNote,
   searchKnowledgeDocuments,
 } from "@/lib/mocks/phase2-fixtures";
+import {
+  addSessionNote,
+  addSessionTimelineEntry,
+  findSessionNote,
+  getMockSessionState,
+  updateSessionNote,
+} from "@/lib/mocks/mock-session-state";
 
 class MockTimelineService implements TimelineService {
   async getTimeline(scenario: Parameters<TimelineService["getTimeline"]>[0], selectedDay?: string) {
-    return buildTimelineSnapshot(scenario, selectedDay);
+    const snapshot = buildTimelineSnapshot(scenario, selectedDay);
+    const captured = getMockSessionState(scenario).timeline;
+    if (captured.length === 0) return snapshot;
+
+    const groups = structuredClone(snapshot.groups);
+    for (const entry of captured) {
+      let group = groups.find((item) => item.date === entry.day);
+      if (!group) {
+        const date = new Date(`${entry.day}T12:00:00+05:30`);
+        const long = new Intl.DateTimeFormat("en-IN", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+        }).format(date);
+        const short = new Intl.DateTimeFormat("en-IN", {
+          weekday: "short",
+          day: "numeric",
+        }).format(date);
+        group = {
+          id: `timeline-capture-${entry.day}`,
+          date: entry.day,
+          label: long,
+          shortLabel: short,
+          entries: [],
+        };
+        groups.push(group);
+      }
+      group.entries = [
+        entry,
+        ...group.entries.filter((item) => item.id !== entry.id),
+      ].sort((left, right) => left.startsAt.localeCompare(right.startsAt));
+    }
+
+    return {
+      ...snapshot,
+      viewState: "populated" as const,
+      groups: groups.sort((left, right) => left.date.localeCompare(right.date)),
+      selectedDay:
+        selectedDay && groups.some((group) => group.date === selectedDay)
+          ? selectedDay
+          : captured[0]?.day ?? snapshot.selectedDay,
+    };
+  }
+
+  async scheduleManualEvent(
+    scenario: Parameters<TimelineService["scheduleManualEvent"]>[0],
+    preview: Parameters<TimelineService["scheduleManualEvent"]>[1],
+  ) {
+    const count = getMockSessionState(scenario).timeline.length + 1;
+    const start = `${preview.date}T${preview.startTime}:00+05:30`;
+    const end = preview.endTime
+      ? `${preview.date}T${preview.endTime}:00+05:30`
+      : undefined;
+    const entry = {
+      id: `capture-event-${count}`,
+      day: preview.date,
+      startsAt: start,
+      endsAt: end,
+      timeLabel: preview.startTime,
+      endLabel: preview.endTime || undefined,
+      title: preview.title,
+      detail: [preview.location, preview.description].filter(Boolean).join(" · ") ||
+        "Created from manually pasted text.",
+      kind: "event" as const,
+      status: "confirmed" as const,
+      source: preview.source.label
+        ? `Manual paste · ${preview.source.label}`
+        : "Manual paste",
+      freshness: "fresh" as const,
+      requiredAuthority: "ask" as const,
+      provenance: "manual-paste" as const,
+      sourceEvidence: preview.sourceEvidence,
+      timezone: preview.timezone,
+    };
+    addSessionTimelineEntry(scenario, entry);
+    return structuredClone(entry);
   }
 
   async resolveSuggestion(
@@ -132,16 +214,63 @@ class MockKnowledgeService implements KnowledgeService {
 
 class MockNotesService implements NotesService {
   async getNotes(scenario: Parameters<NotesService["getNotes"]>[0]) {
-    return buildNotesSnapshot(scenario);
+    const snapshot = buildNotesSnapshot(scenario);
+    const captured = getMockSessionState(scenario).notes;
+    if (captured.length === 0) return snapshot;
+    return {
+      ...snapshot,
+      viewState: "populated" as const,
+      notes: [
+        ...captured,
+        ...snapshot.notes.filter(
+          (note) => !captured.some((capturedNote) => capturedNote.id === note.id),
+        ),
+      ],
+    };
+  }
+
+  async createManualCapture(
+    scenario: Parameters<NotesService["createManualCapture"]>[0],
+    preview: Parameters<NotesService["createManualCapture"]>[1],
+  ) {
+    const count = getMockSessionState(scenario).notes.length + 1;
+    const note: NoteArtifact = {
+      id: `capture-note-${count}`,
+      title: preview.title,
+      group: "Quick Capture",
+      state: "draft",
+      updatedAt: "2026-07-25T09:30:00+05:30",
+      summary: preview.source.label
+        ? `Manually pasted from ${preview.source.label}.`
+        : "Manually pasted into NEXUS.",
+      body: preview.body,
+      sourceMaterialAvailable: true,
+      citations: [],
+      actionItems: [],
+      unresolvedQuestions: [],
+      confidence: 1,
+      provenance: "manual-paste",
+      sourceLabel: preview.source.label,
+      tags: preview.tags,
+    };
+    addSessionNote(scenario, note);
+    return structuredClone(note);
   }
 
   async updateNote(
     noteId: string,
     update: Parameters<NotesService["updateNote"]>[1],
   ): Promise<NoteArtifact> {
-    const note = findNote(noteId);
+    const sessionNote = findSessionNote(noteId);
+    const note = sessionNote?.note ?? findNote(noteId);
     if (!note) throw new Error(`Unknown deterministic note: ${noteId}`);
-    return { ...note, ...update, updatedAt: "2026-07-25T09:20:00+05:30" };
+    const next = {
+      ...note,
+      ...update,
+      updatedAt: "2026-07-25T09:20:00+05:30",
+    };
+    if (sessionNote) updateSessionNote(noteId, next);
+    return next;
   }
 
   async resolvePreparation(

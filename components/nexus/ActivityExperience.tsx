@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   ActivityEvent,
   ActivityEventType,
@@ -11,6 +11,7 @@ import type {
 } from "@/lib/domain/contracts";
 import { createMockPhase3Services } from "@/lib/mocks/mock-phase3-services";
 import { scenarioHref } from "@/lib/mocks/phase2-fixtures";
+import { InterfaceAssetIcon } from "@/components/nexus/InterfaceAssetIcon";
 import {
   ControlBlockingState,
   ControlHeader,
@@ -30,6 +31,7 @@ const eventTypes: ReadonlyArray<{ value: "" | ActivityEventType; label: string }
   { value: "permission-change", label: "Permission changes" },
   { value: "memory-change", label: "Memory changes" },
   { value: "automation-run", label: "Automation runs" },
+  { value: "manual-capture", label: "Manual captures" },
 ];
 
 export function ActivityExperience({
@@ -55,6 +57,39 @@ export function ActivityExperience({
     snapshot.events.find((event) => event.id === selectedId) ??
     snapshot.events[0];
   const blocking = ["loading", "empty"].includes(snapshot.viewState);
+
+  useEffect(() => {
+    let active = true;
+    const refresh = async () => {
+      const response = await service.getActivity(initialSnapshot.scenario, {
+        query,
+        types: type ? [type] : [],
+        sources: source ? [source] : [],
+        authorities: authority ? [authority] : [],
+        outcomes: outcome ? [outcome] : [],
+      });
+      if (!active) return;
+      setSnapshot(response);
+      setSelectedId(response.events[0]?.id ?? "");
+    };
+    const handleSessionChange = (event: Event) => {
+      const detail = (event as CustomEvent<{ scenario?: string }>).detail;
+      if (detail?.scenario === initialSnapshot.scenario) void refresh();
+    };
+    window.addEventListener("nexus:mock-session-change", handleSessionChange);
+    return () => {
+      active = false;
+      window.removeEventListener("nexus:mock-session-change", handleSessionChange);
+    };
+  }, [
+    authority,
+    initialSnapshot.scenario,
+    outcome,
+    query,
+    service,
+    source,
+    type,
+  ]);
 
   const runFilters = async (
     next: Partial<{
@@ -114,7 +149,7 @@ export function ActivityExperience({
         summary={snapshot.summary}
         action={
           <button
-            className="secondary-button"
+            className="secondary-button icon-button"
             type="button"
             onClick={async () => {
               const result = await service.exportActivity({
@@ -127,6 +162,11 @@ export function ActivityExperience({
               setFeedback(result.summary);
             }}
           >
+            <InterfaceAssetIcon
+              kind="download"
+              className="button-transfer-icon"
+              size={17}
+            />
             Export filtered summary
           </button>
         }
@@ -252,7 +292,7 @@ export function ActivityExperience({
                 }}
               >
                 <option value="">All outcomes</option>
-                {["success", "pending", "denied", "failed", "reversed"].map((item) => (
+                {["success", "running", "pending", "denied", "failed", "reversed"].map((item) => (
                   <option key={item} value={item}>{item}</option>
                 ))}
               </select>
