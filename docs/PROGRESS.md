@@ -270,11 +270,12 @@ connected Railway and Sites surfaces.
 - The 2026-07-28 cloud acceptance attempt re-ran the complete local validation
   successfully and reconfirmed the locked cube hashes, secret scan, and all 22
   untouched `exfonts/` files. Railway authentication succeeded, but the
-  connected workspace exposed zero projects and required the account owner to
-  accept Railway's Terms of Service before deployment. The existing active
-  private/custom Sites project remained at version 18 and its runtime-variable
-  store exposed no Phase 6 keys. No backend, migration, or frontend deployment
-  was claimed, and real-user acceptance tests were not run.
+  connected workspace exposed zero projects. The account owner subsequently
+  accepted Railway's Terms of Service, but the same workspace still exposed no
+  project or service to deploy. The existing active private/custom Sites
+  project remained at version 18 and its runtime-variable store exposed no
+  Phase 6 keys. No backend, migration, or frontend deployment was claimed, and
+  real-user acceptance tests were not run.
 
 ## Current implementation assumptions
 
@@ -314,12 +315,12 @@ in Activity; they do not write to a provider calendar.
 
 ## Known limitations
 
-- The connected Railway workspace has no deployable project and is gated by
-  Railway Terms-of-Service acceptance, which Codex cannot perform for the
-  account owner. The existing Sites project has no Phase 6 runtime keys.
-  Consequently production Alembic state, Railway readiness, real Firebase
-  sign-in, durable reload/reauthentication, cross-user isolation, error-state
-  behavior, and a new private Sites version remain externally unverified.
+- Railway Terms of Service are accepted, but the connected workspace still has
+  no deployable project or service. The existing Sites project has no Phase 6
+  runtime keys. Consequently production Alembic state, Railway readiness, real
+  Firebase sign-in, durable reload/reauthentication, cross-user isolation,
+  error-state behavior, and a new private Sites version remain externally
+  unverified.
 - Mock action approvals outside the Phase 6 durable boundaries still update
   only deterministic local state and reset on route reload.
 - Phase 3 connection setup, sync, reconnect, disconnect, export, deletion,
