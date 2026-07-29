@@ -618,12 +618,16 @@
   --nx-space-6: 24px;
   --nx-space-8: 32px;
   --nx-space-12: 48px;
-  --nx-motion-press: 120ms;
-  --nx-motion-micro: 180ms;
-  --nx-motion-item: 320ms;
-  --nx-motion-component: 340ms;
-  --nx-motion-region: 440ms;
-  --nx-motion-panel: 420ms;
+  --nx-motion-press: 150ms;
+  --nx-motion-micro: 220ms;
+  --nx-motion-item: 420ms;
+  --nx-motion-component: 420ms;
+  --nx-motion-region: 500ms;
+  --nx-motion-panel: 600ms;
+  --nx-motion-orbit-attention-fast: 14s;
+  --nx-motion-orbit-attention-medium: 16s;
+  --nx-motion-orbit-attention-slow: 18s;
+  --nx-motion-orbit-degraded: 24s;
   --nx-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --nx-ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
@@ -13049,7 +13053,7 @@ button {
 .command-palette,
 .quick-capture-panel {
   transform-origin: center top;
-  animation: nx-panel-enter var(--nx-motion-component) var(--nx-ease-out) both;
+  animation: nx-panel-enter var(--nx-motion-panel) var(--nx-ease-out) both;
 }
 
 .quick-capture-launcher.has-availability-cue::before {
@@ -13059,7 +13063,7 @@ button {
   border-radius: 22px;
   content: "";
   pointer-events: none;
-  animation: nx-capture-availability 900ms 520ms var(--nx-ease-out) both;
+  animation: nx-capture-availability 1200ms 650ms var(--nx-ease-out) both;
 }
 
 .command-scan-cue::before {
@@ -13073,7 +13077,7 @@ button {
   box-shadow: 0 0 8px rgba(158, 220, 250, 0.42);
   content: "";
   transform-origin: 5px 0;
-  animation: nx-search-scan 360ms var(--nx-ease-standard) both;
+  animation: nx-search-scan 480ms var(--nx-ease-standard) both;
 }
 
 .quick-capture-result > .product-icon,
@@ -13081,7 +13085,7 @@ button {
 .timeline-entry-icon.status-completed > .product-icon,
 .timeline-entry-icon.status-rescheduled > .product-icon,
 .timeline-entry-icon.status-rejected > .product-icon {
-  animation: nx-status-acknowledge 420ms var(--nx-ease-out) both;
+  animation: nx-status-acknowledge 560ms var(--nx-ease-out) both;
 }
 
 .quick-capture-result.is-failure > .product-icon,
@@ -13146,7 +13150,7 @@ button {
   right: auto;
   bottom: auto;
   left: 50%;
-  animation: nx-orbit-clockwise var(--nx-orbit-duration, 14s) linear infinite both;
+  animation: nx-orbit-clockwise var(--nx-orbit-duration, 18s) linear infinite both;
   animation-play-state: paused;
 }
 
@@ -13165,13 +13169,13 @@ button {
 .connection-signal > i:nth-of-type(1) {
   --nx-orbit-phase: -90deg;
   --nx-orbit-radius: 63px;
-  --nx-orbit-duration: 12s;
+  --nx-orbit-duration: 16s;
 }
 
 .connection-signal > i:nth-of-type(2) {
   --nx-orbit-phase: 34deg;
   --nx-orbit-radius: 69px;
-  --nx-orbit-duration: 16s;
+  --nx-orbit-duration: 18s;
   animation-name: nx-orbit-counterclockwise;
 }
 
@@ -13184,7 +13188,7 @@ button {
 .memory-orbit > i:nth-of-type(1) {
   --nx-orbit-phase: -91deg;
   --nx-orbit-radius: 64px;
-  --nx-orbit-duration: 15s;
+  --nx-orbit-duration: 17s;
 }
 
 .memory-orbit > i:nth-of-type(2) {
@@ -13197,36 +13201,36 @@ button {
 .activity-pulse > i:nth-of-type(1) {
   --nx-orbit-phase: -90deg;
   --nx-orbit-radius: 74px;
-  --nx-orbit-duration: 13s;
+  --nx-orbit-duration: 16s;
 }
 
 .activity-pulse > i:nth-of-type(2) {
   --nx-orbit-phase: 32deg;
   --nx-orbit-radius: 74px;
-  --nx-orbit-duration: 17s;
+  --nx-orbit-duration: 18s;
   animation-name: nx-orbit-counterclockwise;
 }
 
 .activity-pulse > i:nth-of-type(3) {
   --nx-orbit-phase: 127deg;
   --nx-orbit-radius: 77px;
-  --nx-orbit-duration: 19s;
+  --nx-orbit-duration: 18s;
 }
 
 .connection-signal > span,
 .memory-orbit > span {
   --nx-tile-rotation: 27deg;
-  animation: nx-central-tile-drift 14s ease-in-out infinite alternate both;
+  animation: nx-central-tile-drift 20s ease-in-out infinite alternate both;
   animation-play-state: paused;
 }
 
 .memory-orbit > span {
   --nx-tile-rotation: 32deg;
-  animation-duration: 17s;
+  animation-duration: 24s;
 }
 
 .activity-pulse > span {
-  animation: nx-centered-tile-drift 16s ease-in-out infinite alternate both;
+  animation: nx-centered-tile-drift 22s ease-in-out infinite alternate both;
   animation-play-state: paused;
 }
 
@@ -13238,22 +13242,22 @@ button {
 .connection-signal[data-motion-state="attention"] > i:nth-of-type(1),
 .memory-orbit[data-motion-state="attention"] > i:nth-of-type(1),
 .activity-pulse[data-motion-state="attention"] > i:nth-of-type(1) {
-  --nx-orbit-duration: 9s;
+  --nx-orbit-duration: var(--nx-motion-orbit-attention-fast);
 }
 
 .connection-signal[data-motion-state="attention"] > i:nth-of-type(2),
 .memory-orbit[data-motion-state="attention"] > i:nth-of-type(2),
 .activity-pulse[data-motion-state="attention"] > i:nth-of-type(2) {
-  --nx-orbit-duration: 12s;
+  --nx-orbit-duration: var(--nx-motion-orbit-attention-medium);
 }
 
 .connection-signal[data-motion-state="attention"] > i:nth-of-type(3),
 .activity-pulse[data-motion-state="attention"] > i:nth-of-type(3) {
-  --nx-orbit-duration: 14s;
+  --nx-orbit-duration: var(--nx-motion-orbit-attention-slow);
 }
 
 :where(.connection-signal, .memory-orbit, .activity-pulse)[data-motion-state="degraded"] > i {
-  --nx-orbit-duration: 22s;
+  --nx-orbit-duration: var(--nx-motion-orbit-degraded);
   animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
 }
 
@@ -13266,7 +13270,7 @@ button {
 }
 
 .connection-signal[data-motion-state="success"][data-motion="active"]::before {
-  animation: nx-orbit-success 900ms var(--nx-ease-out) 1;
+  animation: nx-orbit-success 1200ms var(--nx-ease-out) 1;
 }
 
 @keyframes nx-region-enter {

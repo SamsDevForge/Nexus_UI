@@ -5,10 +5,11 @@ import test from "node:test";
 test("the shared motion system centralizes bounded timing and entry choreography", async () => {
   const css = await readFile("app/globals.css", "utf8");
 
-  assert.match(css, /--nx-motion-press: 120ms/);
-  assert.match(css, /--nx-motion-item: 320ms/);
-  assert.match(css, /--nx-motion-region: 440ms/);
-  assert.match(css, /--nx-motion-panel: 420ms/);
+  assert.match(css, /--nx-motion-press: 150ms/);
+  assert.match(css, /--nx-motion-micro: 220ms/);
+  assert.match(css, /--nx-motion-item: 420ms/);
+  assert.match(css, /--nx-motion-region: 500ms/);
+  assert.match(css, /--nx-motion-panel: 600ms/);
   assert.match(css, /@keyframes nx-region-enter/);
   assert.match(css, /@keyframes nx-item-enter/);
   assert.match(css, /\.today-page > \*/);
@@ -57,7 +58,10 @@ test("only the existing semantic signal illustrations receive orbital behavior",
   assert.match(css, /@keyframes nx-orbit-clockwise/);
   assert.match(css, /@keyframes nx-orbit-counterclockwise/);
   assert.match(css, /--nx-orbit-radius: 63px/);
-  assert.match(css, /--nx-orbit-duration: 22s/);
+  assert.match(css, /--nx-motion-orbit-attention-fast: 14s/);
+  assert.match(css, /--nx-motion-orbit-attention-medium: 16s/);
+  assert.match(css, /--nx-motion-orbit-attention-slow: 18s/);
+  assert.match(css, /--nx-motion-orbit-degraded: 24s/);
 });
 
 test("search, timeline, and Quick Capture keep semantic status without depending on motion", async () => {

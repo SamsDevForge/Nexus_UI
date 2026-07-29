@@ -299,6 +299,10 @@ behavior. Phase 7 has not started.
   builds, `git diff --check`, the secret scan, browser console and hydration
   inspection, locked-cube hashes, both supplied SVG hashes, and the unchanged
   22-file `exfonts/` manifest.
+- Product-owner review found the first motion cadence too fast. The follow-up
+  calibration moves item, region, panel, feedback, and semantic orbit motion
+  toward the calm end of the approved ranges while preserving the same
+  hierarchy, states, geometry, reduced-motion behavior, and stable shell.
 
 ## Current implementation assumptions
 

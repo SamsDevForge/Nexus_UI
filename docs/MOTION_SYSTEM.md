@@ -10,12 +10,12 @@ landing composition and locked cube keep their existing behavior.
 
 | Token | Value | Use |
 | --- | ---: | --- |
-| `--nx-motion-press` | 120 ms | Immediate press acknowledgement |
-| `--nx-motion-micro` | 180 ms | Hover, focus, and small state response |
-| `--nx-motion-item` | 320 ms | Row and card arrival |
-| `--nx-motion-component` | 340 ms | Dialog and panel presence |
-| `--nx-motion-panel` | 420 ms | Spatial panel changes |
-| `--nx-motion-region` | 440 ms | Route-content region arrival |
+| `--nx-motion-press` | 150 ms | Immediate press acknowledgement |
+| `--nx-motion-micro` | 220 ms | Hover, focus, and small state response |
+| `--nx-motion-item` | 420 ms | Row and card arrival |
+| `--nx-motion-component` | 420 ms | Dialog and component presence |
+| `--nx-motion-panel` | 600 ms | Spatial panel changes |
+| `--nx-motion-region` | 500 ms | Route-content region arrival |
 | `--nx-ease-out` | `cubic-bezier(0.16, 1, 0.3, 1)` | Entrances and direct feedback |
 | `--nx-ease-standard` | `cubic-bezier(0.2, 0.7, 0.2, 1)` | Short state movement |
 
@@ -57,6 +57,11 @@ tile drifts independently. Attention states accelerate slightly, degraded
 states slow and dim, success may emit one outward acknowledgement, and
 privacy-paused remains static and dim. Fine existing rings, NEXUS colors, and
 the original geometry are preserved.
+
+The calibrated attention cadence is 14, 16, and 18 seconds across related
+signals. Steady loops remain between 16 and 18 seconds, degraded loops take 24
+seconds, and central-tile drift takes 20 to 24 seconds. This intentionally
+favours legibility and calm over visible spin.
 
 `AmbientMotion` keeps these loops paused until visible, pauses them when
 offscreen or when the document is hidden, and honors the system motion
