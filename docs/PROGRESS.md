@@ -305,9 +305,14 @@ behavior. Phase 7 has not started.
   hierarchy, states, geometry, reduced-motion behavior, and stable shell.
 - A second rendered review exposed two calibration issues: card arrival still
   felt rushed, and higher-specificity legacy dot positions displaced some
-  orbital centers. Card entry now takes 650 ms, every animated dot explicitly
+  orbital centers. Card entry now takes 1200 ms, every animated dot explicitly
   resolves from the same center, all radii remain within the illustration, and
   the central tile no longer translates away from that center.
+- A third product-owner cadence review confirmed that the remaining visible
+  motion still read too quickly. Region and panel entry now take 900 ms, card
+  and row entry takes 1200 ms, attention orbits take 28–36 seconds, steady
+  orbits take 32–40 seconds, and degraded motion takes 48 seconds. Immediate
+  press acknowledgement remains responsive at 160 ms.
 
 ## Current implementation assumptions
 

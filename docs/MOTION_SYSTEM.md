@@ -10,12 +10,12 @@ landing composition and locked cube keep their existing behavior.
 
 | Token | Value | Use |
 | --- | ---: | --- |
-| `--nx-motion-press` | 150 ms | Immediate press acknowledgement |
-| `--nx-motion-micro` | 220 ms | Hover, focus, and small state response |
-| `--nx-motion-item` | 650 ms | Deliberate row and card arrival |
-| `--nx-motion-component` | 420 ms | Dialog and component presence |
-| `--nx-motion-panel` | 600 ms | Spatial panel changes |
-| `--nx-motion-region` | 500 ms | Route-content region arrival |
+| `--nx-motion-press` | 160 ms | Immediate press acknowledgement |
+| `--nx-motion-micro` | 260 ms | Hover, focus, and small state response |
+| `--nx-motion-item` | 1200 ms | Slow row and card arrival |
+| `--nx-motion-component` | 700 ms | Dialog and component presence |
+| `--nx-motion-panel` | 900 ms | Spatial panel changes |
+| `--nx-motion-region` | 900 ms | Route-content region arrival |
 | `--nx-ease-out` | `cubic-bezier(0.16, 1, 0.3, 1)` | Entrances and direct feedback |
 | `--nx-ease-standard` | `cubic-bezier(0.2, 0.7, 0.2, 1)` | Short state movement |
 
@@ -58,9 +58,9 @@ states slow and dim, success may emit one outward acknowledgement, and
 privacy-paused remains static and dim. Fine existing rings, NEXUS colors, and
 the original geometry are preserved.
 
-The calibrated attention cadence is 14, 16, and 18 seconds across related
-signals. Steady loops remain between 16 and 18 seconds and degraded loops take
-24 seconds. Every dot is anchored to the exact center of its 170 px
+The calibrated attention cadence is 28, 32, and 36 seconds across related
+signals. Steady loops remain between 32 and 40 seconds and degraded loops take
+48 seconds. Every dot is anchored to the exact center of its 170 px
 illustration and uses a radius that remains inside that boundary. The central
 tile may counter-rotate, but its geometric center remains fixed. This
 intentionally favours legibility and calm over visible spin.

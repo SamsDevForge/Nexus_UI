@@ -618,16 +618,16 @@
   --nx-space-6: 24px;
   --nx-space-8: 32px;
   --nx-space-12: 48px;
-  --nx-motion-press: 150ms;
-  --nx-motion-micro: 220ms;
-  --nx-motion-item: 650ms;
-  --nx-motion-component: 420ms;
-  --nx-motion-region: 500ms;
-  --nx-motion-panel: 600ms;
-  --nx-motion-orbit-attention-fast: 14s;
-  --nx-motion-orbit-attention-medium: 16s;
-  --nx-motion-orbit-attention-slow: 18s;
-  --nx-motion-orbit-degraded: 24s;
+  --nx-motion-press: 160ms;
+  --nx-motion-micro: 260ms;
+  --nx-motion-item: 1200ms;
+  --nx-motion-component: 700ms;
+  --nx-motion-region: 900ms;
+  --nx-motion-panel: 900ms;
+  --nx-motion-orbit-attention-fast: 28s;
+  --nx-motion-orbit-attention-medium: 32s;
+  --nx-motion-orbit-attention-slow: 36s;
+  --nx-motion-orbit-degraded: 48s;
   --nx-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --nx-ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
@@ -13063,7 +13063,7 @@ button {
   border-radius: 22px;
   content: "";
   pointer-events: none;
-  animation: nx-capture-availability 1200ms 650ms var(--nx-ease-out) both;
+  animation: nx-capture-availability 1800ms 850ms var(--nx-ease-out) both;
 }
 
 .command-scan-cue::before {
@@ -13077,7 +13077,7 @@ button {
   box-shadow: 0 0 8px rgba(158, 220, 250, 0.42);
   content: "";
   transform-origin: 5px 0;
-  animation: nx-search-scan 480ms var(--nx-ease-standard) both;
+  animation: nx-search-scan 800ms var(--nx-ease-standard) both;
 }
 
 .quick-capture-result > .product-icon,
@@ -13085,7 +13085,7 @@ button {
 .timeline-entry-icon.status-completed > .product-icon,
 .timeline-entry-icon.status-rescheduled > .product-icon,
 .timeline-entry-icon.status-rejected > .product-icon {
-  animation: nx-status-acknowledge 560ms var(--nx-ease-out) both;
+  animation: nx-status-acknowledge 900ms var(--nx-ease-out) both;
 }
 
 .quick-capture-result.is-failure > .product-icon,
@@ -13146,7 +13146,7 @@ button {
 .connection-signal > i,
 .memory-orbit > i,
 .activity-pulse > i {
-  animation: nx-orbit-clockwise var(--nx-orbit-duration, 18s) linear infinite both;
+  animation: nx-orbit-clockwise var(--nx-orbit-duration, 36s) linear infinite both;
   animation-play-state: paused;
 }
 
@@ -13174,68 +13174,68 @@ button {
 .connection-signal > i:nth-of-type(1) {
   --nx-orbit-phase: -90deg;
   --nx-orbit-radius: 63px;
-  --nx-orbit-duration: 16s;
+  --nx-orbit-duration: 32s;
 }
 
 .connection-signal > i:nth-of-type(2) {
   --nx-orbit-phase: 34deg;
   --nx-orbit-radius: 69px;
-  --nx-orbit-duration: 18s;
+  --nx-orbit-duration: 36s;
   animation-name: nx-orbit-counterclockwise;
 }
 
 .connection-signal > i:nth-of-type(3) {
   --nx-orbit-phase: 124deg;
   --nx-orbit-radius: 76px;
-  --nx-orbit-duration: 18s;
+  --nx-orbit-duration: 40s;
 }
 
 .memory-orbit > i:nth-of-type(1) {
   --nx-orbit-phase: -91deg;
   --nx-orbit-radius: 64px;
-  --nx-orbit-duration: 17s;
+  --nx-orbit-duration: 34s;
 }
 
 .memory-orbit > i:nth-of-type(2) {
   --nx-orbit-phase: 42deg;
   --nx-orbit-radius: 76px;
-  --nx-orbit-duration: 18s;
+  --nx-orbit-duration: 40s;
   animation-name: nx-orbit-counterclockwise;
 }
 
 .activity-pulse > i:nth-of-type(1) {
   --nx-orbit-phase: -90deg;
   --nx-orbit-radius: 74px;
-  --nx-orbit-duration: 16s;
+  --nx-orbit-duration: 32s;
 }
 
 .activity-pulse > i:nth-of-type(2) {
   --nx-orbit-phase: 32deg;
   --nx-orbit-radius: 74px;
-  --nx-orbit-duration: 18s;
+  --nx-orbit-duration: 36s;
   animation-name: nx-orbit-counterclockwise;
 }
 
 .activity-pulse > i:nth-of-type(3) {
   --nx-orbit-phase: 127deg;
   --nx-orbit-radius: 77px;
-  --nx-orbit-duration: 18s;
+  --nx-orbit-duration: 40s;
 }
 
 .connection-signal > span,
 .memory-orbit > span {
   --nx-tile-rotation: 27deg;
-  animation: nx-central-tile-drift 20s ease-in-out infinite alternate both;
+  animation: nx-central-tile-drift 48s ease-in-out infinite alternate both;
   animation-play-state: paused;
 }
 
 .memory-orbit > span {
   --nx-tile-rotation: 32deg;
-  animation-duration: 24s;
+  animation-duration: 56s;
 }
 
 .activity-pulse > span {
-  animation: nx-centered-tile-drift 22s ease-in-out infinite alternate both;
+  animation: nx-centered-tile-drift 52s ease-in-out infinite alternate both;
   animation-play-state: paused;
 }
 
@@ -13275,7 +13275,7 @@ button {
 }
 
 .connection-signal[data-motion-state="success"][data-motion="active"]::before {
-  animation: nx-orbit-success 1200ms var(--nx-ease-out) 1;
+  animation: nx-orbit-success 1800ms var(--nx-ease-out) 1;
 }
 
 @keyframes nx-region-enter {
