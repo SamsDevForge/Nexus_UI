@@ -303,6 +303,11 @@ behavior. Phase 7 has not started.
   calibration moves item, region, panel, feedback, and semantic orbit motion
   toward the calm end of the approved ranges while preserving the same
   hierarchy, states, geometry, reduced-motion behavior, and stable shell.
+- A second rendered review exposed two calibration issues: card arrival still
+  felt rushed, and higher-specificity legacy dot positions displaced some
+  orbital centers. Card entry now takes 650 ms, every animated dot explicitly
+  resolves from the same center, all radii remain within the illustration, and
+  the central tile no longer translates away from that center.
 
 ## Current implementation assumptions
 

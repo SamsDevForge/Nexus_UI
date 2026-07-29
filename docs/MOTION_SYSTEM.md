@@ -12,7 +12,7 @@ landing composition and locked cube keep their existing behavior.
 | --- | ---: | --- |
 | `--nx-motion-press` | 150 ms | Immediate press acknowledgement |
 | `--nx-motion-micro` | 220 ms | Hover, focus, and small state response |
-| `--nx-motion-item` | 420 ms | Row and card arrival |
+| `--nx-motion-item` | 650 ms | Deliberate row and card arrival |
 | `--nx-motion-component` | 420 ms | Dialog and component presence |
 | `--nx-motion-panel` | 600 ms | Spatial panel changes |
 | `--nx-motion-region` | 500 ms | Route-content region arrival |
@@ -59,9 +59,11 @@ privacy-paused remains static and dim. Fine existing rings, NEXUS colors, and
 the original geometry are preserved.
 
 The calibrated attention cadence is 14, 16, and 18 seconds across related
-signals. Steady loops remain between 16 and 18 seconds, degraded loops take 24
-seconds, and central-tile drift takes 20 to 24 seconds. This intentionally
-favours legibility and calm over visible spin.
+signals. Steady loops remain between 16 and 18 seconds and degraded loops take
+24 seconds. Every dot is anchored to the exact center of its 170 px
+illustration and uses a radius that remains inside that boundary. The central
+tile may counter-rotate, but its geometric center remains fixed. This
+intentionally favours legibility and calm over visible spin.
 
 `AmbientMotion` keeps these loops paused until visible, pauses them when
 offscreen or when the document is hidden, and honors the system motion

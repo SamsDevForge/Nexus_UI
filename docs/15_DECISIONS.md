@@ -327,7 +327,12 @@ announcement. Motion remains dependency-free and must not import, couple to, or
 modify the locked Three.js cube.
 
 Rendered product-owner feedback found the initial cadence visually rushed.
-Motion therefore uses the calm end of the approved ranges: 420 ms item entry,
+Motion therefore uses a deliberately calm cadence: 650 ms item entry,
 500 ms region entry, 600 ms panels, and 14–18 second attention orbits. This is
 a timing calibration only; hierarchy, geometry, state meaning, and interaction
 authority remain unchanged.
+
+All orbital dots resolve their absolute position from one shared center after
+the original static placement rules. Their radii remain within the illustration
+boundary, and central-tile counter-rotation never translates its geometric
+center.

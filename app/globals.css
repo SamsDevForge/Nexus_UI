@@ -620,7 +620,7 @@
   --nx-space-12: 48px;
   --nx-motion-press: 150ms;
   --nx-motion-micro: 220ms;
-  --nx-motion-item: 420ms;
+  --nx-motion-item: 650ms;
   --nx-motion-component: 420ms;
   --nx-motion-region: 500ms;
   --nx-motion-panel: 600ms;
@@ -13146,23 +13146,28 @@ button {
 .connection-signal > i,
 .memory-orbit > i,
 .activity-pulse > i {
-  top: 50%;
-  right: auto;
-  bottom: auto;
-  left: 50%;
   animation: nx-orbit-clockwise var(--nx-orbit-duration, 18s) linear infinite both;
   animation-play-state: paused;
 }
 
-.connection-signal > i {
+.connection-signal > i:nth-of-type(n),
+.memory-orbit > i:nth-of-type(n),
+.activity-pulse > i:nth-of-type(n) {
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+}
+
+.connection-signal > i:nth-of-type(n) {
   margin: -4px 0 0 -4px;
 }
 
-.memory-orbit > i {
+.memory-orbit > i:nth-of-type(n) {
   margin: -5px 0 0 -5px;
 }
 
-.activity-pulse > i {
+.activity-pulse > i:nth-of-type(n) {
   margin: -3.5px 0 0 -3.5px;
 }
 
@@ -13392,11 +13397,10 @@ button {
 
 @keyframes nx-central-tile-drift {
   from {
-    transform: rotate(var(--nx-tile-rotation)) translate3d(0, 0, 0);
+    transform: rotate(var(--nx-tile-rotation));
   }
   to {
-    transform: rotate(calc(var(--nx-tile-rotation) - 3deg))
-      translate3d(1.5px, -1px, 0);
+    transform: rotate(calc(var(--nx-tile-rotation) - 3deg));
   }
 }
 
@@ -13405,7 +13409,7 @@ button {
     transform: translate(-50%, -50%) rotate(30deg);
   }
   to {
-    transform: translate(calc(-50% + 1px), calc(-50% - 1px)) rotate(27deg);
+    transform: translate(-50%, -50%) rotate(27deg);
   }
 }
 
