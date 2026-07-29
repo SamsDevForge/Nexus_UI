@@ -306,3 +306,22 @@ authority.
 Corrections and deletion operate on the owning user's stored capture. Raw
 capture text, provider tokens, email bodies, location history, and other
 sensitive content do not enter structured logs.
+
+## D-032 — Product motion is semantic, bounded, and visibility-aware
+
+NEXUS product motion communicates arrival, hierarchy, relationship, system
+state, feedback, or spatial continuity. Route content may use short region and
+bounded row choreography while the application shell, navigation, context bar,
+Quick Capture launcher, and locked cube remain stable.
+
+Continuous relative motion is limited to existing illustrations whose geometry
+already represents live relationships: Connections, Memory, and Activity.
+Their signal dots may orbit at different radii, phases, speeds, and directions
+around the existing central tile. Attention, success, degraded, and
+privacy-paused states alter that behavior without replacing textual status.
+
+Ambient loops pause offscreen, in hidden documents, and under reduced-motion
+preferences. Reduced motion removes orbit, drift, translation, scale, scan,
+pulse, and stagger while preserving every status, action, focus path, and live
+announcement. Motion remains dependency-free and must not import, couple to, or
+modify the locked Three.js cube.

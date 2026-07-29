@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { AmbientMotion } from "./AmbientMotion";
 import type {
   DependencyImpact,
   MemoryCategory,
@@ -118,11 +119,24 @@ export function MemoryExperience({
                 before it shapes a decision.
               </p>
             </div>
-            <div className="memory-orbit" aria-hidden="true">
+            <AmbientMotion
+              className="memory-orbit"
+              state={
+                snapshot.scenario === "privacy-paused"
+                  ? "paused"
+                  : snapshot.viewState === "offline" ||
+                      snapshot.viewState === "error" ||
+                      snapshot.viewState === "permission-denied"
+                    ? "degraded"
+                    : snapshot.items.some((item) => item.status === "unconfirmed")
+                      ? "attention"
+                      : "steady"
+              }
+            >
               <span />
               <i />
               <i />
-            </div>
+            </AmbientMotion>
             <div className="control-hero-metrics">
               <span>
                 <b>{snapshot.items.filter((item) => item.status === "confirmed").length}</b>

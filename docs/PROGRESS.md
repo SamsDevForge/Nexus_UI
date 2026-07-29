@@ -2,12 +2,11 @@
 
 ## Current phase
 
-Phase 0 through Phase 5 are accepted. Phase 6 local implementation is complete:
-the platform foundation, identity boundary, onboarding, durable user profile,
-settings, places, preferences, manual Quick Capture persistence, and audit-safe
-Activity are implemented. The Phase 6 cloud acceptance checks await provider
-deployment access and runtime configuration that are not present in the
-connected Railway and Sites surfaces.
+Phase 0 through Phase 6 are accepted. The product owner confirmed
+`53a6031608af18caabba01d8c9e9a74c6f1c7b99` as the final accepted Phase 6
+starting point for the motion-completeness pass. The focused motion pass is
+implemented without changing provider, identity, persistence, API, or action
+behavior. Phase 7 has not started.
 
 ## Completed
 
@@ -276,6 +275,30 @@ connected Railway and Sites surfaces.
   project remained at version 18 and its runtime-variable store exposed no
   Phase 6 keys. No backend, migration, or frontend deployment was claimed, and
   real-user acceptance tests were not run.
+- The post-Phase-6 motion-completeness pass added centralized press, item,
+  component, panel, and region timing; bounded route and row choreography; and
+  restrained panel, dialog, search, Quick Capture, and status feedback without
+  adding a motion dependency or changing the approved material system.
+- Connections, Memory, and Activity reuse their existing central tiles, rings,
+  and signal dots for state-aware relative orbital motion. A shared visibility
+  controller pauses ambient loops offscreen, in hidden documents, for the
+  privacy-paused state, and under reduced-motion preferences.
+- Sign-in, onboarding, Today, Timeline, Insights, NEXUS, Knowledge, Nexus
+  Notes, Search, Automations, Connections, Permission Centre, Memory, Activity,
+  Settings, Technicals, global search, and Quick Capture received rendered
+  motion review. Entry motion remains on route content while the shell,
+  navigation, context bar, and locked cube stay stable.
+- Motion verification covered 1440 x 900, 1280 x 800, 768 x 1024,
+  390 x 844, and a 720 x 450 reflow equivalent to 200% zoom. Populated,
+  loading, empty, partial, stale, degraded, denied, offline, success, running,
+  and recoverable-failure states retained their hierarchy with no
+  document-level horizontal overflow. Global Search and Quick Capture retained
+  focus containment, restoration, and narrow-viewport fit.
+- Motion-pass validation passes 65 frontend tests, 14 backend tests,
+  TypeScript, ESLint, Ruff, strict MyPy, Next.js and Sites/vinext production
+  builds, `git diff --check`, the secret scan, browser console and hydration
+  inspection, locked-cube hashes, both supplied SVG hashes, and the unchanged
+  22-file `exfonts/` manifest.
 
 ## Current implementation assumptions
 
@@ -295,8 +318,8 @@ connected Railway and Sites surfaces.
   and Activity APIs implemented
 - Persistence: SQLAlchemy/Alembic PostgreSQL foundation implemented; isolated
   migration and API tests pass
-- Identity: Firebase web sign-in and server token verification implemented,
-  pending deployed end-to-end verification
+- Identity: Firebase web sign-in and server token verification implemented;
+  the motion pass does not change the accepted identity boundary
 - Integrations: Teams icon registered; no external data connector implemented
 - AI: not implemented
 - Android: not implemented
@@ -315,12 +338,9 @@ in Activity; they do not write to a provider calendar.
 
 ## Known limitations
 
-- Railway Terms of Service are accepted, but the connected workspace still has
-  no deployable project or service. The existing Sites project has no Phase 6
-  runtime keys. Consequently production Alembic state, Railway readiness, real
-  Firebase sign-in, durable reload/reauthentication, cross-user isolation,
-  error-state behavior, and a new private Sites version remain externally
-  unverified.
+- The motion pass relies on the product owner's declaration that Phase 6 cloud
+  acceptance is complete at the supplied accepted commit. It does not repeat
+  provider-console, real-account persistence, or cross-user acceptance checks.
 - Mock action approvals outside the Phase 6 durable boundaries still update
   only deterministic local state and reset on route reload.
 - Phase 3 connection setup, sync, reconnect, disconnect, export, deletion,
@@ -338,6 +358,5 @@ in Activity; they do not write to a provider calendar.
 
 ## Next phase
 
-Phase 7 — Weather, Maps, and Public Context APIs. Begin only after the Phase 6
-cloud acceptance checks in `docs/PHASE_06_USER_SETUP.md` pass. No Phase 7
-implementation has started.
+Phase 7 — Weather, Maps, and Public Context APIs. It remains the exact next
+phase and was not implemented by the motion-completeness pass.

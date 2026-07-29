@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { AmbientMotion } from "./AmbientMotion";
 import type {
   ActivityEvent,
   ActivityEventType,
@@ -210,12 +211,25 @@ export function ActivityExperience({
                 result—not generated language—is the source of truth.
               </p>
             </div>
-            <div className="activity-pulse" aria-hidden="true">
+            <AmbientMotion
+              className="activity-pulse"
+              state={
+                snapshot.scenario === "privacy-paused"
+                  ? "paused"
+                  : snapshot.viewState === "offline" ||
+                      snapshot.viewState === "error" ||
+                      snapshot.viewState === "permission-denied"
+                    ? "degraded"
+                    : snapshot.events.some((event) => event.outcome === "failed")
+                      ? "attention"
+                      : "success"
+              }
+            >
               <span />
               <i />
               <i />
               <i />
-            </div>
+            </AmbientMotion>
             <div className="control-hero-metrics">
               <span>
                 <b>{snapshot.events.length}</b>

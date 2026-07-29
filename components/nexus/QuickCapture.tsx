@@ -86,6 +86,7 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
   const [draft, setDraft] = useState<QuickCaptureDraft>(emptyDraft);
   const [preview, setPreview] = useState<QuickCapturePreview | null>(null);
   const [result, setResult] = useState<QuickCaptureResult | null>(null);
+  const [showAvailabilityCue, setShowAvailabilityCue] = useState(true);
   const canonical = canonicalScenario(scenario);
   const dirty = hasDraftContent(draft);
 
@@ -666,14 +667,24 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
       ) : null}
 
       <button
-        className="quick-capture-launcher"
+        className={
+          showAvailabilityCue
+            ? "quick-capture-launcher has-availability-cue"
+            : "quick-capture-launcher"
+        }
         ref={launcherRef}
         type="button"
         aria-label={open ? "Close Quick Capture" : "Open Quick Capture"}
         aria-expanded={open}
         aria-haspopup="dialog"
         title="Quick Capture"
+        onAnimationEnd={(event) => {
+          if (event.animationName === "nx-capture-availability") {
+            setShowAvailabilityCue(false);
+          }
+        }}
         onClick={() => {
+          setShowAvailabilityCue(false);
           if (open) {
             requestClose();
           } else {

@@ -115,7 +115,7 @@ export function GlobalSearch({
           </button>
         </header>
         <div className="command-input">
-          <span aria-hidden="true" />
+          <span className="command-scan-cue" key={query} aria-hidden="true" />
           <input
             ref={inputRef}
             value={query}

@@ -618,9 +618,14 @@
   --nx-space-6: 24px;
   --nx-space-8: 32px;
   --nx-space-12: 48px;
+  --nx-motion-press: 120ms;
   --nx-motion-micro: 180ms;
+  --nx-motion-item: 320ms;
   --nx-motion-component: 340ms;
+  --nx-motion-region: 440ms;
+  --nx-motion-panel: 420ms;
   --nx-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --nx-ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 * {
@@ -12911,5 +12916,557 @@ button {
     display: inline-flex;
     min-height: 44px;
     align-items: center;
+  }
+}
+
+/* Motion completeness: restrained route choreography and semantic feedback */
+
+.identity-page > .identity-atmosphere,
+.identity-page > .identity-panel,
+.onboarding-page > .onboarding-progress,
+.onboarding-page > .onboarding-stage,
+.today-page > *,
+.phase2-page > *,
+.control-page > *,
+.technicals-page > * {
+  --nx-motion-delay: 0ms;
+  animation: nx-region-enter var(--nx-motion-region) var(--nx-ease-out) both;
+  animation-delay: var(--nx-motion-delay);
+}
+
+.identity-page > .identity-panel,
+.onboarding-page > .onboarding-stage,
+.today-page > .today-heading,
+.phase2-page > .phase2-heading,
+.control-page > .control-heading,
+.technicals-page > .technicals-heading {
+  --nx-motion-delay: 35ms;
+}
+
+.today-page > .insight-hero,
+.insights-page > .ranked-insight-primary,
+.timeline-page > .timeline-workspace,
+.nexus-page > .nexus-context,
+.knowledge-page > .knowledge-source-overview,
+.notes-page > .notes-source-rule,
+.search-page > .search-workspace,
+.control-page > .control-hero,
+.technicals-page > .technical-overview {
+  --nx-motion-delay: 0ms;
+}
+
+.today-page > .today-band,
+.phase2-page > :nth-child(2),
+.control-page > :nth-child(2),
+.technicals-page > :nth-child(2) {
+  --nx-motion-delay: 55ms;
+}
+
+.today-page > .today-detail-grid,
+.phase2-page > :nth-child(3),
+.control-page > :nth-child(3),
+.technicals-page > :nth-child(3) {
+  --nx-motion-delay: 100ms;
+}
+
+.today-page > .prepared-section,
+.phase2-page > :nth-child(4),
+.control-page > :nth-child(4),
+.technicals-page > :nth-child(4) {
+  --nx-motion-delay: 145ms;
+}
+
+.today-page > .signals-section,
+.phase2-page > :nth-child(n + 5),
+.control-page > :nth-child(n + 5),
+.technicals-page > :nth-child(n + 5) {
+  --nx-motion-delay: 180ms;
+}
+
+.timeline-track > .timeline-entry,
+.insight-stream > .insight-row,
+.knowledge-document-list > button,
+.notes-library section > button,
+.search-result-groups section > .search-result-row,
+.command-results > button,
+.control-row-list > .control-row,
+.activity-date-group > .activity-row {
+  --nx-item-delay: 0ms;
+  animation: nx-item-enter var(--nx-motion-item) var(--nx-ease-out) both;
+  animation-delay: var(--nx-item-delay);
+}
+
+.timeline-track > .timeline-entry:nth-child(2),
+.insight-stream > .insight-row:nth-child(2),
+.knowledge-document-list > button:nth-child(2),
+.notes-library section > button:nth-child(2),
+.search-result-groups section > .search-result-row:nth-child(2),
+.command-results > button:nth-child(2),
+.control-row-list > .control-row:nth-child(2),
+.activity-date-group > .activity-row:nth-child(3) {
+  --nx-item-delay: 45ms;
+}
+
+.timeline-track > .timeline-entry:nth-child(3),
+.insight-stream > .insight-row:nth-child(3),
+.knowledge-document-list > button:nth-child(3),
+.notes-library section > button:nth-child(3),
+.search-result-groups section > .search-result-row:nth-child(3),
+.command-results > button:nth-child(3),
+.control-row-list > .control-row:nth-child(3),
+.activity-date-group > .activity-row:nth-child(4) {
+  --nx-item-delay: 90ms;
+}
+
+.timeline-track > .timeline-entry:nth-child(4),
+.insight-stream > .insight-row:nth-child(4),
+.knowledge-document-list > button:nth-child(4),
+.notes-library section > button:nth-child(4),
+.search-result-groups section > .search-result-row:nth-child(4),
+.command-results > button:nth-child(4),
+.control-row-list > .control-row:nth-child(4),
+.activity-date-group > .activity-row:nth-child(5) {
+  --nx-item-delay: 135ms;
+}
+
+.timeline-track > .timeline-entry:nth-child(n + 5),
+.insight-stream > .insight-row:nth-child(n + 5),
+.knowledge-document-list > button:nth-child(n + 5),
+.notes-library section > button:nth-child(n + 5),
+.search-result-groups section > .search-result-row:nth-child(n + 5),
+.command-results > button:nth-child(n + 5),
+.control-row-list > .control-row:nth-child(n + 5),
+.activity-date-group > .activity-row:nth-child(n + 6) {
+  --nx-item-delay: 180ms;
+}
+
+.control-dialog-backdrop,
+.command-backdrop {
+  animation: nx-presence-backdrop var(--nx-motion-item) ease-out both;
+}
+
+.control-dialog,
+.command-palette,
+.quick-capture-panel {
+  transform-origin: center top;
+  animation: nx-panel-enter var(--nx-motion-component) var(--nx-ease-out) both;
+}
+
+.quick-capture-launcher.has-availability-cue::before {
+  position: absolute;
+  inset: -6px;
+  border: 1px solid rgba(158, 220, 250, 0.48);
+  border-radius: 22px;
+  content: "";
+  pointer-events: none;
+  animation: nx-capture-availability 900ms 520ms var(--nx-ease-out) both;
+}
+
+.command-scan-cue::before {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  width: 8px;
+  height: 1px;
+  border-radius: 999px;
+  background: rgba(158, 220, 250, 0.9);
+  box-shadow: 0 0 8px rgba(158, 220, 250, 0.42);
+  content: "";
+  transform-origin: 5px 0;
+  animation: nx-search-scan 360ms var(--nx-ease-standard) both;
+}
+
+.quick-capture-result > .product-icon,
+.timeline-entry-icon.status-accepted > .product-icon,
+.timeline-entry-icon.status-completed > .product-icon,
+.timeline-entry-icon.status-rescheduled > .product-icon,
+.timeline-entry-icon.status-rejected > .product-icon {
+  animation: nx-status-acknowledge 420ms var(--nx-ease-out) both;
+}
+
+.quick-capture-result.is-failure > .product-icon,
+.timeline-entry-icon.status-rejected > .product-icon {
+  animation-name: nx-status-failure;
+}
+
+.product-main :where(
+    .secondary-button,
+    .text-button,
+    .quiet-button,
+    .control-row,
+    .activity-row,
+    .timeline-entry-main,
+    .search-result-row,
+    .knowledge-document-list > button,
+    .notes-library button
+  ),
+.command-results > button,
+.quick-capture-actions button {
+  transition:
+    transform var(--nx-motion-micro) var(--nx-ease-out),
+    border-color var(--nx-motion-micro) ease,
+    background var(--nx-motion-micro) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-main :where(
+      .control-row,
+      .activity-row,
+      .search-result-row,
+      .knowledge-document-list > button,
+      .notes-library button
+    ):hover {
+    transform: translate3d(0, -1px, 0);
+  }
+}
+
+.product-main :where(
+    .secondary-button,
+    .text-button,
+    .quiet-button,
+    .control-row,
+    .activity-row,
+    .timeline-entry-main,
+    .search-result-row,
+    .knowledge-document-list > button,
+    .notes-library button
+  ):active,
+.command-results > button:active,
+.quick-capture-actions button:active {
+  transform: scale(0.985);
+  transition-duration: var(--nx-motion-press);
+}
+
+/* Existing signal illustrations: relative circular movement around stable geometry */
+
+.connection-signal > i,
+.memory-orbit > i,
+.activity-pulse > i {
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  animation: nx-orbit-clockwise var(--nx-orbit-duration, 14s) linear infinite both;
+  animation-play-state: paused;
+}
+
+.connection-signal > i {
+  margin: -4px 0 0 -4px;
+}
+
+.memory-orbit > i {
+  margin: -5px 0 0 -5px;
+}
+
+.activity-pulse > i {
+  margin: -3.5px 0 0 -3.5px;
+}
+
+.connection-signal > i:nth-of-type(1) {
+  --nx-orbit-phase: -90deg;
+  --nx-orbit-radius: 63px;
+  --nx-orbit-duration: 12s;
+}
+
+.connection-signal > i:nth-of-type(2) {
+  --nx-orbit-phase: 34deg;
+  --nx-orbit-radius: 69px;
+  --nx-orbit-duration: 16s;
+  animation-name: nx-orbit-counterclockwise;
+}
+
+.connection-signal > i:nth-of-type(3) {
+  --nx-orbit-phase: 124deg;
+  --nx-orbit-radius: 76px;
+  --nx-orbit-duration: 18s;
+}
+
+.memory-orbit > i:nth-of-type(1) {
+  --nx-orbit-phase: -91deg;
+  --nx-orbit-radius: 64px;
+  --nx-orbit-duration: 15s;
+}
+
+.memory-orbit > i:nth-of-type(2) {
+  --nx-orbit-phase: 42deg;
+  --nx-orbit-radius: 76px;
+  --nx-orbit-duration: 18s;
+  animation-name: nx-orbit-counterclockwise;
+}
+
+.activity-pulse > i:nth-of-type(1) {
+  --nx-orbit-phase: -90deg;
+  --nx-orbit-radius: 74px;
+  --nx-orbit-duration: 13s;
+}
+
+.activity-pulse > i:nth-of-type(2) {
+  --nx-orbit-phase: 32deg;
+  --nx-orbit-radius: 74px;
+  --nx-orbit-duration: 17s;
+  animation-name: nx-orbit-counterclockwise;
+}
+
+.activity-pulse > i:nth-of-type(3) {
+  --nx-orbit-phase: 127deg;
+  --nx-orbit-radius: 77px;
+  --nx-orbit-duration: 19s;
+}
+
+.connection-signal > span,
+.memory-orbit > span {
+  --nx-tile-rotation: 27deg;
+  animation: nx-central-tile-drift 14s ease-in-out infinite alternate both;
+  animation-play-state: paused;
+}
+
+.memory-orbit > span {
+  --nx-tile-rotation: 32deg;
+  animation-duration: 17s;
+}
+
+.activity-pulse > span {
+  animation: nx-centered-tile-drift 16s ease-in-out infinite alternate both;
+  animation-play-state: paused;
+}
+
+:where(.connection-signal, .memory-orbit, .activity-pulse)[data-motion="active"] > i,
+:where(.connection-signal, .memory-orbit, .activity-pulse)[data-motion="active"] > span {
+  animation-play-state: running;
+}
+
+.connection-signal[data-motion-state="attention"] > i:nth-of-type(1),
+.memory-orbit[data-motion-state="attention"] > i:nth-of-type(1),
+.activity-pulse[data-motion-state="attention"] > i:nth-of-type(1) {
+  --nx-orbit-duration: 9s;
+}
+
+.connection-signal[data-motion-state="attention"] > i:nth-of-type(2),
+.memory-orbit[data-motion-state="attention"] > i:nth-of-type(2),
+.activity-pulse[data-motion-state="attention"] > i:nth-of-type(2) {
+  --nx-orbit-duration: 12s;
+}
+
+.connection-signal[data-motion-state="attention"] > i:nth-of-type(3),
+.activity-pulse[data-motion-state="attention"] > i:nth-of-type(3) {
+  --nx-orbit-duration: 14s;
+}
+
+:where(.connection-signal, .memory-orbit, .activity-pulse)[data-motion-state="degraded"] > i {
+  --nx-orbit-duration: 22s;
+  animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+}
+
+:where(.connection-signal, .memory-orbit, .activity-pulse)[data-motion-state="degraded"] {
+  opacity: 0.72;
+}
+
+:where(.connection-signal, .memory-orbit, .activity-pulse)[data-motion-state="paused"] {
+  opacity: 0.52;
+}
+
+.connection-signal[data-motion-state="success"][data-motion="active"]::before {
+  animation: nx-orbit-success 900ms var(--nx-ease-out) 1;
+}
+
+@keyframes nx-region-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0) scale(0.996);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes nx-item-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 5px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes nx-presence-backdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nx-panel-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 7px, 0) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes nx-capture-availability {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  35% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.14);
+  }
+}
+
+@keyframes nx-search-scan {
+  from {
+    opacity: 0.35;
+    transform: rotate(-55deg) scaleX(0.62);
+  }
+  to {
+    opacity: 0.9;
+    transform: rotate(42deg) scaleX(1);
+  }
+}
+
+@keyframes nx-status-acknowledge {
+  0% {
+    opacity: 0.68;
+    transform: scale(0.92);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes nx-status-failure {
+  0% {
+    opacity: 0.62;
+    transform: translate3d(-2px, 0, 0);
+  }
+  55% {
+    opacity: 1;
+    transform: translate3d(2px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes nx-orbit-clockwise {
+  from {
+    transform: rotate(var(--nx-orbit-phase)) translateX(var(--nx-orbit-radius));
+  }
+  to {
+    transform: rotate(calc(var(--nx-orbit-phase) + 360deg))
+      translateX(var(--nx-orbit-radius));
+  }
+}
+
+@keyframes nx-orbit-counterclockwise {
+  from {
+    transform: rotate(var(--nx-orbit-phase)) translateX(var(--nx-orbit-radius));
+  }
+  to {
+    transform: rotate(calc(var(--nx-orbit-phase) - 360deg))
+      translateX(var(--nx-orbit-radius));
+  }
+}
+
+@keyframes nx-central-tile-drift {
+  from {
+    transform: rotate(var(--nx-tile-rotation)) translate3d(0, 0, 0);
+  }
+  to {
+    transform: rotate(calc(var(--nx-tile-rotation) - 3deg))
+      translate3d(1.5px, -1px, 0);
+  }
+}
+
+@keyframes nx-centered-tile-drift {
+  from {
+    transform: translate(-50%, -50%) rotate(30deg);
+  }
+  to {
+    transform: translate(calc(-50% + 1px), calc(-50% - 1px)) rotate(27deg);
+  }
+}
+
+@keyframes nx-orbit-success {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .identity-page > *,
+  .onboarding-page > *,
+  .today-page > *,
+  .phase2-page > *,
+  .control-page > *,
+  .technicals-page > *,
+  .timeline-track > .timeline-entry,
+  .insight-stream > .insight-row,
+  .knowledge-document-list > button,
+  .notes-library section > button,
+  .search-result-groups section > .search-result-row,
+  .command-results > button,
+  .control-row-list > .control-row,
+  .activity-date-group > .activity-row,
+  .control-dialog-backdrop,
+  .control-dialog,
+  .command-backdrop,
+  .command-palette,
+  .quick-capture-panel,
+  .quick-capture-launcher.has-availability-cue::before,
+  .command-scan-cue::before,
+  .quick-capture-result > .product-icon,
+  .timeline-entry-icon > .product-icon,
+  .connection-signal > *,
+  .memory-orbit > *,
+  .activity-pulse > *,
+  .connection-signal::before {
+    animation: none !important;
+  }
+
+  .product-main :where(
+      .control-row,
+      .activity-row,
+      .search-result-row,
+      .knowledge-document-list > button,
+      .notes-library button
+    ):hover,
+  .product-main :where(
+      .secondary-button,
+      .text-button,
+      .quiet-button,
+      .control-row,
+      .activity-row,
+      .timeline-entry-main,
+      .search-result-row,
+      .knowledge-document-list > button,
+      .notes-library button
+    ):active,
+  .command-results > button:active,
+  .quick-capture-actions button:active {
+    transform: none;
   }
 }
