@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { NexusApiClient, NexusApiError } from "../lib/api/client";
+import { NEXUS_PROXY_AUTHORIZATION_HEADER } from "../lib/api/proxy-transport";
 import { forwardNexusApiRequest } from "../lib/api/server-proxy";
 import { getNexusRuntimeMode } from "../lib/runtime/config";
 
@@ -68,6 +69,31 @@ test("authentication refresh is bounded to one retry", async () => {
   assert.deepEqual(refreshCalls, [false, true, false]);
 });
 
+test("the API client can avoid the hosting gate authorization header", async () => {
+  const requests: Request[] = [];
+  const client = new NexusApiClient({
+    baseUrl: "https://nexus.test/api/nexus",
+    authorizationHeaderName: NEXUS_PROXY_AUTHORIZATION_HEADER,
+    getToken: async () => "private-id-token",
+    fetchImplementation: async (input, init) => {
+      const request = new Request(input, init);
+      requests.push(request);
+      return Response.json({
+        data: { id: "nexus-user" },
+        requestId: "request-proxy-auth",
+      });
+    },
+  });
+
+  await client.request<{ id: string }>("/api/v1/me");
+
+  assert.equal(requests[0].headers.get("authorization"), null);
+  assert.equal(
+    requests[0].headers.get(NEXUS_PROXY_AUTHORIZATION_HEADER),
+    "Bearer private-id-token",
+  );
+});
+
 test("non-authentication failures are normalized without retry", async () => {
   let requestCount = 0;
   const client = new NexusApiClient({
@@ -109,9 +135,10 @@ test("the same-origin Phase 6 proxy forwards only approved request metadata", as
         method: "PATCH",
         headers: {
           Accept: "application/json",
-          Authorization: "Bearer test-token",
+          Authorization: "Bearer hosting-gate-token",
           "Content-Type": "application/json",
           Cookie: "must-not-forward=1",
+          [NEXUS_PROXY_AUTHORIZATION_HEADER]: "Bearer test-token",
           "X-Idempotency-Key": "operation-1",
         },
         body: JSON.stringify({ displayName: "Phase Six Test" }),
@@ -136,6 +163,10 @@ test("the same-origin Phase 6 proxy forwards only approved request metadata", as
     assert.equal(
       upstreamRequest.headers.get("authorization"),
       "Bearer test-token",
+    );
+    assert.equal(
+      upstreamRequest.headers.get(NEXUS_PROXY_AUTHORIZATION_HEADER),
+      null,
     );
     assert.equal(upstreamRequest.headers.get("cookie"), null);
     assert.equal(
@@ -163,7 +194,11 @@ test("the Phase 6 proxy blocks redirects and normalizes upstream outages", async
   try {
     const request = new Request(
       "https://nexus.test/api/nexus/api/v1/me",
-      { headers: { Authorization: "Bearer test-token" } },
+      {
+        headers: {
+          [NEXUS_PROXY_AUTHORIZATION_HEADER]: "Bearer test-token",
+        },
+      },
     );
     const redirected = await forwardNexusApiRequest(
       request,

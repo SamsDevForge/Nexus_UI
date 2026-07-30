@@ -1,6 +1,10 @@
 import type { ApiEnvelope, ApiErrorEnvelope } from "./contracts";
+import { NEXUS_PROXY_AUTHORIZATION_HEADER } from "./proxy-transport";
 
 export type AuthTokenProvider = (forceRefresh: boolean) => Promise<string | null>;
+export type AuthorizationHeaderName =
+  | "Authorization"
+  | typeof NEXUS_PROXY_AUTHORIZATION_HEADER;
 
 export class NexusApiError extends Error {
   constructor(
@@ -19,15 +23,19 @@ export interface NexusApiClientOptions {
   getToken: AuthTokenProvider;
   fetchImplementation?: typeof fetch;
   timeoutMs?: number;
+  authorizationHeaderName?: AuthorizationHeaderName;
 }
 
 export class NexusApiClient {
   private readonly fetchImplementation: typeof fetch;
   private readonly timeoutMs: number;
+  private readonly authorizationHeaderName: AuthorizationHeaderName;
 
   constructor(private readonly options: NexusApiClientOptions) {
     this.fetchImplementation = options.fetchImplementation ?? fetch;
     this.timeoutMs = options.timeoutMs ?? 10_000;
+    this.authorizationHeaderName =
+      options.authorizationHeaderName ?? "Authorization";
   }
 
   async request<T>(
@@ -46,17 +54,19 @@ export class NexusApiClient {
       this.timeoutMs,
     );
     try {
+      const headers = new Headers(init.headers);
+      if (!headers.has("Accept")) headers.set("Accept", "application/json");
+      if (!headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+      }
+      headers.set(this.authorizationHeaderName, `Bearer ${token}`);
+
       const response = await this.fetchImplementation(
         `${this.options.baseUrl}${path}`,
         {
           ...init,
           signal: controller.signal,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            ...init.headers,
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
         },
       );
 

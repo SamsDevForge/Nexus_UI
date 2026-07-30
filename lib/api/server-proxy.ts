@@ -1,6 +1,7 @@
+import { NEXUS_PROXY_AUTHORIZATION_HEADER } from "./proxy-transport";
+
 const FORWARDED_REQUEST_HEADERS = [
   "accept",
-  "authorization",
   "content-type",
   "x-idempotency-key",
   "x-request-id",
@@ -77,6 +78,12 @@ export async function forwardNexusApiRequest(
   for (const name of FORWARDED_REQUEST_HEADERS) {
     const value = request.headers.get(name);
     if (value) headers.set(name, value);
+  }
+  const nexusAuthorization = request.headers.get(
+    NEXUS_PROXY_AUTHORIZATION_HEADER,
+  );
+  if (nexusAuthorization) {
+    headers.set("authorization", nexusAuthorization);
   }
 
   const method = request.method.toUpperCase();
