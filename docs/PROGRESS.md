@@ -2,12 +2,11 @@
 
 ## Current phase
 
-Phase 0 through Phase 5 are accepted. Phase 6 local implementation is complete:
-the platform foundation, identity boundary, onboarding, durable user profile,
-settings, places, preferences, manual Quick Capture persistence, and audit-safe
-Activity are implemented. The Phase 6 cloud acceptance checks await provider
-deployment access and runtime configuration that are not present in the
-connected Railway and Sites surfaces.
+Phase 0 through Phase 5 are accepted. Phase 6 local implementation is complete
+and its cloud acceptance pass is in progress. Railway is deployed, Alembic is
+at the Phase 6 head, readiness is healthy, and the existing owner-only Sites
+project is configured for the live runtime. Real-account persistence and
+cross-user verification remain to be completed before Phase 6 is accepted.
 
 ## Completed
 
@@ -276,6 +275,16 @@ connected Railway and Sites surfaces.
   project remained at version 18 and its runtime-variable store exposed no
   Phase 6 keys. No backend, migration, or frontend deployment was claimed, and
   real-user acceptance tests were not run.
+- The resumed 2026-07-30 cloud pass deployed the FastAPI service and Alembic
+  head, verified production readiness and exact-origin CORS, and permanently
+  normalized Neon `postgresql://` direct and pooled URLs for asyncpg without
+  logging connection strings.
+- Private Sites live-mode verification exposed a hosting-boundary defect before
+  the request reached Railway. A same-origin Phase 6 API proxy now forwards
+  only approved headers, blocks upstream redirects, preserves normalized API
+  errors, and never logs tokens or request bodies. Focused proxy regression
+  coverage and the complete 63-test frontend suite pass; private redeployment
+  and real-account acceptance are in progress.
 
 ## Current implementation assumptions
 
