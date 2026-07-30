@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
+from urllib.parse import unquote_plus
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
@@ -14,14 +15,56 @@ from .config import Settings
 from .models import Base
 
 
+def _normalize_asyncpg_query(value: str) -> str:
+    url_without_fragment, fragment_separator, fragment = value.partition("#")
+    base_url, query_separator, query = url_without_fragment.partition("?")
+    if not query_separator:
+        return value
+
+    parameters = [parameter for parameter in query.split("&") if parameter]
+    has_asyncpg_ssl = any(
+        unquote_plus(parameter.partition("=")[0]).casefold() == "ssl"
+        for parameter in parameters
+    )
+    normalized_parameters: list[str] = []
+
+    for parameter in parameters:
+        encoded_name, value_separator, encoded_value = parameter.partition("=")
+        name = unquote_plus(encoded_name).casefold()
+
+        if name == "channel_binding":
+            continue
+
+        if (
+            name == "sslmode"
+            and value_separator
+            and unquote_plus(encoded_value).casefold() == "require"
+        ):
+            if not has_asyncpg_ssl:
+                normalized_parameters.append("ssl=require")
+                has_asyncpg_ssl = True
+            continue
+
+        normalized_parameters.append(parameter)
+
+    normalized_url = base_url
+    if normalized_parameters:
+        normalized_url += f"?{'&'.join(normalized_parameters)}"
+    if fragment_separator:
+        normalized_url += f"#{fragment}"
+    return normalized_url
+
+
 def normalize_async_database_url(value: str) -> str:
-    if value.startswith("postgresql+asyncpg://") or value.startswith("sqlite+aiosqlite://"):
+    if value.startswith("sqlite+aiosqlite://"):
         return value
     if value.startswith("postgresql://"):
-        return value.replace("postgresql://", "postgresql+asyncpg://", 1)
-    if value.startswith("postgres://"):
-        return value.replace("postgres://", "postgresql+asyncpg://", 1)
-    return value
+        value = value.replace("postgresql://", "postgresql+asyncpg://", 1)
+    elif value.startswith("postgres://"):
+        value = value.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif not value.startswith("postgresql+asyncpg://"):
+        return value
+    return _normalize_asyncpg_query(value)
 
 
 class Database:
