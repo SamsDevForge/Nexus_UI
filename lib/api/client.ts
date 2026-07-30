@@ -26,7 +26,9 @@ export class NexusApiClient {
   private readonly timeoutMs: number;
 
   constructor(private readonly options: NexusApiClientOptions) {
-    this.fetchImplementation = options.fetchImplementation ?? fetch;
+    this.fetchImplementation = (options.fetchImplementation ?? fetch).bind(
+      globalThis,
+    );
     this.timeoutMs = options.timeoutMs ?? 10_000;
   }
 

@@ -109,6 +109,22 @@ test("Phase 6 live requests use the configured API origin directly", async () =>
   assert.equal(requests[0].method, "GET");
 });
 
+test("the API client binds fetch to the active runtime global", async () => {
+  const fetchImplementation = function (this: unknown) {
+    assert.equal(this, globalThis);
+    return Promise.resolve(
+      Response.json({ data: { id: "user-1" }, requestId: "request-1" }),
+    );
+  };
+  const client = new NexusApiClient({
+    baseUrl: "https://api.nexus.test",
+    getToken: async () => "firebase-id-token",
+    fetchImplementation,
+  });
+
+  await client.request("/api/v1/me");
+});
+
 test("authentication refresh is bounded to one retry", async () => {
   const refreshCalls: boolean[] = [];
   let requestCount = 0;
