@@ -4,6 +4,10 @@ import {
   handleImageOptimization,
 } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import {
+  installNexusPublicRuntimeEnvironment,
+  type NexusWorkerRuntimeEnvironment,
+} from "../lib/runtime/worker-environment";
 
 interface AssetFetcher {
   fetch(request: Request): Promise<Response>;
@@ -17,7 +21,7 @@ interface ImageTransformer {
   transform(options: Record<string, unknown>): ImageTransformer;
 }
 
-interface Env {
+interface Env extends NexusWorkerRuntimeEnvironment {
   ASSETS: AssetFetcher;
   IMAGES: {
     input(stream: ReadableStream): ImageTransformer;
@@ -31,6 +35,7 @@ interface ExecutionContext {
 
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    installNexusPublicRuntimeEnvironment(env);
     const url = new URL(request.url);
 
     if (url.pathname === "/_vinext/image") {

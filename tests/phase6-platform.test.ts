@@ -8,6 +8,7 @@ import {
   getNexusPublicRuntimeConfig,
   getNexusRuntimeMode,
 } from "../lib/runtime/config";
+import { installNexusPublicRuntimeEnvironment } from "../lib/runtime/worker-environment";
 
 test("Phase 6 runtime selection is deliberate and mock-safe", () => {
   assert.equal(getNexusRuntimeMode(undefined), "mock");
@@ -37,6 +38,32 @@ test("Phase 6 public configuration can be supplied at worker runtime", () => {
       appId: "nexus-app",
     },
   });
+});
+
+test("the worker copies only allowlisted public runtime bindings", () => {
+  const target: Record<string, string | undefined> = {};
+  installNexusPublicRuntimeEnvironment(
+    {
+      NEXT_PUBLIC_NEXUS_RUNTIME_MODE: "phase6-live",
+      NEXT_PUBLIC_NEXUS_API_BASE_URL: "https://api.nexus.test",
+      NEXT_PUBLIC_FIREBASE_API_KEY: "public-key",
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "nexus.firebaseapp.test",
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: "nexus-project",
+      NEXT_PUBLIC_FIREBASE_APP_ID: "nexus-app",
+      SERVER_ONLY_SECRET: "must-not-copy",
+    } as Parameters<typeof installNexusPublicRuntimeEnvironment>[0],
+    target,
+  );
+
+  assert.deepEqual(Object.keys(target).sort(), [
+    "NEXT_PUBLIC_FIREBASE_API_KEY",
+    "NEXT_PUBLIC_FIREBASE_APP_ID",
+    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
+    "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+    "NEXT_PUBLIC_NEXUS_API_BASE_URL",
+    "NEXT_PUBLIC_NEXUS_RUNTIME_MODE",
+  ]);
+  assert.equal(target.SERVER_ONLY_SECRET, undefined);
 });
 
 test("the typed API client injects identity without exposing it in URLs", async () => {
