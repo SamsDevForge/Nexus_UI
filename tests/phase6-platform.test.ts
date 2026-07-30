@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { NexusApiClient, NexusApiError } from "../lib/api/client";
+import { forwardNexusApiRequest } from "../lib/api/server-proxy";
 import { getNexusRuntimeMode } from "../lib/runtime/config";
 
 test("Phase 6 runtime selection is deliberate and mock-safe", () => {
@@ -95,6 +96,108 @@ test("non-authentication failures are normalized without retry", async () => {
       error.message === "Persistence is temporarily unavailable.",
   );
   assert.equal(requestCount, 1);
+});
+
+test("the same-origin Phase 6 proxy forwards only approved request metadata", async () => {
+  const originalBaseUrl = process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL;
+  process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL = "https://api.nexus.test";
+  const upstreamRequests: Request[] = [];
+
+  try {
+    const response = await forwardNexusApiRequest(
+      new Request("https://nexus.test/api/nexus/api/v1/profile?view=full", {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer test-token",
+          "Content-Type": "application/json",
+          Cookie: "must-not-forward=1",
+          "X-Idempotency-Key": "operation-1",
+        },
+        body: JSON.stringify({ displayName: "Phase Six Test" }),
+      }),
+      ["api", "v1", "profile"],
+      async (input, init) => {
+        upstreamRequests.push(new Request(input, init));
+        return Response.json(
+          { data: { updated: true }, requestId: "request-proxy" },
+          { headers: { "X-Request-ID": "request-proxy" } },
+        );
+      },
+    );
+
+    assert.equal(response.status, 200);
+    const upstreamRequest = upstreamRequests[0];
+    assert.ok(upstreamRequest);
+    assert.equal(
+      upstreamRequest.url,
+      "https://api.nexus.test/api/v1/profile?view=full",
+    );
+    assert.equal(
+      upstreamRequest.headers.get("authorization"),
+      "Bearer test-token",
+    );
+    assert.equal(upstreamRequest.headers.get("cookie"), null);
+    assert.equal(
+      upstreamRequest.headers.get("x-idempotency-key"),
+      "operation-1",
+    );
+    assert.deepEqual(await upstreamRequest.json(), {
+      displayName: "Phase Six Test",
+    });
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.equal(response.headers.get("x-request-id"), "request-proxy");
+  } finally {
+    if (originalBaseUrl === undefined) {
+      delete process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL;
+    } else {
+      process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL = originalBaseUrl;
+    }
+  }
+});
+
+test("the Phase 6 proxy blocks redirects and normalizes upstream outages", async () => {
+  const originalBaseUrl = process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL;
+  process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL = "https://api.nexus.test";
+
+  try {
+    const request = new Request(
+      "https://nexus.test/api/nexus/api/v1/me",
+      { headers: { Authorization: "Bearer test-token" } },
+    );
+    const redirected = await forwardNexusApiRequest(
+      request,
+      ["api", "v1", "me"],
+      async () =>
+        new Response(null, {
+          status: 307,
+          headers: { Location: "https://unexpected.example" },
+        }),
+    );
+    assert.equal(redirected.status, 502);
+    assert.equal(
+      (await redirected.json()).error.code,
+      "upstream_redirect_blocked",
+    );
+
+    const unavailable = await forwardNexusApiRequest(
+      request,
+      ["api", "v1", "me"],
+      async () => {
+        throw new TypeError("network details stay internal");
+      },
+    );
+    assert.equal(unavailable.status, 502);
+    const body = await unavailable.json();
+    assert.equal(body.error.code, "upstream_unavailable");
+    assert.doesNotMatch(body.error.message, /network details stay internal/);
+  } finally {
+    if (originalBaseUrl === undefined) {
+      delete process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL;
+    } else {
+      process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL = originalBaseUrl;
+    }
+  }
 });
 
 test("live composition only replaces Phase 6 service boundaries", async () => {

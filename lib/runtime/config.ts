@@ -11,6 +11,9 @@ export const nexusRuntimeMode = getNexusRuntimeMode();
 export const nexusApiBaseUrl =
   process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL?.replace(/\/+$/, "") ?? "";
 
+export const nexusApiRequestBaseUrl =
+  nexusRuntimeMode === "phase6-live" ? "/api/nexus" : nexusApiBaseUrl;
+
 export const firebaseWebConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? "",
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? "",

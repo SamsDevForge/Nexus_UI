@@ -25,7 +25,7 @@ import {
 } from "./firebase-client";
 import {
   hasPhase6PublicConfiguration,
-  nexusApiBaseUrl,
+  nexusApiRequestBaseUrl,
   nexusRuntimeMode,
   type NexusRuntimeMode,
 } from "@/lib/runtime/config";
@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const apiClient = useMemo(() => {
     if (!configured || mode !== "phase6-live") return null;
     return new NexusApiClient({
-      baseUrl: nexusApiBaseUrl,
+      baseUrl: nexusApiRequestBaseUrl,
       getToken: async (forceRefresh) => {
         if (!auth?.currentUser) return null;
         return auth.currentUser.getIdToken(forceRefresh);
@@ -135,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const user = await signInWithGoogle(auth);
         setFirebaseUser(user);
         const tokenClient = new NexusApiClient({
-          baseUrl: nexusApiBaseUrl,
+          baseUrl: nexusApiRequestBaseUrl,
           getToken: (forceRefresh) => user.getIdToken(forceRefresh),
         });
         const current = await tokenClient.request<NexusUser>("/api/v1/me");
