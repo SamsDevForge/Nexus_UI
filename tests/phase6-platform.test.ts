@@ -260,6 +260,19 @@ test("durable event results never claim an external calendar write", async () =>
   assert.doesNotMatch(live, /Added to Google Calendar/);
 });
 
+test("Phase 6 live capture copy reports durable storage honestly", async () => {
+  const [capture, notes] = await Promise.all([
+    readFile("components/nexus/QuickCapture.tsx", "utf8"),
+    readFile("components/nexus/NotesExperience.tsx", "utf8"),
+  ]);
+
+  assert.match(capture, /durable local NEXUS event draft/);
+  assert.match(capture, /This item is durable and remains after reload/);
+  assert.match(capture, /auth\.mode === "phase6-live"/);
+  assert.match(notes, /Durable in NEXUS/);
+  assert.match(notes, /live\s*\?/);
+});
+
 test("the product-owner Teams SVG is passive and keeps its square aspect", async () => {
   const svg = await readFile("public/icons/microsoft-teams.svg", "utf8");
 

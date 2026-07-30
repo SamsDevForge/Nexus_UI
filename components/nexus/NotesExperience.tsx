@@ -293,7 +293,11 @@ export function NotesExperience({
                         ? `Source label · ${selected.sourceLabel}`
                         : "No source app connection"}
                     </span>
-                    <small>Session-only · plain text</small>
+                    <small>
+                      {live
+                        ? "Durable in NEXUS · plain text"
+                        : "Session-only · plain text"}
+                    </small>
                   </div>
                 ) : null}
 

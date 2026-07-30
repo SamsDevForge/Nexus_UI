@@ -545,7 +545,9 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
                 </p>
                 {preview.location ? <p>{preview.location}</p> : null}
                 <small>
-                  Confirming records a mock Timeline item for this demo session.
+                  {auth.mode === "phase6-live"
+                    ? "Confirming records a durable local NEXUS event draft."
+                    : "Confirming records a mock Timeline item for this demo session."}
                   No calendar provider is contacted.
                 </small>
               </div>
@@ -586,7 +588,9 @@ export function QuickCapture({ scenario }: { scenario: NexusScenario }) {
               </h3>
               <p>
                 Manual-paste provenance and an Activity entry were recorded.
-                This item lasts only for the active demo session.
+                {auth.mode === "phase6-live"
+                  ? " This item is durable and remains after reload."
+                  : " This item lasts only for the active demo session."}
               </p>
               <footer className="quick-capture-actions">
                 <button type="button" onClick={resetDraft}>
