@@ -324,6 +324,10 @@ test("protected routes fail closed without a live Firebase user", async () => {
   assert.match(gate, /!auth\.nexusUser\.onboardingCompleted/);
   assert.match(firebase, /onAuthStateChanged/);
   assert.match(firebase, /GoogleAuthProvider/);
+  assert.match(provider, /window\.setTimeout/);
+  assert.match(provider, /NEXUS could not restore your identity/);
+  assert.match(provider, /window\.clearTimeout/);
+  assert.match(provider, /setLoading\(false\)/);
   assert.doesNotMatch(firebase, /gmail|calendar/i);
   assert.doesNotMatch(provider, /query.*fake|header.*fake|cookie.*fake/i);
 });

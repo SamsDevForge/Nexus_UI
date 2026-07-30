@@ -100,14 +100,37 @@ export function AuthProvider({
   }, [apiClient, firebaseUser]);
 
   useEffect(() => {
-    if (!auth) return;
-    return observeFirebaseUser(auth, (user) => {
+    if (!auth) {
+      if (mode === "phase6-live" && configured) {
+        const initializationTimeout = window.setTimeout(() => {
+          setLoading(false);
+          setError("NEXUS identity could not initialize. Sign in to try again.");
+        }, 0);
+        return () => window.clearTimeout(initializationTimeout);
+      }
+      return;
+    }
+
+    let resolved = false;
+    const resolutionTimeout = window.setTimeout(() => {
+      if (resolved) return;
+      setLoading(false);
+      setError("NEXUS could not restore your identity. Sign in to continue.");
+    }, 8_000);
+    const unsubscribe = observeFirebaseUser(auth, (user) => {
+      resolved = true;
+      window.clearTimeout(resolutionTimeout);
       setFirebaseUser(user);
       setNexusUser(null);
       setError("");
       setLoading(false);
     });
-  }, [auth]);
+    return () => {
+      resolved = true;
+      window.clearTimeout(resolutionTimeout);
+      unsubscribe();
+    };
+  }, [auth, configured, mode]);
 
   useEffect(() => {
     if (!firebaseUser || !apiClient) return;
