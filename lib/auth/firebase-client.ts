@@ -10,12 +10,14 @@ import {
   type Auth,
   type User,
 } from "firebase/auth";
-import { firebaseWebConfig } from "@/lib/runtime/config";
+import type { NexusPublicRuntimeConfig } from "@/lib/runtime/config";
 
 let firebaseApp: FirebaseApp | null = null;
 
-export function getNexusFirebaseAuth(): Auth {
-  firebaseApp = getApps()[0] ?? initializeApp(firebaseWebConfig);
+export function getNexusFirebaseAuth(
+  firebaseConfig: NexusPublicRuntimeConfig["firebase"],
+): Auth {
+  firebaseApp = getApps()[0] ?? initializeApp(firebaseConfig);
   return getAuth(firebaseApp);
 }
 

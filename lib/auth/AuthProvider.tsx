@@ -26,8 +26,7 @@ import {
 } from "./firebase-client";
 import {
   hasPhase6PublicConfiguration,
-  nexusApiRequestBaseUrl,
-  nexusRuntimeMode,
+  type NexusPublicRuntimeConfig,
   type NexusRuntimeMode,
 } from "@/lib/runtime/config";
 
@@ -51,18 +50,25 @@ function safeReturnPath(value?: string) {
   return value?.startsWith("/app/") ? value : "/app/today";
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({
+  children,
+  runtimeConfig,
+}: {
+  children: ReactNode;
+  runtimeConfig: NexusPublicRuntimeConfig;
+}) {
   const router = useRouter();
-  const mode = nexusRuntimeMode;
-  const configured = mode === "mock" || hasPhase6PublicConfiguration();
+  const mode = runtimeConfig.mode;
+  const configured =
+    mode === "mock" || hasPhase6PublicConfiguration(runtimeConfig);
   const auth = useMemo<Auth | null>(() => {
     if (mode !== "phase6-live" || !configured) return null;
     try {
-      return getNexusFirebaseAuth();
+      return getNexusFirebaseAuth(runtimeConfig.firebase);
     } catch {
       return null;
     }
-  }, [configured, mode]);
+  }, [configured, mode, runtimeConfig.firebase]);
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
   const [nexusUser, setNexusUser] = useState<NexusUser | null>(null);
   const [loading, setLoading] = useState(
@@ -77,14 +83,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const apiClient = useMemo(() => {
     if (!configured || mode !== "phase6-live") return null;
     return new NexusApiClient({
-      baseUrl: nexusApiRequestBaseUrl,
+      baseUrl: runtimeConfig.apiRequestBaseUrl,
       authorizationHeaderName: NEXUS_PROXY_AUTHORIZATION_HEADER,
       getToken: async (forceRefresh) => {
         if (!auth?.currentUser) return null;
         return auth.currentUser.getIdToken(forceRefresh);
       },
     });
-  }, [auth, configured, mode]);
+  }, [auth, configured, mode, runtimeConfig.apiRequestBaseUrl]);
 
   const refreshCurrentUser = useCallback(async () => {
     if (!apiClient || !firebaseUser) return null;
@@ -137,7 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const user = await signInWithGoogle(auth);
         setFirebaseUser(user);
         const tokenClient = new NexusApiClient({
-          baseUrl: nexusApiRequestBaseUrl,
+          baseUrl: runtimeConfig.apiRequestBaseUrl,
           authorizationHeaderName: NEXUS_PROXY_AUTHORIZATION_HEADER,
           getToken: (forceRefresh) => user.getIdToken(forceRefresh),
         });
@@ -158,7 +164,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
       }
     },
-    [auth, router],
+    [auth, router, runtimeConfig.apiRequestBaseUrl],
   );
 
   const signOut = useCallback(async () => {

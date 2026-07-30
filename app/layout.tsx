@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
+import { getNexusPublicRuntimeConfig } from "@/lib/runtime/config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,15 +33,18 @@ export const viewport: Viewport = {
   themeColor: "#080a0d",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const runtimeConfig = getNexusPublicRuntimeConfig();
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider runtimeConfig={runtimeConfig}>{children}</AuthProvider>
       </body>
     </html>
   );

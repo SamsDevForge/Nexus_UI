@@ -1,4 +1,5 @@
 import { NEXUS_PROXY_AUTHORIZATION_HEADER } from "./proxy-transport";
+import { getNexusPublicRuntimeConfig } from "../runtime/config";
 
 const FORWARDED_REQUEST_HEADERS = [
   "accept",
@@ -43,8 +44,7 @@ function proxyError(
 }
 
 function upstreamBaseUrl() {
-  const configured =
-    process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL?.replace(/\/+$/, "") ?? "";
+  const configured = getNexusPublicRuntimeConfig().apiBaseUrl;
   try {
     const parsed = new URL(configured);
     if (parsed.protocol !== "https:") return null;

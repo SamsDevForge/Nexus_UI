@@ -1,32 +1,65 @@
 export type NexusRuntimeMode = "mock" | "phase6-live";
 
+export interface NexusPublicRuntimeConfig {
+  mode: NexusRuntimeMode;
+  apiBaseUrl: string;
+  apiRequestBaseUrl: string;
+  firebase: {
+    apiKey: string;
+    authDomain: string;
+    projectId: string;
+    appId: string;
+  };
+}
+
+type PublicRuntimeEnvironment = Partial<
+  Record<
+    | "NEXT_PUBLIC_NEXUS_RUNTIME_MODE"
+    | "NEXT_PUBLIC_NEXUS_API_BASE_URL"
+    | "NEXT_PUBLIC_FIREBASE_API_KEY"
+    | "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN"
+    | "NEXT_PUBLIC_FIREBASE_PROJECT_ID"
+    | "NEXT_PUBLIC_FIREBASE_APP_ID",
+    string
+  >
+>;
+
 export function getNexusRuntimeMode(
-  value = process.env.NEXT_PUBLIC_NEXUS_RUNTIME_MODE,
+  value?: string,
 ): NexusRuntimeMode {
   return value === "phase6-live" ? "phase6-live" : "mock";
 }
 
-export const nexusRuntimeMode = getNexusRuntimeMode();
+export function getNexusPublicRuntimeConfig(
+  environment?: PublicRuntimeEnvironment,
+): NexusPublicRuntimeConfig {
+  const source = environment ?? process.env;
+  const mode = getNexusRuntimeMode(
+    source["NEXT_PUBLIC_NEXUS_RUNTIME_MODE"],
+  );
+  const apiBaseUrl =
+    source["NEXT_PUBLIC_NEXUS_API_BASE_URL"]?.replace(/\/+$/, "") ?? "";
+  return {
+    mode,
+    apiBaseUrl,
+    apiRequestBaseUrl: mode === "phase6-live" ? "/api/nexus" : apiBaseUrl,
+    firebase: {
+      apiKey: source["NEXT_PUBLIC_FIREBASE_API_KEY"] ?? "",
+      authDomain: source["NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN"] ?? "",
+      projectId: source["NEXT_PUBLIC_FIREBASE_PROJECT_ID"] ?? "",
+      appId: source["NEXT_PUBLIC_FIREBASE_APP_ID"] ?? "",
+    },
+  };
+}
 
-export const nexusApiBaseUrl =
-  process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL?.replace(/\/+$/, "") ?? "";
-
-export const nexusApiRequestBaseUrl =
-  nexusRuntimeMode === "phase6-live" ? "/api/nexus" : nexusApiBaseUrl;
-
-export const firebaseWebConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? "",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? "",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? "",
-};
-
-export function hasPhase6PublicConfiguration() {
+export function hasPhase6PublicConfiguration(
+  config: NexusPublicRuntimeConfig,
+) {
   return Boolean(
-    nexusApiBaseUrl &&
-      firebaseWebConfig.apiKey &&
-      firebaseWebConfig.authDomain &&
-      firebaseWebConfig.projectId &&
-      firebaseWebConfig.appId,
+    config.apiBaseUrl &&
+      config.firebase.apiKey &&
+      config.firebase.authDomain &&
+      config.firebase.projectId &&
+      config.firebase.appId,
   );
 }

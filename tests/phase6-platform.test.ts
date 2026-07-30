@@ -4,13 +4,39 @@ import test from "node:test";
 import { NexusApiClient, NexusApiError } from "../lib/api/client";
 import { NEXUS_PROXY_AUTHORIZATION_HEADER } from "../lib/api/proxy-transport";
 import { forwardNexusApiRequest } from "../lib/api/server-proxy";
-import { getNexusRuntimeMode } from "../lib/runtime/config";
+import {
+  getNexusPublicRuntimeConfig,
+  getNexusRuntimeMode,
+} from "../lib/runtime/config";
 
 test("Phase 6 runtime selection is deliberate and mock-safe", () => {
   assert.equal(getNexusRuntimeMode(undefined), "mock");
   assert.equal(getNexusRuntimeMode("mock"), "mock");
   assert.equal(getNexusRuntimeMode("phase6-live"), "phase6-live");
   assert.equal(getNexusRuntimeMode("live"), "mock");
+});
+
+test("Phase 6 public configuration can be supplied at worker runtime", () => {
+  const config = getNexusPublicRuntimeConfig({
+    NEXT_PUBLIC_NEXUS_RUNTIME_MODE: "phase6-live",
+    NEXT_PUBLIC_NEXUS_API_BASE_URL: "https://api.nexus.test/",
+    NEXT_PUBLIC_FIREBASE_API_KEY: "public-key",
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "nexus.firebaseapp.test",
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID: "nexus-project",
+    NEXT_PUBLIC_FIREBASE_APP_ID: "nexus-app",
+  });
+
+  assert.deepEqual(config, {
+    mode: "phase6-live",
+    apiBaseUrl: "https://api.nexus.test",
+    apiRequestBaseUrl: "/api/nexus",
+    firebase: {
+      apiKey: "public-key",
+      authDomain: "nexus.firebaseapp.test",
+      projectId: "nexus-project",
+      appId: "nexus-app",
+    },
+  });
 });
 
 test("the typed API client injects identity without exposing it in URLs", async () => {
