@@ -82,14 +82,13 @@ export function AuthProvider({
   const apiClient = useMemo(() => {
     if (!configured || mode !== "phase6-live") return null;
     return new NexusApiClient({
-      baseUrl: runtimeConfig.apiRequestBaseUrl,
-      authenticationTransport: "same-origin-envelope",
+      baseUrl: runtimeConfig.apiBaseUrl,
       getToken: async (forceRefresh) => {
         if (!auth?.currentUser) return null;
         return auth.currentUser.getIdToken(forceRefresh);
       },
     });
-  }, [auth, configured, mode, runtimeConfig.apiRequestBaseUrl]);
+  }, [auth, configured, mode, runtimeConfig.apiBaseUrl]);
 
   const refreshCurrentUser = useCallback(async () => {
     if (!apiClient || !firebaseUser) return null;
@@ -165,8 +164,7 @@ export function AuthProvider({
         const user = await signInWithGoogle(auth);
         setFirebaseUser(user);
         const tokenClient = new NexusApiClient({
-          baseUrl: runtimeConfig.apiRequestBaseUrl,
-          authenticationTransport: "same-origin-envelope",
+          baseUrl: runtimeConfig.apiBaseUrl,
           getToken: (forceRefresh) => user.getIdToken(forceRefresh),
         });
         const current = await tokenClient.request<NexusUser>("/api/v1/me");
@@ -186,7 +184,7 @@ export function AuthProvider({
         setLoading(false);
       }
     },
-    [auth, router, runtimeConfig.apiRequestBaseUrl],
+    [auth, router, runtimeConfig.apiBaseUrl],
   );
 
   const signOut = useCallback(async () => {

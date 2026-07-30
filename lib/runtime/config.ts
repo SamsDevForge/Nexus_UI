@@ -3,7 +3,6 @@ export type NexusRuntimeMode = "mock" | "phase6-live";
 export interface NexusPublicRuntimeConfig {
   mode: NexusRuntimeMode;
   apiBaseUrl: string;
-  apiRequestBaseUrl: string;
   firebase: {
     apiKey: string;
     authDomain: string;
@@ -42,7 +41,6 @@ export function getNexusPublicRuntimeConfig(
   return {
     mode,
     apiBaseUrl,
-    apiRequestBaseUrl: mode === "phase6-live" ? "/api/nexus" : apiBaseUrl,
     firebase: {
       apiKey: source["NEXT_PUBLIC_FIREBASE_API_KEY"] ?? "",
       authDomain: source["NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN"] ?? "",
