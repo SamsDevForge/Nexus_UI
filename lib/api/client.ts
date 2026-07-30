@@ -1,10 +1,15 @@
 import type { ApiEnvelope, ApiErrorEnvelope } from "./contracts";
-import { NEXUS_PROXY_AUTHORIZATION_HEADER } from "./proxy-transport";
+import {
+  NEXUS_PROXY_METHODS,
+  NEXUS_PROXY_TRANSPORT_VERSION,
+  type NexusProxyMethod,
+  type NexusProxyRequestEnvelope,
+} from "./proxy-transport";
 
 export type AuthTokenProvider = (forceRefresh: boolean) => Promise<string | null>;
-export type AuthorizationHeaderName =
-  | "Authorization"
-  | typeof NEXUS_PROXY_AUTHORIZATION_HEADER;
+export type NexusApiAuthenticationTransport =
+  | "authorization-header"
+  | "same-origin-envelope";
 
 export class NexusApiError extends Error {
   constructor(
@@ -23,19 +28,19 @@ export interface NexusApiClientOptions {
   getToken: AuthTokenProvider;
   fetchImplementation?: typeof fetch;
   timeoutMs?: number;
-  authorizationHeaderName?: AuthorizationHeaderName;
+  authenticationTransport?: NexusApiAuthenticationTransport;
 }
 
 export class NexusApiClient {
   private readonly fetchImplementation: typeof fetch;
   private readonly timeoutMs: number;
-  private readonly authorizationHeaderName: AuthorizationHeaderName;
+  private readonly authenticationTransport: NexusApiAuthenticationTransport;
 
   constructor(private readonly options: NexusApiClientOptions) {
     this.fetchImplementation = options.fetchImplementation ?? fetch;
     this.timeoutMs = options.timeoutMs ?? 10_000;
-    this.authorizationHeaderName =
-      options.authorizationHeaderName ?? "Authorization";
+    this.authenticationTransport =
+      options.authenticationTransport ?? "authorization-header";
   }
 
   async request<T>(
@@ -59,15 +64,62 @@ export class NexusApiClient {
       if (!headers.has("Content-Type")) {
         headers.set("Content-Type", "application/json");
       }
-      headers.set(this.authorizationHeaderName, `Bearer ${token}`);
 
-      const response = await this.fetchImplementation(
-        `${this.options.baseUrl}${path}`,
-        {
+      let requestInit: RequestInit;
+      if (this.authenticationTransport === "same-origin-envelope") {
+        const method = (init.method ?? "GET").toUpperCase();
+        if (!NEXUS_PROXY_METHODS.includes(method as NexusProxyMethod)) {
+          throw new NexusApiError(
+            405,
+            "unsupported_proxy_method",
+            "NEXUS could not complete the persistence request.",
+          );
+        }
+        if (init.body !== undefined && typeof init.body !== "string") {
+          throw new NexusApiError(
+            400,
+            "unsupported_proxy_body",
+            "NEXUS could not complete the persistence request.",
+          );
+        }
+
+        const envelope: NexusProxyRequestEnvelope = {
+          version: NEXUS_PROXY_TRANSPORT_VERSION,
+          token,
+          request: {
+            method: method as NexusProxyMethod,
+            headers: {
+              accept: headers.get("Accept") ?? undefined,
+              contentType: headers.get("Content-Type") ?? undefined,
+              idempotencyKey:
+                headers.get("X-Idempotency-Key") ?? undefined,
+              requestId: headers.get("X-Request-ID") ?? undefined,
+            },
+            body: typeof init.body === "string" ? init.body : null,
+          },
+        };
+        requestInit = {
+          method: "POST",
+          credentials: "same-origin",
+          signal: controller.signal,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(envelope),
+        };
+      } else {
+        headers.set("Authorization", `Bearer ${token}`);
+        requestInit = {
           ...init,
           signal: controller.signal,
           headers,
-        },
+        };
+      }
+
+      const response = await this.fetchImplementation(
+        `${this.options.baseUrl}${path}`,
+        requestInit,
       );
 
       if (response.status === 401 && retryAuthentication) {

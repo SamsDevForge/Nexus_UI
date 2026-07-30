@@ -1,4 +1,7 @@
-import { forwardNexusApiRequest } from "@/lib/api/server-proxy";
+import {
+  forwardNexusApiRequest,
+  forwardNexusProxyEnvelope,
+} from "@/lib/api/server-proxy";
 
 interface NexusProxyContext {
   params: Promise<{ path: string[] }>;
@@ -14,7 +17,8 @@ export async function GET(request: Request, context: NexusProxyContext) {
 }
 
 export async function POST(request: Request, context: NexusProxyContext) {
-  return forward(request, context);
+  const { path } = await context.params;
+  return forwardNexusProxyEnvelope(request, path);
 }
 
 export async function PUT(request: Request, context: NexusProxyContext) {

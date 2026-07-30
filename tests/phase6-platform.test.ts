@@ -2,8 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { NexusApiClient, NexusApiError } from "../lib/api/client";
-import { NEXUS_PROXY_AUTHORIZATION_HEADER } from "../lib/api/proxy-transport";
-import { forwardNexusApiRequest } from "../lib/api/server-proxy";
+import {
+  NEXUS_PROXY_TRANSPORT_VERSION,
+  type NexusProxyRequestEnvelope,
+} from "../lib/api/proxy-transport";
+import {
+  forwardNexusProxyEnvelope,
+} from "../lib/api/server-proxy";
 import {
   getNexusPublicRuntimeConfig,
   getNexusRuntimeMode,
@@ -122,11 +127,11 @@ test("authentication refresh is bounded to one retry", async () => {
   assert.deepEqual(refreshCalls, [false, true, false]);
 });
 
-test("the API client can avoid the hosting gate authorization header", async () => {
+test("the API client can traverse the private hosting gate without identity headers", async () => {
   const requests: Request[] = [];
   const client = new NexusApiClient({
     baseUrl: "https://nexus.test/api/nexus",
-    authorizationHeaderName: NEXUS_PROXY_AUTHORIZATION_HEADER,
+    authenticationTransport: "same-origin-envelope",
     getToken: async () => "private-id-token",
     fetchImplementation: async (input, init) => {
       const request = new Request(input, init);
@@ -140,11 +145,14 @@ test("the API client can avoid the hosting gate authorization header", async () 
 
   await client.request<{ id: string }>("/api/v1/me");
 
+  assert.equal(requests[0].method, "POST");
   assert.equal(requests[0].headers.get("authorization"), null);
-  assert.equal(
-    requests[0].headers.get(NEXUS_PROXY_AUTHORIZATION_HEADER),
-    "Bearer private-id-token",
-  );
+  assert.equal(requests[0].url.includes("private-id-token"), false);
+  const envelope = (await requests[0].json()) as NexusProxyRequestEnvelope;
+  assert.equal(envelope.version, NEXUS_PROXY_TRANSPORT_VERSION);
+  assert.equal(envelope.token, "private-id-token");
+  assert.equal(envelope.request.method, "GET");
+  assert.equal(envelope.request.body, null);
 });
 
 test("non-authentication failures are normalized without retry", async () => {
@@ -177,24 +185,33 @@ test("non-authentication failures are normalized without retry", async () => {
   assert.equal(requestCount, 1);
 });
 
-test("the same-origin Phase 6 proxy forwards only approved request metadata", async () => {
+test("the same-origin Phase 6 proxy forwards only its validated envelope", async () => {
   const originalBaseUrl = process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL;
   process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL = "https://api.nexus.test";
   const upstreamRequests: Request[] = [];
 
   try {
-    const response = await forwardNexusApiRequest(
+    const response = await forwardNexusProxyEnvelope(
       new Request("https://nexus.test/api/nexus/api/v1/profile?view=full", {
-        method: "PATCH",
+        method: "POST",
         headers: {
-          Accept: "application/json",
           Authorization: "Bearer hosting-gate-token",
           "Content-Type": "application/json",
           Cookie: "must-not-forward=1",
-          [NEXUS_PROXY_AUTHORIZATION_HEADER]: "Bearer test-token",
-          "X-Idempotency-Key": "operation-1",
         },
-        body: JSON.stringify({ displayName: "Phase Six Test" }),
+        body: JSON.stringify({
+          version: NEXUS_PROXY_TRANSPORT_VERSION,
+          token: "test-token",
+          request: {
+            method: "PATCH",
+            headers: {
+              accept: "application/json",
+              contentType: "application/json",
+              idempotencyKey: "operation-1",
+            },
+            body: JSON.stringify({ displayName: "Phase Six Test" }),
+          },
+        } satisfies NexusProxyRequestEnvelope),
       }),
       ["api", "v1", "profile"],
       async (input, init) => {
@@ -216,10 +233,6 @@ test("the same-origin Phase 6 proxy forwards only approved request metadata", as
     assert.equal(
       upstreamRequest.headers.get("authorization"),
       "Bearer test-token",
-    );
-    assert.equal(
-      upstreamRequest.headers.get(NEXUS_PROXY_AUTHORIZATION_HEADER),
-      null,
     );
     assert.equal(upstreamRequest.headers.get("cookie"), null);
     assert.equal(
@@ -248,13 +261,21 @@ test("the Phase 6 proxy blocks redirects and normalizes upstream outages", async
     const request = new Request(
       "https://nexus.test/api/nexus/api/v1/me",
       {
-        headers: {
-          [NEXUS_PROXY_AUTHORIZATION_HEADER]: "Bearer test-token",
-        },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          version: NEXUS_PROXY_TRANSPORT_VERSION,
+          token: "test-token",
+          request: {
+            method: "GET",
+            headers: {},
+            body: null,
+          },
+        } satisfies NexusProxyRequestEnvelope),
       },
     );
-    const redirected = await forwardNexusApiRequest(
-      request,
+    const redirected = await forwardNexusProxyEnvelope(
+      request.clone(),
       ["api", "v1", "me"],
       async () =>
         new Response(null, {
@@ -268,7 +289,7 @@ test("the Phase 6 proxy blocks redirects and normalizes upstream outages", async
       "upstream_redirect_blocked",
     );
 
-    const unavailable = await forwardNexusApiRequest(
+    const unavailable = await forwardNexusProxyEnvelope(
       request,
       ["api", "v1", "me"],
       async () => {
@@ -279,6 +300,41 @@ test("the Phase 6 proxy blocks redirects and normalizes upstream outages", async
     const body = await unavailable.json();
     assert.equal(body.error.code, "upstream_unavailable");
     assert.doesNotMatch(body.error.message, /network details stay internal/);
+  } finally {
+    if (originalBaseUrl === undefined) {
+      delete process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL;
+    } else {
+      process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL = originalBaseUrl;
+    }
+  }
+});
+
+test("the Phase 6 proxy rejects malformed envelopes before upstream access", async () => {
+  const originalBaseUrl = process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL;
+  process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL = "https://api.nexus.test";
+  let upstreamCalls = 0;
+
+  try {
+    const response = await forwardNexusProxyEnvelope(
+      new Request("https://nexus.test/api/nexus/api/v1/me", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          version: NEXUS_PROXY_TRANSPORT_VERSION,
+          token: "",
+          request: { method: "GET", headers: {}, body: null },
+        }),
+      }),
+      ["api", "v1", "me"],
+      async () => {
+        upstreamCalls += 1;
+        return new Response(null, { status: 204 });
+      },
+    );
+
+    assert.equal(response.status, 400);
+    assert.equal((await response.json()).error.code, "invalid_proxy_envelope");
+    assert.equal(upstreamCalls, 0);
   } finally {
     if (originalBaseUrl === undefined) {
       delete process.env.NEXT_PUBLIC_NEXUS_API_BASE_URL;

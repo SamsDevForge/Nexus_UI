@@ -1,4 +1,9 @@
-import { NEXUS_PROXY_AUTHORIZATION_HEADER } from "./proxy-transport";
+import {
+  NEXUS_PROXY_METHODS,
+  NEXUS_PROXY_TRANSPORT_VERSION,
+  type NexusProxyMethod,
+  type NexusProxyRequestEnvelope,
+} from "./proxy-transport";
 import { getNexusPublicRuntimeConfig } from "../runtime/config";
 
 const FORWARDED_REQUEST_HEADERS = [
@@ -18,6 +23,13 @@ type ProxyFetch = (
   input: string | URL | Request,
   init?: RequestInit,
 ) => Promise<Response>;
+
+interface UpstreamRequest {
+  method: string;
+  headers: Headers;
+  body?: BodyInit;
+  requestId?: string;
+}
 
 function proxyError(
   status: number,
@@ -54,13 +66,25 @@ function upstreamBaseUrl() {
   }
 }
 
-export async function forwardNexusApiRequest(
+function upstreamUrlFor(request: Request, path: string[]) {
+  const baseUrl = upstreamBaseUrl();
+  if (!baseUrl) return null;
+  const upstreamUrl = new URL(
+    path.map((segment) => encodeURIComponent(segment)).join("/"),
+    `${baseUrl.toString().replace(/\/+$/, "")}/`,
+  );
+  upstreamUrl.search = new URL(request.url).search;
+  return upstreamUrl;
+}
+
+async function forwardUpstream(
   request: Request,
   path: string[],
+  upstreamRequest: UpstreamRequest,
   fetchImplementation: ProxyFetch = fetch,
 ) {
-  const baseUrl = upstreamBaseUrl();
-  if (!baseUrl) {
+  const upstreamUrl = upstreamUrlFor(request, path);
+  if (!upstreamUrl) {
     return proxyError(
       503,
       "persistence_not_configured",
@@ -68,35 +92,11 @@ export async function forwardNexusApiRequest(
     );
   }
 
-  const upstreamUrl = new URL(
-    path.map((segment) => encodeURIComponent(segment)).join("/"),
-    `${baseUrl.toString().replace(/\/+$/, "")}/`,
-  );
-  upstreamUrl.search = new URL(request.url).search;
-
-  const headers = new Headers();
-  for (const name of FORWARDED_REQUEST_HEADERS) {
-    const value = request.headers.get(name);
-    if (value) headers.set(name, value);
-  }
-  const nexusAuthorization = request.headers.get(
-    NEXUS_PROXY_AUTHORIZATION_HEADER,
-  );
-  if (nexusAuthorization) {
-    headers.set("authorization", nexusAuthorization);
-  }
-
-  const method = request.method.toUpperCase();
-  const body =
-    method === "GET" || method === "HEAD"
-      ? undefined
-      : await request.arrayBuffer();
-
   try {
     const upstream = await fetchImplementation(upstreamUrl, {
-      method,
-      headers,
-      body,
+      method: upstreamRequest.method,
+      headers: upstreamRequest.headers,
+      body: upstreamRequest.body,
       redirect: "manual",
     });
     if (upstream.status >= 300 && upstream.status < 400) {
@@ -121,7 +121,110 @@ export async function forwardNexusApiRequest(
       502,
       "upstream_unavailable",
       "NEXUS could not reach the persistence service. Your changes were not saved.",
-      request.headers.get("x-request-id") ?? undefined,
+      upstreamRequest.requestId,
     );
   }
+}
+
+function isProxyEnvelope(value: unknown): value is NexusProxyRequestEnvelope {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<NexusProxyRequestEnvelope>;
+  const nested = candidate.request;
+  if (
+    candidate.version !== NEXUS_PROXY_TRANSPORT_VERSION ||
+    typeof candidate.token !== "string" ||
+    candidate.token.length === 0 ||
+    candidate.token.length > 16_384 ||
+    /[\r\n]/.test(candidate.token) ||
+    !nested ||
+    typeof nested !== "object" ||
+    !NEXUS_PROXY_METHODS.includes(nested.method as NexusProxyMethod) ||
+    (nested.body !== null && typeof nested.body !== "string") ||
+    typeof nested.headers !== "object" ||
+    nested.headers === null
+  ) {
+    return false;
+  }
+  return Object.values(nested.headers).every(
+    (value) => value === undefined || typeof value === "string",
+  );
+}
+
+export async function forwardNexusProxyEnvelope(
+  request: Request,
+  path: string[],
+  fetchImplementation: ProxyFetch = fetch,
+) {
+  let envelope: unknown;
+  try {
+    envelope = await request.json();
+  } catch {
+    return proxyError(
+      400,
+      "invalid_proxy_envelope",
+      "NEXUS could not complete the persistence request.",
+    );
+  }
+  if (!isProxyEnvelope(envelope)) {
+    return proxyError(
+      400,
+      "invalid_proxy_envelope",
+      "NEXUS could not complete the persistence request.",
+    );
+  }
+
+  const headers = new Headers();
+  const metadata = envelope.request.headers;
+  if (metadata.accept) headers.set("accept", metadata.accept);
+  if (metadata.contentType) {
+    headers.set("content-type", metadata.contentType);
+  }
+  if (metadata.idempotencyKey) {
+    headers.set("x-idempotency-key", metadata.idempotencyKey);
+  }
+  if (metadata.requestId) headers.set("x-request-id", metadata.requestId);
+  headers.set("authorization", `Bearer ${envelope.token}`);
+
+  const method = envelope.request.method;
+  return forwardUpstream(
+    request,
+    path,
+    {
+      method,
+      headers,
+      body:
+        method === "GET" || envelope.request.body === null
+          ? undefined
+          : envelope.request.body,
+      requestId: metadata.requestId,
+    },
+    fetchImplementation,
+  );
+}
+
+export async function forwardNexusApiRequest(
+  request: Request,
+  path: string[],
+  fetchImplementation: ProxyFetch = fetch,
+) {
+  const headers = new Headers();
+  for (const name of FORWARDED_REQUEST_HEADERS) {
+    const value = request.headers.get(name);
+    if (value) headers.set(name, value);
+  }
+  const method = request.method.toUpperCase();
+  return forwardUpstream(
+    request,
+    path,
+    {
+      method,
+      headers,
+      body:
+        method === "GET" || method === "HEAD"
+          ? undefined
+          : await request.arrayBuffer(),
+      requestId: request.headers.get("x-request-id") ?? undefined,
+    },
+    fetchImplementation,
+  );
 }

@@ -12,7 +12,6 @@ import {
 } from "react";
 import type { Auth, User } from "firebase/auth";
 import { NexusApiClient } from "@/lib/api/client";
-import { NEXUS_PROXY_AUTHORIZATION_HEADER } from "@/lib/api/proxy-transport";
 import type {
   NexusUser,
   OnboardingPayload,
@@ -84,7 +83,7 @@ export function AuthProvider({
     if (!configured || mode !== "phase6-live") return null;
     return new NexusApiClient({
       baseUrl: runtimeConfig.apiRequestBaseUrl,
-      authorizationHeaderName: NEXUS_PROXY_AUTHORIZATION_HEADER,
+      authenticationTransport: "same-origin-envelope",
       getToken: async (forceRefresh) => {
         if (!auth?.currentUser) return null;
         return auth.currentUser.getIdToken(forceRefresh);
@@ -167,7 +166,7 @@ export function AuthProvider({
         setFirebaseUser(user);
         const tokenClient = new NexusApiClient({
           baseUrl: runtimeConfig.apiRequestBaseUrl,
-          authorizationHeaderName: NEXUS_PROXY_AUTHORIZATION_HEADER,
+          authenticationTransport: "same-origin-envelope",
           getToken: (forceRefresh) => user.getIdToken(forceRefresh),
         });
         const current = await tokenClient.request<NexusUser>("/api/v1/me");
