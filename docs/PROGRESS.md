@@ -30,10 +30,11 @@ implemented. Neither Phase 6 nor full Phase 7 cloud acceptance is claimed.
   forecasts. Next and Sites/Worker production builds pass independently. The
   cube hash checks remain unchanged. Desktop/mobile result layouts were visually
   inspected; the retained Sites build still reports its existing chunk warning.
-- The first Linux CI browser run passed three cases but exhausted the cold
-  desktop case's 45-second total budget. Browser setup now warms the actual
-  planner route and gives CI a 90-second test budget; individual assertion
-  timeouts remain bounded. Remote validation is rerun after this adjustment.
+- Linux CI separates functional API checks from software WebGL using the
+  existing Focus-mode cookie. Cube-enabled desktop/mobile layouts are inspected
+  locally and locked cube hashes remain tested. Browser setup warms the planner
+  route and checks real bridge responses before UI assertions; individual
+  assertion timeouts remain bounded. Remote validation is rerun after adjustment.
 - Compatible framework/security patches applied under D-036. The final runtime
   dependency audit reports zero findings. Eleven development/tooling advisories
   remain in the retained vinext/Cloudflare/Vite stack; no forced major tooling

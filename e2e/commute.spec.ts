@@ -4,6 +4,11 @@ test("search, plan, route fallback and incomplete weather work through the real 
   await page.clock.install();
   const pageErrors: string[] = [];
   page.on("pageerror", error => pageErrors.push(error.message));
+  // Keep Linux software WebGL independent of these functional API checks.
+  // The cube-enabled layout is inspected locally; its source has locked hash tests.
+  if (process.env.CI) await page.context().addCookies([
+    { name: "nexus-focus-mode", value: "on", url: "http://127.0.0.1:3101" },
+  ]);
   await page.goto("/app/context");
   await expect(page.getByRole("heading", { name: "Plan your departure." })).toBeVisible();
   await expect(page.getByText("3 live signals", { exact: true })).toHaveCount(0);
@@ -20,7 +25,9 @@ test("search, plan, route fallback and incomplete weather work through the real 
   await page.getByLabel("Event starts (your device’s local time)").fill(localDate);
   await page.getByLabel("Journey estimate / fallback (minutes)").fill("35");
   await page.getByLabel("Request a driving estimate", { exact: false }).check();
+  const firstResponse = page.waitForResponse(response => response.url().endsWith("/api/public-context/plan"));
   await page.getByRole("button", { name: "Prepare departure plan" }).click();
+  expect((await firstResponse).status()).toBe(200);
   const result = page.getByRole("region", { name: "Departure plan" });
   await expect(result).toBeFocused();
   await expect(result.getByText("Driving estimate unavailable; using your entered journey time.")).toBeVisible();
@@ -32,7 +39,11 @@ test("search, plan, route fallback and incomplete weather work through the real 
   expect(times).toHaveLength(4);
   await page.getByLabel("origin latitude", { exact: true }).fill("0");
   await expect(result).toHaveCount(0); // Changing any input invalidates the old result.
+  const secondResponse = page.waitForResponse(response => response.url().endsWith("/api/public-context/plan"));
   await page.getByRole("button", { name: "Prepare departure plan" }).click();
+  const partial = await secondResponse;
+  expect(partial.status()).toBe(200);
+  expect((await partial.json()).data.origin_weather.available).toBe(false);
   await expect(result.getByText("Weather coverage is incomplete. Check conditions before travelling.")).toBeVisible();
   await expect(result.getByText("No usable weather forecast for this travel window.")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("departure-plan.png") });

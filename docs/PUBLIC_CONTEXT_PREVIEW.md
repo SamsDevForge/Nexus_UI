@@ -122,6 +122,11 @@ runs the same tests. The fixture refuses startup unless `NEXUS_E2E=1`; the
 Playwright configuration supplies that flag only to the isolated test process.
 It is not a production identity or provider fallback.
 
+Linux CI runs the functional workflow in the existing Focus mode to avoid
+coupling API assertions to software WebGL rendering. Local visual inspection
+retains the cube at desktop/mobile widths, and its locked source hashes are
+checked separately. The browser tests also assert the actual bridge response.
+
 A separate live-provider smoke check on 20 November 2026 found Bengaluru,
 returned an OSRM driving estimate and retrieved usable weather at both journey
 endpoints. Earlier local browser verification also traversed real geocoding and
