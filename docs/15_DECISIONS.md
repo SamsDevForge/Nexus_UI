@@ -350,3 +350,33 @@ fixes alongside the motion work. Neither branch is proof of deployed acceptance.
 The saved private Site is unavailable and the owner reports lost credentials.
 Preserve its identity; do not create a replacement or begin Phase 7 before the
 Phase 6 cloud acceptance gate can be verified.
+
+## D-035 — Continue isolated development without bypassing cloud acceptance
+
+After reviewing the remaining final-vision work, the owner explicitly requested
+continued implementation. This supersedes D-034's restriction on starting any
+later-phase development, only for independently testable development previews.
+It does not accept Phase 6, promote Phase 7, replace the lost private Site, or
+authorize invented deployment identities. Preserve the large cube unchanged.
+
+The first preview is an on-demand commute planner at `/app/context`: explicit
+locations and event time, Open-Meteo geocoding/forecasts, optional configured
+OSRM driving estimates, and deterministic preparation/departure arithmetic.
+It is disabled on the backend by default. Production requires existing Firebase
+identity verification. It grants suggestion authority only; no calendar write,
+notification, continuous tracking, or automatic action is introduced.
+
+Other daily screens retain their typed fixtures. Provider outages and missing
+weather stay unavailable rather than being replaced by sample data. This slice
+does not fulfill Calendar, traffic, notification, or complete Phase 7 acceptance.
+
+## D-036 — Patch runtime advisories without changing the cube renderer
+
+The dependency check during public-context validation found existing framework
+advisories. Update Next and its ESLint configuration to 16.4.6, React/React DOM/
+RSC to the compatible 19.2.9 patch line, and patched PostCSS/Sharp/gRPC overrides.
+Keep React below 19.3 because the accepted React Three Fiber renderer's peer
+range requires it. No locked cube source or renderer migration is authorized by
+this maintenance work. Apply compatible transitive fixes without forced major
+upgrades. The remaining vinext/Cloudflare/Vite tooling advisories require a
+separate verified tooling migration before hosted release.

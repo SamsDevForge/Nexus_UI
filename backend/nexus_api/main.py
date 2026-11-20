@@ -6,6 +6,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any
 
+import httpx
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,6 +22,8 @@ from .identity import (
     IdentityVerifier,
     UnavailableIdentityVerifier,
 )
+from .public_context import PublicContextService
+from .public_context import router as context_router
 
 
 def error_payload(request: Request, code: str, message: str) -> dict[str, Any]:
@@ -53,11 +56,13 @@ def create_app(
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-        del app
         await database.start()
+        client = httpx.AsyncClient(timeout=6, follow_redirects=False)
+        app.state.public_context = PublicContextService(client, settings.osrm_base_url)
         try:
             yield
         finally:
+            await client.aclose()
             await database.stop()
 
     app = FastAPI(
@@ -75,6 +80,8 @@ def create_app(
         level=getattr(logging, settings.log_level.upper(), logging.INFO),
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
+    # Provider request URLs contain locations; do not emit them through HTTPX INFO logs.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
 
     app.add_middleware(
         CORSMiddleware,
@@ -137,6 +144,7 @@ def create_app(
 
     app.include_router(health_router)
     app.include_router(api_router)
+    app.include_router(context_router)
     return app
 
 

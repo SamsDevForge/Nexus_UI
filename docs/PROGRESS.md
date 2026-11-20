@@ -6,7 +6,41 @@ Phases 0 through 5 retain their recorded acceptance. The Phase 6 foundation
 and motion branches are reconciled on `codex/nexus-phase6-reconciliation`.
 Cloud acceptance remains open: the saved private Site is unavailable through
 the current connection and the owner reports lost credentials. Historical
-reports do not establish current deployment availability. Phase 7 has not started.
+reports do not establish current deployment availability. Under renewed owner
+authorization (D-035), an isolated public-context development preview is now
+implemented. Neither Phase 6 nor full Phase 7 cloud acceptance is claimed.
+
+## Public-context development preview — 20 November 2026
+
+- `/app/context`: responsive, keyboard-accessible commute planner using explicit
+  inputs, real place search, endpoint forecasts and optional OSRM driving estimates.
+- Deterministic UTC preparation/departure/arrival calculations, elapsed-time
+  warnings, explicit route fallback, complete hourly coverage checks, source
+  attribution, retrieval timestamps, stale-plan warning and manual refresh.
+- FastAPI schemas and provider adapter with bounded cache/deduplication,
+  timeouts, disabled-by-default feature gate and production Firebase verification.
+- Same-origin Next bridge; server-only backend binding in the Worker runtime.
+- Other daily screens retain sample data. No provider calendar write,
+  notification, background tracking, model or automatic action is introduced.
+- Setup, API contracts, provider terms, verification and remaining work:
+  [`PUBLIC_CONTEXT_PREVIEW.md`](PUBLIC_CONTEXT_PREVIEW.md).
+- Validation: 73 frontend tests, 33 backend tests and four desktop/mobile browser
+  checks pass; typecheck, ESLint, Ruff and strict MyPy pass. Live-provider smoke
+  verification returned geocoding, a real driving estimate and both endpoint
+  forecasts. Next and Sites/Worker production builds pass independently. The
+  cube hash checks remain unchanged. Desktop/mobile result layouts were visually
+  inspected; the retained Sites build still reports its existing chunk warning.
+- Linux CI separates functional API checks from software WebGL using the
+  existing Focus-mode cookie. Cube-enabled desktop/mobile layouts are inspected
+  locally and locked cube hashes remain tested. Browser setup warms the planner
+  route and checks real bridge responses before UI assertions; individual
+  assertion timeouts remain bounded. Remote validation is rerun after adjustment.
+  The browser job uses preinstalled Chrome on a pinned Ubuntu 24.04 runner to
+  avoid a stalled apt/browser installer, with a ten-minute job limit.
+- Compatible framework/security patches applied under D-036. The final runtime
+  dependency audit reports zero findings. Eleven development/tooling advisories
+  remain in the retained vinext/Cloudflare/Vite stack; no forced major tooling
+  migration or security-complete hosted-release claim is made.
 
 ## Completed
 
@@ -361,15 +395,15 @@ reports do not establish current deployment availability. Phase 7 has not starte
   migration and API tests pass
 - Identity: Firebase web sign-in and server token verification implemented,
   pending deployed end-to-end verification
-- Integrations: Teams icon registered; no external data connector implemented
+- Integrations: opt-in public geocoding/weather and optional OSRM implemented
+  for the standalone commute planner; productivity connectors remain mocked
 - AI: not implemented
 - Android: not implemented
 
-Calendar, route, weather, task, future-source, document, conversation, search,
+Outside the standalone commute planner, Calendar, route, weather, task, future-source, document, conversation, search,
 connection, permission, memory, automation, export, provider deletion,
 approval, and action results remain deterministic mocks behind provider-neutral
-service boundaries. No model, productivity provider, notification service, or
-external tool is called.
+service boundaries. No model, productivity provider or notification service is called.
 
 Quick Capture does not read the clipboard, call a model or parser service, or
 write to a calendar provider. It renders pasted markup as plain text and uses
@@ -382,7 +416,8 @@ in Activity; they do not write to a provider calendar.
 - The saved private Sites project returns `project_not_found` through the
   current connection. The owner reports lost credentials. No replacement Site
   was created. Deployed sign-in, reload persistence and cross-user isolation
-  remain unverified. Phase 7 remains gated on Phase 6 cloud acceptance.
+  remain unverified. Phase 7 release acceptance remains gated on Phase 6 cloud
+  acceptance; isolated development is permitted by D-035.
 - Mock action approvals outside the Phase 6 durable boundaries still update
   only deterministic local state and reset on route reload.
 - Phase 3 connection setup, sync, reconnect, disconnect, export, deletion,
@@ -400,6 +435,7 @@ in Activity; they do not write to a provider calendar.
 
 ## Next phase
 
-Phase 7 — Weather, Maps, and Public Context APIs. Begin only after the Phase 6
-cloud acceptance checks in `docs/PHASE_06_USER_SETUP.md` pass. No Phase 7
-implementation has started.
+Complete Phase 6 cloud acceptance after access is restored, then finish Phase 7
+— Weather, Maps, and Public Context APIs. The commute preview is a development
+slice only; it does not complete the phase or begin productivity OAuth, model,
+notification or Android work.

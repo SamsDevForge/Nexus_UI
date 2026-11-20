@@ -22,6 +22,7 @@ const focusModeCookie = "nexus-focus-mode";
 
 const dailyNavigation = [
   { label: "Today", compact: "T", description: "Your day now", href: "/app/today" },
+  { label: "Commute planner", compact: "CP", description: "Forecast and departure", href: "/app/context" },
   {
     label: "Timeline",
     compact: "TL",
@@ -112,7 +113,9 @@ export function ProductShell({
     .filter(Boolean)
     .join(" ");
   const shellState =
-    canonical === "privacy-paused"
+    pathname === "/app/context"
+      ? { label: "On demand", detail: "Forecasts and your inputs" }
+      : canonical === "privacy-paused"
       ? { label: "Privacy paused", detail: "0 new signals" }
       : canonical === "offline"
         ? { label: "Offline", detail: "Prepared state" }
@@ -275,7 +278,7 @@ export function ProductShell({
           <span>
             <b>{accountName}</b>
             <small>
-              {auth.mode === "phase6-live" ? "Durable profile" : "Student profile"}
+              {auth.mode === "phase6-live" ? "Durable profile" : "Sample profile"}
             </small>
           </span>
           {auth.mode === "phase6-live" ? (
@@ -302,13 +305,13 @@ export function ProductShell({
         <header className="app-context-bar">
           <div className="mobile-brand">
             <BrandLockup />
-            <small className="sample-day-label">Sample day</small>
+            <small className="sample-day-label">{pathname === "/app/context" ? "Forecasts" : "Sample day"}</small>
           </div>
           <div className="context-location">
             <span className="context-pulse" aria-hidden="true" />
             <span>
-              <b>Sample day · Saturday, 25 July</b>
-              <small>Bengaluru · IST</small>
+              <b>{pathname === "/app/context" ? "Commute planner" : "Sample day · Saturday, 25 July"}</b>
+              <small>{pathname === "/app/context" ? "Public forecasts · your inputs" : "Bengaluru · IST"}</small>
             </span>
           </div>
           <div className="context-actions">
