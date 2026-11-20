@@ -7,7 +7,9 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: false,
   workers: 1,
-  timeout: 45_000,
+  // Cold Linux runners compile the route and initialize software WebGL more slowly.
+  // Individual assertions retain Playwright's bounded five-second expectation timeout.
+  timeout: process.env.CI ? 90_000 : 45_000,
   use: {
     baseURL: "http://127.0.0.1:3101",
     trace: "retain-on-failure",
@@ -32,7 +34,7 @@ export default defineConfig({
     },
     {
       command: "node node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 3101",
-      url: "http://127.0.0.1:3101",
+      url: "http://127.0.0.1:3101/app/context",
       env: { NEXUS_CONTEXT_API_URL: "http://127.0.0.1:8101", NEXT_PUBLIC_NEXUS_RUNTIME_MODE: "mock" },
       timeout: 120_000,
       reuseExistingServer: false,
