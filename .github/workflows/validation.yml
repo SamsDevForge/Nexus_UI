@@ -37,6 +37,19 @@ jobs:
       - run: npm run test:e2e
   backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: nexus_test
+          POSTGRES_PASSWORD: isolated_test_only
+          POSTGRES_DB: nexus_notifications_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U nexus_test -d nexus_notifications_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_NOTIFICATION_DATABASE_URL: postgresql+asyncpg://nexus_test:isolated_test_only@localhost:5432/nexus_notifications_test
     defaults:
       run:
         working-directory: backend

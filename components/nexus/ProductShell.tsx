@@ -23,6 +23,7 @@ const focusModeCookie = "nexus-focus-mode";
 const dailyNavigation = [
   { label: "Today", compact: "T", description: "Your day now", href: "/app/today" },
   { label: "Commute planner", compact: "CP", description: "Forecast and departure", href: "/app/context" },
+  { label: "Notifications", compact: "N", description: "Briefs on your terms", href: "/app/notifications" },
   {
     label: "Timeline",
     compact: "TL",
@@ -113,7 +114,9 @@ export function ProductShell({
     .filter(Boolean)
     .join(" ");
   const shellState =
-    pathname === "/app/context"
+    pathname === "/app/notifications"
+      ? { label: auth.mode === "mock" ? "Demonstration" : "Scheduled briefs", detail: "Check delivery in your inbox" }
+      : pathname === "/app/context"
       ? { label: "On demand", detail: "Forecasts and your inputs" }
       : canonical === "privacy-paused"
       ? { label: "Privacy paused", detail: "0 new signals" }
@@ -305,13 +308,13 @@ export function ProductShell({
         <header className="app-context-bar">
           <div className="mobile-brand">
             <BrandLockup />
-            <small className="sample-day-label">{pathname === "/app/context" ? "Forecasts" : "Sample day"}</small>
+            <small className="sample-day-label">{pathname === "/app/notifications" ? "Briefs" : pathname === "/app/context" ? "Forecasts" : "Sample day"}</small>
           </div>
           <div className="context-location">
             <span className="context-pulse" aria-hidden="true" />
             <span>
-              <b>{pathname === "/app/context" ? "Commute planner" : "Sample day · Saturday, 25 July"}</b>
-              <small>{pathname === "/app/context" ? "Public forecasts · your inputs" : "Bengaluru · IST"}</small>
+              <b>{pathname === "/app/notifications" ? "Notifications" : pathname === "/app/context" ? "Commute planner" : "Sample day · Saturday, 25 July"}</b>
+              <small>{pathname === "/app/notifications" ? auth.mode === "mock" ? "Demonstration · no sends" : "Schedules and delivery history" : pathname === "/app/context" ? "Public forecasts · your inputs" : "Bengaluru · IST"}</small>
             </span>
           </div>
           <div className="context-actions">

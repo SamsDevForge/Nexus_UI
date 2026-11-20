@@ -380,3 +380,24 @@ range requires it. No locked cube source or renderer migration is authorized by
 this maintenance work. Apply compatible transitive fixes without forced major
 upgrades. The remaining vinext/Cloudflare/Vite tooling advisories require a
 separate verified tooling migration before hosted release.
+
+## D-037 — Owner-requested notification development after merging PR #2
+
+The owner explicitly requested merging PR #2 and continuing to the next phase.
+PR #2 is merged into its existing reconciliation development base. Develop
+Phase 8 notifications/scheduled jobs independently; earlier cloud acceptance
+and incomplete broader Phase 7 scope stay open. This does not replace the
+private Site or declare production acceptance. Preserve the locked cube.
+
+Use a durable PostgreSQL notification/outbox queue and an explicit background
+worker alongside FastAPI. Keep brief schedules opt-in, honor latest privacy
+and channel preferences at delivery, and never start a worker implicitly in
+the web process. Briefs use only owned, saved local event drafts and disclose
+that external calendars are not connected.
+
+Web push uses Firebase SDK 13.4/Admin SDK Installation IDs, an encrypted device
+identifier store, generic lock-screen text and explicit browser consent. The
+SDK update is an explicit prerequisite: validation found the token API deprecated.
+Provider acceptance is not device receipt.
+Uncertain/crashed push attempts are not blindly retried; the durable in-app
+item remains available. Development verification sends no external push.

@@ -22,6 +22,7 @@ from .identity import (
     IdentityVerifier,
     UnavailableIdentityVerifier,
 )
+from .notification_api import router as notification_router
 from .public_context import PublicContextService
 from .public_context import router as context_router
 
@@ -145,6 +146,7 @@ def create_app(
     app.include_router(health_router)
     app.include_router(api_router)
     app.include_router(context_router)
+    app.include_router(notification_router)
     return app
 
 

@@ -14,6 +14,12 @@ estimates and deterministic preparation/departure times at `/app/context`.
 It works locally without the unavailable hosting account. Other daily screens
 remain sample-data experiences; cloud acceptance is still open.
 
+[Phase 8 notifications](docs/PHASE_08_NOTIFICATIONS.md) adds opt-in brief
+schedules, a durable inbox/worker queue and Firebase Installation ID push
+plumbing. The default UI is a labeled demonstration; real scheduling requires
+configured identity, PostgreSQL and a separately started worker. Deployed
+browser/device acceptance remains open.
+
 ## Local frontend
 
 Requires Node.js 20.9 or newer.

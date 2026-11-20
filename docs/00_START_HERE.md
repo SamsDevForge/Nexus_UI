@@ -53,6 +53,7 @@ Read the documents in numerical order before starting implementation.
 | `15_DECISIONS.md` | Durable product and engineering decisions |
 | `PROGRESS.md` | Current implementation status; update after every phase |
 | `PUBLIC_CONTEXT_PREVIEW.md` | Standalone commute preview, setup, contracts, validation and remaining gates |
+| `PHASE_08_NOTIFICATIONS.md` | Notification schedules, queue/worker, opt-in push, verification and remaining gates |
 | `prompts/PHASE_01_CODEX_PROMPT.md` | The first implementation prompt |
 | `prompts/UI_REDESIGN_PROMPT.md` | A reusable visual-audit and redesign prompt |
 

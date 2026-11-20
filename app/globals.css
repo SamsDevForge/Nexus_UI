@@ -5211,7 +5211,7 @@ button {
     position: fixed;
     z-index: 20;
     right: 10px;
-    bottom: 9px;
+    bottom: calc(9px + env(safe-area-inset-bottom, 0px));
     left: 10px;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -5230,8 +5230,9 @@ button {
     gap: 4px;
     align-content: center;
     min-width: 0;
+    min-height: 44px;
     border-radius: 12px;
-    color: rgba(111, 128, 143, 0.73);
+    color: var(--nx-text-2);
     text-align: center;
     text-decoration: none;
   }
@@ -5249,9 +5250,18 @@ button {
 
   .mobile-nav-link > b {
     overflow: hidden;
-    font-size: 8px;
+    font-size: 11px;
+    line-height: 1.25;
     font-weight: 480;
     text-overflow: ellipsis;
+  }
+
+  .quick-capture-root {
+    bottom: calc(128px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .product-main {
+    padding-bottom: calc(160px + env(safe-area-inset-bottom, 0px));
   }
 
   .mobile-nav-link.is-active {
