@@ -1,0 +1,4 @@
+# Preserve the approved cube's byte hashes on Windows and Unix checkouts.
+app/NexusExperience.tsx text eol=lf
+app/LandingExperienceClient.tsx text eol=lf
+components/nexus/ProductLandingCubeBackdrop.tsx text eol=lf

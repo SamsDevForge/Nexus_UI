@@ -306,3 +306,47 @@ authority.
 Corrections and deletion operate on the owning user's stored capture. Raw
 capture text, provider tokens, email bodies, location history, and other
 sensitive content do not enter structured logs.
+
+## D-032 — Product motion is semantic, bounded, and visibility-aware
+
+NEXUS product motion communicates arrival, hierarchy, relationship, system
+state, feedback, or spatial continuity. Route content may use short region and
+bounded row choreography while the application shell, navigation, context bar,
+Quick Capture launcher, and locked cube remain stable.
+
+Continuous relative motion is limited to existing illustrations whose geometry
+already represents live relationships: Connections, Memory, and Activity.
+Their signal dots may orbit at different radii, phases, speeds, and directions
+around the existing central tile. Attention, success, degraded, and
+privacy-paused states alter that behavior without replacing textual status.
+
+Ambient loops pause offscreen, in hidden documents, and under reduced-motion
+preferences. Reduced motion removes orbit, drift, translation, scale, scan,
+pulse, and stagger while preserving every status, action, focus path, and live
+announcement. Motion remains dependency-free and must not import, couple to, or
+modify the locked Three.js cube.
+
+Rendered product-owner feedback found the initial cadence visually rushed.
+Motion therefore uses a deliberately slow cadence: 1200 ms item entry,
+900 ms region entry, 900 ms panels, and 28–36 second attention orbits. This is
+a timing calibration only; hierarchy, geometry, state meaning, and interaction
+authority remain unchanged.
+
+All orbital dots resolve their absolute position from one shared center after
+the original static placement rules. Their radii remain within the illustration
+boundary, and central-tile counter-rotation never translates its geometric
+center.
+
+
+## D-034 — Reconcile motion and the current platform foundation
+
+The owner authorized continued development and supplied the final product vision
+in `16_FINAL_PRODUCT_VISION.md`. Preserve the large cube's scale, position,
+material, lighting and visual dominance. Retain the existing phase order.
+
+The motion branch called Phase 6 accepted; newer foundation commits still require
+real-account acceptance. Preserve the newer database, auth, fetch and persistence
+fixes alongside the motion work. Neither branch is proof of deployed acceptance.
+The saved private Site is unavailable and the owner reports lost credentials.
+Preserve its identity; do not create a replacement or begin Phase 7 before the
+Phase 6 cloud acceptance gate can be verified.

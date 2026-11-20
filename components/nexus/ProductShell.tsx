@@ -302,11 +302,12 @@ export function ProductShell({
         <header className="app-context-bar">
           <div className="mobile-brand">
             <BrandLockup />
+            <small className="sample-day-label">Sample day</small>
           </div>
           <div className="context-location">
             <span className="context-pulse" aria-hidden="true" />
             <span>
-              <b>Saturday, 25 July</b>
+              <b>Sample day · Saturday, 25 July</b>
               <small>Bengaluru · IST</small>
             </span>
           </div>

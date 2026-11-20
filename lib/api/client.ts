@@ -89,20 +89,26 @@ export class NexusApiClient {
           requestId: response.headers.get("X-Request-ID") ?? "",
         };
       }
-      return (await response.json()) as ApiEnvelope<T>;
+      const payload: unknown = await response.json().catch(() => null);
+      if (!payload || typeof payload !== "object" || !("data" in payload)
+        || !("requestId" in payload) || typeof payload.requestId !== "string"
+        || !payload.requestId.trim()) {
+        throw new NexusApiError(502, "invalid_response", "NEXUS could not confirm the server result. Check your saved items before retrying.");
+      }
+      return payload as ApiEnvelope<T>;
     } catch (error) {
       if (error instanceof NexusApiError) throw error;
       if (error instanceof DOMException && error.name === "AbortError") {
         throw new NexusApiError(
           408,
           "request_timeout",
-          "The request timed out. Your changes were not saved.",
+          "The request timed out. NEXUS could not confirm whether changes were saved. Check your saved items before retrying.",
         );
       }
       throw new NexusApiError(
         0,
         "network_unavailable",
-        "NEXUS could not reach the persistence service. Your changes were not saved.",
+        "The connection was interrupted. NEXUS could not confirm whether changes were saved. Check your saved items before retrying.",
       );
     } finally {
       globalThis.clearTimeout(timeout);

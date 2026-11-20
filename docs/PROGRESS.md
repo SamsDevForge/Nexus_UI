@@ -2,11 +2,11 @@
 
 ## Current phase
 
-Phase 0 through Phase 5 are accepted. Phase 6 local implementation is complete
-and its cloud acceptance pass is in progress. Railway is deployed, Alembic is
-at the Phase 6 head, readiness is healthy, and the existing owner-only Sites
-project is configured for the live runtime. Real-account persistence and
-cross-user verification remain to be completed before Phase 6 is accepted.
+Phases 0 through 5 retain their recorded acceptance. The Phase 6 foundation
+and motion branches are reconciled on `codex/nexus-phase6-reconciliation`.
+Cloud acceptance remains open: the saved private Site is unavailable through
+the current connection and the owner reports lost credentials. Historical
+reports do not establish current deployment availability. Phase 7 has not started.
 
 ## Completed
 
@@ -286,6 +286,61 @@ cross-user verification remain to be completed before Phase 6 is accepted.
   coverage and the complete 63-test frontend suite pass; private redeployment
   and real-account acceptance are in progress.
 
+- The post-Phase-6 motion-completeness pass added centralized press, item,
+  component, panel, and region timing; bounded route and row choreography; and
+  restrained panel, dialog, search, Quick Capture, and status feedback without
+  adding a motion dependency or changing the approved material system.
+- Connections, Memory, and Activity reuse their existing central tiles, rings,
+  and signal dots for state-aware relative orbital motion. A shared visibility
+  controller pauses ambient loops offscreen, in hidden documents, for the
+  privacy-paused state, and under reduced-motion preferences.
+- Sign-in, onboarding, Today, Timeline, Insights, NEXUS, Knowledge, Nexus
+  Notes, Search, Automations, Connections, Permission Centre, Memory, Activity,
+  Settings, Technicals, global search, and Quick Capture received rendered
+  motion review. Entry motion remains on route content while the shell,
+  navigation, context bar, and locked cube stay stable.
+- Motion verification covered 1440 x 900, 1280 x 800, 768 x 1024,
+  390 x 844, and a 720 x 450 reflow equivalent to 200% zoom. Populated,
+  loading, empty, partial, stale, degraded, denied, offline, success, running,
+  and recoverable-failure states retained their hierarchy with no
+  document-level horizontal overflow. Global Search and Quick Capture retained
+  focus containment, restoration, and narrow-viewport fit.
+- Motion-pass validation passes 65 frontend tests, 14 backend tests,
+  TypeScript, ESLint, Ruff, strict MyPy, Next.js and Sites/vinext production
+  builds, `git diff --check`, the secret scan, browser console and hydration
+  inspection, locked-cube hashes, both supplied SVG hashes, and the unchanged
+  22-file `exfonts/` manifest.
+- Product-owner review found the first motion cadence too fast. The follow-up
+  calibration moves item, region, panel, feedback, and semantic orbit motion
+  toward the calm end of the approved ranges while preserving the same
+  hierarchy, states, geometry, reduced-motion behavior, and stable shell.
+- A second rendered review exposed two calibration issues: card arrival still
+  felt rushed, and higher-specificity legacy dot positions displaced some
+  orbital centers. Card entry now takes 1200 ms, every animated dot explicitly
+  resolves from the same center, all radii remain within the illustration, and
+  the central tile no longer translates away from that center.
+- A third product-owner cadence review confirmed that the remaining visible
+  motion still read too quickly. Region and panel entry now take 900 ms, card
+  and row entry takes 1200 ms, attention orbits take 28–36 seconds, steady
+  orbits take 32–40 seconds, and degraded motion takes 48 seconds. Immediate
+  press acknowledgement remains responsive at 160 ms.
+
+## Reconciliation validation
+
+- The current platform branch and motion branch are combined without changes to
+  the locked cube source. LF checkout rules retain its approved hashes on Windows.
+- The API client rejects malformed success envelopes and distinguishes an unknown
+  save outcome after a connection loss from a confirmed failure. Two regression
+  tests cover these cases.
+- Daily context is visibly identified as a sample day, including narrow layouts.
+- Local validation: 72 frontend tests, 16 backend tests, TypeScript, ESLint,
+  Ruff and strict MyPy pass. Next.js and Sites/vinext production builds pass
+  independently. Browser checks cover Today, Connections, Memory, narrow layouts
+  and Quick Capture opening/closing, with no horizontal overflow or page errors.
+- The local npm distribution failed to invoke nested `npm` in postbuild; running
+  the Sites build directly succeeded. This is a local tooling limit.
+- These are local software checks, not production Firebase/Neon acceptance.
+
 ## Current implementation assumptions
 
 - The existing cinematic landing page is the accepted public visual baseline.
@@ -324,12 +379,10 @@ in Activity; they do not write to a provider calendar.
 
 ## Known limitations
 
-- Railway Terms of Service are accepted, but the connected workspace still has
-  no deployable project or service. The existing Sites project has no Phase 6
-  runtime keys. Consequently production Alembic state, Railway readiness, real
-  Firebase sign-in, durable reload/reauthentication, cross-user isolation,
-  error-state behavior, and a new private Sites version remain externally
-  unverified.
+- The saved private Sites project returns `project_not_found` through the
+  current connection. The owner reports lost credentials. No replacement Site
+  was created. Deployed sign-in, reload persistence and cross-user isolation
+  remain unverified. Phase 7 remains gated on Phase 6 cloud acceptance.
 - Mock action approvals outside the Phase 6 durable boundaries still update
   only deterministic local state and reset on route reload.
 - Phase 3 connection setup, sync, reconnect, disconnect, export, deletion,
