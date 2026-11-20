@@ -13,6 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from .api import api_router, health_router
+from .calendar_api import router as calendar_router
+from .calendar_boundary import CalendarBoundary
+from .calendar_provider import CalendarProvider
 from .config import Settings, get_settings
 from .db import Database
 from .errors import ApiError
@@ -60,9 +63,11 @@ def create_app(
         await database.start()
         client = httpx.AsyncClient(timeout=6, follow_redirects=False)
         app.state.public_context = PublicContextService(client, settings.osrm_base_url)
+        app.state.calendar_provider = CalendarProvider(settings)
         try:
             yield
         finally:
+            await app.state.calendar_provider.close()
             await client.aclose()
             await database.stop()
 
@@ -83,6 +88,8 @@ def create_app(
     )
     # Provider request URLs contain locations; do not emit them through HTTPX INFO logs.
     logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+    logging.getLogger("authlib").setLevel(logging.WARNING)
 
     app.add_middleware(
         CORSMiddleware,
@@ -104,6 +111,9 @@ def create_app(
         request.state.request_id = incoming[:64] if incoming else str(uuid.uuid4())
         response = await call_next(request)
         response.headers["X-Request-ID"] = request.state.request_id
+        if request.url.path.startswith("/api/v1/calendar"):
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Referrer-Policy"] = "no-referrer"
         return response
 
     @app.exception_handler(ApiError)
@@ -147,6 +157,8 @@ def create_app(
     app.include_router(api_router)
     app.include_router(context_router)
     app.include_router(notification_router)
+    app.include_router(calendar_router)
+    app.add_middleware(CalendarBoundary)
     return app
 
 

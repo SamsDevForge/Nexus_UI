@@ -7,10 +7,13 @@ from typing import Any
 from sqlalchemy import (
     JSON,
     Boolean,
+    CheckConstraint,
     DateTime,
     Float,
     ForeignKey,
+    ForeignKeyConstraint,
     Index,
+    Integer,
     String,
     Text,
     Time,
@@ -227,3 +230,104 @@ class PushDelivery(TimestampMixin, Base):
     reason: Mapped[str | None] = mapped_column(String(64))
     lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     provider_message_id: Mapped[str | None] = mapped_column(String(255))
+
+
+class CalendarConnection(TimestampMixin, Base):
+    __tablename__ = "calendar_connections"
+    __table_args__ = (
+        UniqueConstraint("user_id", "provider", name="uq_calendar_owner_provider"),
+        UniqueConstraint("id", "user_id", name="uq_calendar_connection_owner"),
+        Index("ix_calendar_sync_due", "status", "next_sync_at"),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    provider: Mapped[str] = mapped_column(String(16))
+    status: Mapped[str] = mapped_column(String(24), default="connected")
+    generation: Mapped[int] = mapped_column(Integer, default=1)
+    sync_version: Mapped[int] = mapped_column(Integer, default=1)
+    access_encrypted: Mapped[str | None] = mapped_column(Text)
+    refresh_encrypted: Mapped[str | None] = mapped_column(Text)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    scopes: Mapped[list[str]] = mapped_column(JSON, default=list)
+    cursor_encrypted: Mapped[str | None] = mapped_column(Text)
+    last_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_full_sync_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    next_sync_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
+    lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    lease_token: Mapped[uuid.UUID | None] = mapped_column(Uuid)
+    window_start: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    window_end: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    watch_id: Mapped[str | None] = mapped_column(String(255))
+    watch_resource: Mapped[str | None] = mapped_column(String(255))
+    watch_secret_hash: Mapped[str | None] = mapped_column(String(64))
+    watch_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    error_code: Mapped[str | None] = mapped_column(String(64))
+
+
+class CalendarOAuthState(Base):
+    __tablename__ = "calendar_oauth_states"
+    state_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    provider: Mapped[str] = mapped_column(String(16))
+    verifier_encrypted: Mapped[str] = mapped_column(Text)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class CalendarCollection(TimestampMixin, Base):
+    __tablename__ = "calendar_collections"
+    __table_args__ = (
+        UniqueConstraint("user_id", "kind", "name", name="uq_calendar_collection_name"),
+        UniqueConstraint("id", "user_id", name="uq_calendar_collection_owner"),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    kind: Mapped[str] = mapped_column(String(16))
+    name: Mapped[str] = mapped_column(String(100))
+    fingerprint: Mapped[str | None] = mapped_column(String(64))
+
+
+class CalendarEvent(TimestampMixin, Base):
+    __tablename__ = "calendar_events"
+    __table_args__ = (
+        UniqueConstraint("connection_id", "external_key", name="uq_calendar_remote_event"),
+        UniqueConstraint("collection_id", "external_key", name="uq_calendar_local_event"),
+        ForeignKeyConstraint(
+            ["connection_id", "user_id"],
+            ["calendar_connections.id", "calendar_connections.user_id"],
+            ondelete="CASCADE",
+        ),
+        ForeignKeyConstraint(
+            ["collection_id", "user_id"],
+            ["calendar_collections.id", "calendar_collections.user_id"],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            "(connection_id IS NULL) != (collection_id IS NULL)", name="ck_calendar_one_source"
+        ),
+        Index("ix_calendar_owner_start", "user_id", "starts_at"),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    connection_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
+    collection_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
+    external_key: Mapped[str] = mapped_column(String(64))
+    source: Mapped[str] = mapped_column(String(16))
+    title: Mapped[str] = mapped_column(String(200))
+    location: Mapped[str] = mapped_column(String(300), default="")
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    timezone: Mapped[str] = mapped_column(String(64))
+    all_day: Mapped[bool] = mapped_column(Boolean, default=False)
+    starts_on: Mapped[str | None] = mapped_column(String(10))
+    ends_on: Mapped[str | None] = mapped_column(String(10))
+    busy: Mapped[bool] = mapped_column(Boolean, default=True)
+    status: Mapped[str] = mapped_column(String(16), default="confirmed")
+    preparation_minutes: Mapped[int] = mapped_column(Integer, default=15)
+    source_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

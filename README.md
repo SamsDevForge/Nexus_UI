@@ -20,6 +20,12 @@ plumbing. The default UI is a labeled demonstration; real scheduling requires
 configured identity, PostgreSQL and a separately started worker. Deployed
 browser/device acceptance remains open.
 
+[Phase 9 Calendar and timetable](docs/PHASE_09_CALENDAR.md) adds an owner-scoped
+agenda, manual events, ICS/timetable imports, read-only Google/Outlook OAuth,
+leased incremental synchronization and verified webhook scheduling. The dedicated
+Calendar screen reports sources, freshness and preparation conflicts. Real OAuth
+and deployed acceptance remain open; default mode stays a local demonstration.
+
 ## Local frontend
 
 Requires Node.js 20.9 or newer.
@@ -38,7 +44,7 @@ NEXT_PUBLIC_NEXUS_RUNTIME_MODE=phase6-live
 
 ## Local backend
 
-The backend requires Python 3.11 or newer.
+The backend requires Python 3.12 or newer.
 
 ```powershell
 cd backend

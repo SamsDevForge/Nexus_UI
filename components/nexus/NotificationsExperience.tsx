@@ -77,7 +77,7 @@ function NotificationsWorkspace() {
     </header>
     <p className="notifications-boundary">{sample
       ? "Demonstration mode. Changes last only on this screen; no background job runs and no notification is sent."
-      : "Briefs use your saved NEXUS event drafts. External calendars are not connected. Push acceptance does not confirm device receipt."}</p>
+      : "Briefs use your saved NEXUS event drafts. Calendar copies are not consulted by these briefs. Push acceptance does not confirm device receipt."}</p>
     {error && <p className="notifications-error" role="alert">{error}</p>}
     {message && <p role="status">{message}</p>}
     {!service && <p role="alert">Live notifications require a configured account and API connection.</p>}
