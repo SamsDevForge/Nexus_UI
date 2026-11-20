@@ -40,7 +40,7 @@ push-device acceptance gates remain open. No real mailbox was accessed.
   automatic tasks or Calendar writes. Existing daily mocks remain distinct.
 - Default examples are fictional, screen-local and reset on reload. Real mailbox
   consent, deployed processing and production privacy operation remain unverified.
-- Local validation: 82 frontend tests, 84 backend tests, ten desktop/mobile
+- Local validation: 82 frontend tests, 85 backend tests, ten desktop/mobile
   browser checks, TypeScript, ESLint, Ruff and strict MyPy pass. Next and retained
   Sites Worker production builds pass. Layouts were visually inspected with the
   unchanged cube. Three real PostgreSQL concurrency cases run separately in CI;

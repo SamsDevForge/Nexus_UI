@@ -430,3 +430,11 @@ async def test_mail_provider_rejects_external_url_and_insufficient_scope(tmp_pat
             await adapter.get("https://evil.example/steal", "private-access", guard)
         with pytest.raises(CalendarFailure):
             await adapter.tokens("microsoft", code="code", verifier="verifier")
+
+
+def test_extracted_dates_are_grounded_in_the_retained_excerpt() -> None:
+    found = extract("Update", "x" * 300 + " Deadline 2026-12-01 " + "y" * 300)["items"][0]
+    assert found["value"] == "2026-12-01" and found["value"] in found["evidence"]
+    assert len(found["evidence"]) <= 240
+    distant = extract("Update", "Deadline " + "x" * 400 + " 2026-12-01")["items"][0]
+    assert distant["value"] is None

@@ -60,25 +60,25 @@ def extract(subject: str, text: str, important: bool = False) -> dict[str, Any]:
     lines = (subject + "\n" + text).splitlines()
     items: list[dict[str, Any]] = []
     for line_number, line in enumerate(lines):
-        kind = (
-            "deadline"
-            if re.search(r"\b(due|deadline|submit|submission)\b", line, re.I)
-            else "event"
-            if re.search(
-                r"\b(meeting|class|exam|workshop|appointment|interview|session)\b", line, re.I
-            )
-            else None
+        deadline = re.search(r"\b(due|deadline|submit|submission)\b", line, re.I)
+        event = re.search(
+            r"\b(meeting|class|exam|workshop|appointment|interview|session)\b", line, re.I
         )
-        if kind is None:
+        match = deadline or event
+        if match is None:
             continue
-        dates = re.findall(r"(?<!\w)\d{4}-\d{2}-\d{2}(?!\d)", line)
+        kind = "deadline" if deadline else "event"
+        # Only infer from the excerpt actually retained and shown as evidence.
+        context = line[max(0, match.start() - 40) : match.end() + 180].strip()
+        dates = re.findall(r"(?<!\w)\d{4}-\d{2}-\d{2}(?!\d)", context)
         value, reason = None, "No unambiguous ISO date found. Review at the source."
         if len(set(dates)) == 1:
             try:
                 value = date.fromisoformat(dates[0]).isoformat()
                 reason = "Date found; no exact time or timezone inferred."
                 clock = re.search(
-                    re.escape(value) + r"[T ](\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2}))\b", line
+                    re.escape(value) + r"[T ](\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2}))\b",
+                    context,
                 )
                 if clock:
                     value = instant(value + "T" + clock[1]).isoformat()
@@ -94,10 +94,10 @@ def extract(subject: str, text: str, important: bool = False) -> dict[str, Any]:
             {
                 "id": identifier,
                 "kind": kind,
-                "title": line[:120],
+                "title": context[:120],
                 "value": value,
-                "evidence": line[:240],
-                "location": "subject" if line_number == 0 else f"body line {line_number}",
+                "evidence": context[:240],
+                "location": "subject" if line_number == 0 else f"processed body line {line_number}",
                 "reason": reason,
                 "status": "suggested",
                 "confidence": "explicit-pattern" if value else "needs-review",

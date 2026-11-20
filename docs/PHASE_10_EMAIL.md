@@ -14,7 +14,9 @@ original message. Gmail links include the consented account's address from its
 profile so a different default browser account does not silently become the
 evidence source. Outlook links are restricted to Microsoft mail hosts.
 
-Detection is deterministic English keyword/pattern matching. Only ISO dates
+Detection is deterministic English keyword/pattern matching within the retained
+excerpt window around each keyword. Dates outside that evidence window are not
+inferred. Only ISO dates
 (`YYYY-MM-DD`) and explicit offset timestamps are normalized. Relative dates,
 ambiguous numeric dates, invalid dates and multiple competing dates remain
 unresolved. Date-only events still need time/duration review. Everything starts
