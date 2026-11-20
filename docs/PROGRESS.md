@@ -10,6 +10,38 @@ reports do not establish current deployment availability. Under renewed owner
 authorization (D-035), an isolated public-context development preview is now
 implemented. Neither Phase 6 nor full Phase 7 cloud acceptance is claimed.
 
+PR #2 is merged into its reconciliation development base at `f589f617`.
+The owner explicitly requested the next phase: Phase 8 notification development
+is implemented on `codex/nexus-notifications` under D-037. Earlier cloud gates
+and full Phase 8 deployed/device acceptance remain open.
+
+## Phase 8 development — notifications and jobs
+
+- Opt-in morning/evening schedules, quiet hours and responsive notification
+  inbox/history UI with explicit sample/live boundaries.
+- Readable notification heading over the cube; mobile navigation retains
+  44-pixel touch targets as routes wrap, with Quick Capture above the nav.
+- Authenticated owner-scoped preference, inbox/read, test and device APIs.
+- Alembic migration, durable notification and encrypted-device push outbox,
+  separate 30-second worker, per-user locks/conditional claims, deduplication,
+  cooldown, expiry, privacy/channel checks and uncertain-send suppression.
+- Briefs explain only owned, saved local event drafts; no external calendar or
+  model was consulted. Lock-screen text contains no private event content.
+- Firebase JS 13.4/Admin 7.5 Installation ID registration/sending foundation,
+  opt-in service worker, expiry/tag handling, browser revocation and bounded
+  sign-out cleanup. No actual external push is sent during verification.
+- Local checks include a real worker subprocess delivering one explainable
+  scheduled brief, migration upgrade/downgrade/model comparison and encrypted
+  routing identifiers. PostgreSQL concurrency is separately checked in CI.
+- Validation: 77 frontend tests and 53 local backend tests pass; one PostgreSQL
+  concurrency case runs in CI. Typecheck, ESLint, Ruff and strict MyPy pass.
+  Six desktop/mobile browser cases pass, with explicit additional mobile
+  touch-target/Quick Capture spacing checks. Notification layouts were visually
+  inspected with the unchanged cube; Next and Sites/Worker builds pass. Runtime
+  dependency audit remains clear; the previously documented 11 tooling findings
+  remain. No real Firebase sign-in or device push receipt is claimed.
+- Setup, API contracts and acceptance limits: [`PHASE_08_NOTIFICATIONS.md`](PHASE_08_NOTIFICATIONS.md).
+
 ## Public-context development preview — 20 November 2026
 
 - `/app/context`: responsive, keyboard-accessible commute planner using explicit
@@ -397,6 +429,8 @@ implemented. Neither Phase 6 nor full Phase 7 cloud acceptance is claimed.
   pending deployed end-to-end verification
 - Integrations: opt-in public geocoding/weather and optional OSRM implemented
   for the standalone commute planner; productivity connectors remain mocked
+- Notifications: Phase 8 API, durable worker/inbox and opt-in FCM plumbing
+  implemented; deployed browser/device receipt unverified
 - AI: not implemented
 - Android: not implemented
 
@@ -435,7 +469,7 @@ in Activity; they do not write to a provider calendar.
 
 ## Next phase
 
-Complete Phase 6 cloud acceptance after access is restored, then finish Phase 7
-— Weather, Maps, and Public Context APIs. The commute preview is a development
-slice only; it does not complete the phase or begin productivity OAuth, model,
-notification or Android work.
+Restore existing deployment access and verify the earlier cloud gates, remaining
+Phase 7 scope and Phase 8 scheduled/device acceptance. The next development
+phase is Phase 9 — Calendar and timetable; no productivity OAuth, model or
+Android application is implemented by the notification change.

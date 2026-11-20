@@ -86,6 +86,8 @@ class QuietHours(ApiModel):
 
     @model_validator(mode="after")
     def validate_interval(self) -> Self:
+        if any(t.tzinfo or t.second or t.microsecond for t in (self.starts_at, self.ends_at)):
+            raise ValueError("Quiet hours use local times with minute precision.")
         if self.enabled and self.starts_at == self.ends_at:
             raise ValueError("Quiet hours must have different start and end times.")
         return self
@@ -99,6 +101,13 @@ class NotificationPreferences(ApiModel):
     morning_brief_at: time = time(7, 30)
     evening_brief_at: time = time(20, 30)
     quiet_hours: QuietHours = Field(default_factory=QuietHours)
+
+    @field_validator("morning_brief_at", "evening_brief_at")
+    @classmethod
+    def local_minute_precision(cls, value: time) -> time:
+        if value.tzinfo or value.second or value.microsecond:
+            raise ValueError("Brief schedules use local times with minute precision.")
+        return value
 
 
 class PersonalizationPreferences(ApiModel):

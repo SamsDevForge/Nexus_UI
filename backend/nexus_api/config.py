@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal, Self
 
-from pydantic import Field, model_validator
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,10 +24,22 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     public_context_enabled: bool = False
     osrm_base_url: str | None = None
+    notifications_enabled: bool = False
+    push_enabled: bool = False
+    push_token_encryption_key: SecretStr | None = None
+    fcm_web_vapid_public_key: str | None = None
     auto_create_test_schema: bool = Field(default=False, exclude=True)
 
     @model_validator(mode="after")
     def validate_environment(self) -> Self:
+        if self.push_enabled:
+            if not self.notifications_enabled or not self.push_token_encryption_key:
+                raise ValueError("Push requires notifications and an encryption key.")
+            if not self.firebase_project_id or not self.firebase_service_account_json_b64:
+                raise ValueError("Push requires the configured Firebase service account.")
+            from cryptography.fernet import Fernet
+
+            Fernet(self.push_token_encryption_key.get_secret_value().encode())
         origins = self.cors_origins
         if "*" in origins:
             raise ValueError("CORS_ALLOWED_ORIGINS must contain exact origins, never '*'.")

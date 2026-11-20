@@ -17,9 +17,10 @@ if config.config_file_name is not None:
 
 settings = Settings()
 database_url = settings.migration_database_url or settings.database_url
-if not database_url:
+if not database_url and config.attributes.get("connection") is None:
     raise RuntimeError("MIGRATION_DATABASE_URL or DATABASE_URL is required for migrations.")
-config.set_main_option("sqlalchemy.url", normalize_async_database_url(database_url))
+if database_url:
+    config.set_main_option("sqlalchemy.url", normalize_async_database_url(database_url))
 target_metadata = Base.metadata
 
 
@@ -54,5 +55,7 @@ async def run_async_migrations() -> None:
 
 if context.is_offline_mode():
     run_migrations_offline()
+elif config.attributes.get("connection") is not None:
+    do_run_migrations(config.attributes["connection"])
 else:
     asyncio.run(run_async_migrations())

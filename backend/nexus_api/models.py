@@ -116,6 +116,8 @@ class Preference(TimestampMixin, Base):
     device_push: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     morning_brief_at: Mapped[time] = mapped_column(Time, default=time(7, 30), nullable=False)
     evening_brief_at: Mapped[time] = mapped_column(Time, default=time(20, 30), nullable=False)
+    morning_brief_enabled: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    evening_brief_enabled: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     quiet_hours_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     quiet_hours_start: Mapped[time] = mapped_column(Time, default=time(22, 30), nullable=False)
     quiet_hours_end: Mapped[time] = mapped_column(Time, default=time(7, 0), nullable=False)
@@ -172,3 +174,56 @@ class AuditEvent(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class Notification(TimestampMixin, Base):
+    __tablename__ = "notifications"
+    __table_args__ = (
+        UniqueConstraint("user_id", "dedup_key", name="uq_notification_user_dedup"),
+        Index("ix_notification_queue", "status", "due_at"),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    kind: Mapped[str] = mapped_column(String(16))
+    dedup_key: Mapped[str] = mapped_column(String(160))
+    timezone: Mapped[str] = mapped_column(String(64))
+    due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    status: Mapped[str] = mapped_column(String(24), default="queued")
+    reason: Mapped[str | None] = mapped_column(String(64))
+    title: Mapped[str] = mapped_column(String(120), default="")
+    body: Mapped[str] = mapped_column(Text, default="")
+    evidence: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class PushDevice(TimestampMixin, Base):
+    __tablename__ = "push_devices"
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    token_encrypted: Mapped[str] = mapped_column(Text)
+    platform: Mapped[str] = mapped_column(String(16))
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class PushDelivery(TimestampMixin, Base):
+    __tablename__ = "push_deliveries"
+    __table_args__ = (
+        UniqueConstraint("notification_id", "device_id", name="uq_push_notification_device"),
+        Index("ix_push_queue", "status", "created_at"),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    notification_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("notifications.id", ondelete="CASCADE")
+    )
+    device_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("push_devices.id", ondelete="CASCADE"))
+    status: Mapped[str] = mapped_column(String(24), default="queued")
+    reason: Mapped[str | None] = mapped_column(String(64))
+    lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    provider_message_id: Mapped[str | None] = mapped_column(String(255))
