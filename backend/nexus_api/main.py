@@ -25,6 +25,8 @@ from .identity import (
     IdentityVerifier,
     UnavailableIdentityVerifier,
 )
+from .mail_api import router as mail_router
+from .mail_provider import MailProvider
 from .notification_api import router as notification_router
 from .public_context import PublicContextService
 from .public_context import router as context_router
@@ -64,10 +66,12 @@ def create_app(
         client = httpx.AsyncClient(timeout=6, follow_redirects=False)
         app.state.public_context = PublicContextService(client, settings.osrm_base_url)
         app.state.calendar_provider = CalendarProvider(settings)
+        app.state.mail_provider = MailProvider(settings)
         try:
             yield
         finally:
             await app.state.calendar_provider.close()
+            await app.state.mail_provider.close()
             await client.aclose()
             await database.stop()
 
@@ -111,7 +115,7 @@ def create_app(
         request.state.request_id = incoming[:64] if incoming else str(uuid.uuid4())
         response = await call_next(request)
         response.headers["X-Request-ID"] = request.state.request_id
-        if request.url.path.startswith("/api/v1/calendar"):
+        if request.url.path.startswith(("/api/v1/calendar", "/api/v1/mail")):
             response.headers["Cache-Control"] = "no-store"
             response.headers["Referrer-Policy"] = "no-referrer"
         return response
@@ -158,6 +162,7 @@ def create_app(
     app.include_router(context_router)
     app.include_router(notification_router)
     app.include_router(calendar_router)
+    app.include_router(mail_router)
     app.add_middleware(CalendarBoundary)
     return app
 

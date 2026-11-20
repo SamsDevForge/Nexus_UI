@@ -1,4 +1,4 @@
-"""Bound calendar bodies and remove OAuth query credentials before access logging."""
+"""Bound provider bodies and remove OAuth query credentials before access logging."""
 
 from __future__ import annotations
 
@@ -13,7 +13,9 @@ class CalendarBoundary:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] != "http" or not scope.get("path", "").startswith("/api/v1/calendar"):
+        if scope["type"] != "http" or not scope.get("path", "").startswith(
+            ("/api/v1/calendar", "/api/v1/mail")
+        ):
             await self.app(scope, receive, send)
             return
         path = scope["path"]
@@ -26,11 +28,10 @@ class CalendarBoundary:
                 values = parse_qs(raw.decode("utf-8"), max_num_fields=8, strict_parsing=True)
                 if any(len(v) != 1 for v in values.values()):
                     raise ValueError("Duplicate callback fields")
-                scope.setdefault("state", {})["calendar_oauth"] = {
-                    k: v[0] for k, v in values.items()
-                }
+                state_key = "mail_oauth" if path.startswith("/api/v1/mail/") else "calendar_oauth"
+                scope.setdefault("state", {})[state_key] = {k: v[0] for k, v in values.items()}
             except (ValueError, UnicodeError):
-                await JSONResponse({"message": "Invalid calendar callback."}, status_code=400)(
+                await JSONResponse({"message": "Invalid provider callback."}, status_code=400)(
                     scope, receive, send
                 )
                 return

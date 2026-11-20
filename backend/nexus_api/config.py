@@ -37,11 +37,24 @@ class Settings(BaseSettings):
     google_calendar_client_secret: SecretStr | None = None
     microsoft_calendar_client_id: str | None = None
     microsoft_calendar_client_secret: SecretStr | None = None
+    mail_enabled: bool = False
+    mail_encryption_key: SecretStr | None = None
+    mail_api_public_url: str | None = None
+    mail_web_url: str | None = None
+    google_mail_client_id: str | None = None
+    google_mail_client_secret: SecretStr | None = None
+    microsoft_mail_client_id: str | None = None
+    microsoft_mail_client_secret: SecretStr | None = None
     auto_create_test_schema: bool = Field(default=False, exclude=True)
 
     @model_validator(mode="after")
     def validate_environment(self) -> Self:
-        for origin in (self.calendar_api_public_url, self.calendar_web_url):
+        for origin in (
+            self.calendar_api_public_url,
+            self.calendar_web_url,
+            self.mail_api_public_url,
+            self.mail_web_url,
+        ):
             if origin:
                 parsed = urlsplit(origin)
                 local = self.app_env != "production" and parsed.hostname in {
@@ -57,13 +70,17 @@ class Settings(BaseSettings):
                     or parsed.path not in {"", "/"}
                 ):
                     raise ValueError(
-                        "Calendar origins require HTTPS (localhost HTTP in development) "
+                        "Provider origins require HTTPS (localhost HTTP in development) "
                         "and no path/query."
                     )
         if self.calendar_encryption_key and self.calendar_encryption_key.get_secret_value():
             from cryptography.fernet import Fernet
 
             Fernet(self.calendar_encryption_key.get_secret_value().encode())
+        if self.mail_encryption_key and self.mail_encryption_key.get_secret_value():
+            from cryptography.fernet import Fernet
+
+            Fernet(self.mail_encryption_key.get_secret_value().encode())
         if self.push_enabled:
             if not self.notifications_enabled or not self.push_token_encryption_key:
                 raise ValueError("Push requires notifications and an encryption key.")

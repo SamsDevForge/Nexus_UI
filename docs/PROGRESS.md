@@ -16,9 +16,37 @@ is implemented on `codex/nexus-notifications` under D-037. Earlier cloud gates
 and full Phase 8 deployed/device acceptance remain open.
 
 PR #3 is merged into the reconciliation development base at `1a5b3de`.
-Phase 9 Calendar/timetable development continues on `codex/nexus-calendar`
+Phase 9 Calendar/timetable development was completed on `codex/nexus-calendar`
 under the owner's explicit request (D-038). Real calendar OAuth, provider webhook
 and deployed acceptance remain open. No replacement Site has been created.
+
+PR #4 is merged at `61779bc4`. Under the owner's request (D-039), Phase 10
+Email is developed on `codex/nexus-email`. Existing deployment, Calendar and
+push-device acceptance gates remain open. No real mailbox was accessed.
+
+## Phase 10 development — Email review
+
+- Responsive `/app/mail` review queue with importance filters, source evidence,
+  attachment metadata, editable/dismissible suggestions, source-change warnings,
+  revision-checked saves and protection against losing unsaved edits.
+- Separate Gmail/Outlook read-only OAuth with PKCE, one-use owner-bound consent,
+  encrypted credentials and fixed provider/callback URLs. Sign-in and Calendar
+  do not imply mail consent. Gmail evidence links select the consented account.
+- Dedicated encrypted mail schema and worker: up to 50 Inbox messages/source
+  from the previous 14 days, five-minute polling, conditional leases, bounded
+  reads, expiry cleanup, snapshot retention on failure and revocation guards.
+- Conservative English/ISO-date extraction; ambiguous dates remain unresolved.
+  No full message bodies, attachment bytes, model calls, send/mark-read operations,
+  automatic tasks or Calendar writes. Existing daily mocks remain distinct.
+- Default examples are fictional, screen-local and reset on reload. Real mailbox
+  consent, deployed processing and production privacy operation remain unverified.
+- Local validation: 82 frontend tests, 84 backend tests, ten desktop/mobile
+  browser checks, TypeScript, ESLint, Ruff and strict MyPy pass. Next and retained
+  Sites Worker production builds pass. Layouts were visually inspected with the
+  unchanged cube. Three real PostgreSQL concurrency cases run separately in CI;
+  final remote results belong to the phase PR.
+- Setup, limits, API and remaining gates: [PHASE_10_EMAIL.md](PHASE_10_EMAIL.md).
+- Next: Phase 11 Notion and Microsoft Teams; not started in this branch.
 
 ## Phase 9 development — Calendar and timetable
 
@@ -43,7 +71,7 @@ and deployed acceptance remain open. No replacement Site has been created.
   layouts were visually inspected with the unchanged cube. Two PostgreSQL
   concurrency cases run separately in CI; final remote results belong to the PR.
 - Details, setup, API and acceptance limits: [PHASE_09_CALENDAR.md](PHASE_09_CALENDAR.md).
-- Exact next phase: Phase 10 Email (Gmail, then Outlook mail), not started here.
+- Phase 9 handoff led to the Phase 10 development recorded above.
 
 ## Phase 8 development — notifications and jobs
 

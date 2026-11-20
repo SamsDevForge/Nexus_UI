@@ -331,3 +331,64 @@ class CalendarEvent(TimestampMixin, Base):
     status: Mapped[str] = mapped_column(String(16), default="confirmed")
     preparation_minutes: Mapped[int] = mapped_column(Integer, default=15)
     source_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class MailConnection(TimestampMixin, Base):
+    __tablename__ = "mail_connections"
+    __table_args__ = (
+        UniqueConstraint("user_id", "provider", name="uq_mail_owner_provider"),
+        UniqueConstraint("id", "user_id", name="uq_mail_connection_owner"),
+        Index("ix_mail_sync_due", "status", "next_sync_at"),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    provider: Mapped[str] = mapped_column(String(16))
+    status: Mapped[str] = mapped_column(String(24), default="connected")
+    generation: Mapped[int] = mapped_column(Integer, default=1)
+    sync_version: Mapped[int] = mapped_column(Integer, default=1)
+    access_encrypted: Mapped[str | None] = mapped_column(Text)
+    refresh_encrypted: Mapped[str | None] = mapped_column(Text)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    scopes: Mapped[list[str]] = mapped_column(JSON, default=list)
+    last_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    next_sync_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
+    lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    lease_token: Mapped[uuid.UUID | None] = mapped_column(Uuid)
+    error_code: Mapped[str | None] = mapped_column(String(64))
+    truncated: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class MailOAuthState(Base):
+    __tablename__ = "mail_oauth_states"
+    state_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    provider: Mapped[str] = mapped_column(String(16))
+    verifier_encrypted: Mapped[str] = mapped_column(Text)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class MailMessage(TimestampMixin, Base):
+    __tablename__ = "mail_messages"
+    __table_args__ = (
+        UniqueConstraint("connection_id", "external_key", name="uq_mail_source_message"),
+        ForeignKeyConstraint(
+            ["connection_id", "user_id"],
+            ["mail_connections.id", "mail_connections.user_id"],
+            ondelete="CASCADE",
+        ),
+        Index("ix_mail_owner_received", "user_id", "received_at"),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    connection_id: Mapped[uuid.UUID] = mapped_column(Uuid)
+    external_key: Mapped[str] = mapped_column(String(64))
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    payload_encrypted: Mapped[str] = mapped_column(Text)
+    correction_encrypted: Mapped[str | None] = mapped_column(Text)
+    revision: Mapped[int] = mapped_column(Integer, default=1)
