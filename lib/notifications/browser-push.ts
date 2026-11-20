@@ -3,6 +3,7 @@
 import type { NexusApiClient } from "@/lib/api/client";
 import type { NotificationService } from "@/lib/services/notification-service";
 import { getApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 const storageKey = (userId: string) => `nexus-push-device:${userId}`;
 
@@ -28,6 +29,7 @@ export async function enableBrowserPush(service: NotificationService, userId: st
       timeout = setTimeout(() => reject(new Error("Push registration timed out. Please retry.")), 20_000);
       void messaging.register(instance, { vapidKey, serviceWorkerRegistration: registration }).catch(reject);
     }).finally(() => { stop(); if (timeout) clearTimeout(timeout); });
+    if (getAuth(getApp()).currentUser?.uid !== userId) throw new Error("The signed-in account changed. Please enable push again from that account.");
     const device = await service.register(fid);
     try { localStorage.setItem(storageKey(userId), device.id); } catch { /* Optional device-id hint only. */ }
     return device;

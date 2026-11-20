@@ -34,12 +34,15 @@ and full Phase 8 deployed/device acceptance remain open.
   scheduled brief, migration upgrade/downgrade/model comparison and encrypted
   routing identifiers. PostgreSQL concurrency is separately checked in CI.
 - Validation: 77 frontend tests and 53 local backend tests pass; one PostgreSQL
-  concurrency case runs in CI. Typecheck, ESLint, Ruff and strict MyPy pass.
+  concurrency case also passed in CI (54 backend tests total). Typecheck,
+  ESLint, Ruff and strict MyPy pass.
   Six desktop/mobile browser cases pass, with explicit additional mobile
   touch-target/Quick Capture spacing checks. Notification layouts were visually
   inspected with the unchanged cube; Next and Sites/Worker builds pass. Runtime
   dependency audit remains clear; the previously documented 11 tooling findings
   remain. No real Firebase sign-in or device push receipt is claimed.
+- Account changes reset the notification workspace; an account change during
+  browser registration blocks attaching that in-flight registration to another user.
 - Setup, API contracts and acceptance limits: [`PHASE_08_NOTIFICATIONS.md`](PHASE_08_NOTIFICATIONS.md).
 
 ## Public-context development preview — 20 November 2026

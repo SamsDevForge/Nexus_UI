@@ -25,6 +25,12 @@ const format = (value: string) => new Date(value).toLocaleString(undefined, { da
 
 export function NotificationsExperience() {
   const auth = useNexusAuth();
+  // Account changes must discard the previous account's inbox and unsaved preferences.
+  return <NotificationsWorkspace key={`${auth.mode}:${auth.firebaseUser?.uid ?? "signed-out"}`} />;
+}
+
+function NotificationsWorkspace() {
+  const auth = useNexusAuth();
   const service = useMemo(() => auth.apiClient
     ? createLiveNotificationService(auth.apiClient)
     : auth.mode === "mock" ? createSampleNotificationService() : null, [auth.apiClient, auth.mode]);
