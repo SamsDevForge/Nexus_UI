@@ -19,6 +19,10 @@ dependencies = [
   "uvicorn[standard]==0.51.0",
   "httpx==0.28.1",
   "cryptography==50.0.2",
+  "icalendar==7.3.2",
+  "recurring-ical-events==3.8.2",
+  "Babel==2.18.0",
+  "Authlib==1.9.10",
 ]
 
 [project.optional-dependencies]
@@ -52,5 +56,5 @@ plugins = ["pydantic.mypy"]
 exclude = ["alembic"]
 
 [[tool.mypy.overrides]]
-module = ["firebase_admin.*"]
+module = ["firebase_admin.*", "authlib.*", "recurring_ical_events.*"]
 ignore_missing_imports = true

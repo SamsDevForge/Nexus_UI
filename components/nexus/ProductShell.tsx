@@ -23,6 +23,7 @@ const focusModeCookie = "nexus-focus-mode";
 const dailyNavigation = [
   { label: "Today", compact: "T", description: "Your day now", href: "/app/today" },
   { label: "Commute planner", compact: "CP", description: "Forecast and departure", href: "/app/context" },
+  { label: "Calendar", compact: "CA", description: "Schedule and preparation", href: "/app/calendar" },
   { label: "Notifications", compact: "N", description: "Briefs on your terms", href: "/app/notifications" },
   {
     label: "Timeline",
@@ -114,7 +115,9 @@ export function ProductShell({
     .filter(Boolean)
     .join(" ");
   const shellState =
-    pathname === "/app/notifications"
+    pathname === "/app/calendar"
+      ? { label: auth.mode === "mock" ? "Demonstration" : "Calendar copies", detail: "Source and freshness in Calendar" }
+      : pathname === "/app/notifications"
       ? { label: auth.mode === "mock" ? "Demonstration" : "Scheduled briefs", detail: "Check delivery in your inbox" }
       : pathname === "/app/context"
       ? { label: "On demand", detail: "Forecasts and your inputs" }
@@ -308,13 +311,13 @@ export function ProductShell({
         <header className="app-context-bar">
           <div className="mobile-brand">
             <BrandLockup />
-            <small className="sample-day-label">{pathname === "/app/notifications" ? "Briefs" : pathname === "/app/context" ? "Forecasts" : "Sample day"}</small>
+            <small className="sample-day-label">{pathname === "/app/calendar" ? "Calendar" : pathname === "/app/notifications" ? "Briefs" : pathname === "/app/context" ? "Forecasts" : "Sample day"}</small>
           </div>
           <div className="context-location">
             <span className="context-pulse" aria-hidden="true" />
             <span>
-              <b>{pathname === "/app/notifications" ? "Notifications" : pathname === "/app/context" ? "Commute planner" : "Sample day · Saturday, 25 July"}</b>
-              <small>{pathname === "/app/notifications" ? auth.mode === "mock" ? "Demonstration · no sends" : "Schedules and delivery history" : pathname === "/app/context" ? "Public forecasts · your inputs" : "Bengaluru · IST"}</small>
+              <b>{pathname === "/app/calendar" ? "Your schedule" : pathname === "/app/notifications" ? "Notifications" : pathname === "/app/context" ? "Commute planner" : "Sample day · Saturday, 25 July"}</b>
+              <small>{pathname === "/app/calendar" ? auth.mode === "mock" ? "Sample events · this screen only" : "Read-only sources · manual events" : pathname === "/app/notifications" ? auth.mode === "mock" ? "Demonstration · no sends" : "Schedules and delivery history" : pathname === "/app/context" ? "Public forecasts · your inputs" : "Bengaluru · IST"}</small>
             </span>
           </div>
           <div className="context-actions">

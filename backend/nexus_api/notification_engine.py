@@ -94,7 +94,7 @@ async def compose_brief(session: AsyncSession, item: Notification, now: datetime
     }[item.kind]
     item.body = (
         f"You have {count} saved NEXUS event draft(s) for {target_day.isoformat()}. "
-        "External calendars are not connected; this is not a complete schedule."
+        "Calendar copies are not consulted by this brief; this is not a complete schedule."
     )
     item.evidence = {
         **item.evidence,
@@ -102,7 +102,7 @@ async def compose_brief(session: AsyncSession, item: Notification, now: datetime
         "targetDate": target_day.isoformat(),
         "eventCount": count,
         "generatedAt": now.isoformat(),
-        "externalCalendarsConnected": False,
+        "externalCalendarsConsulted": False,
     }
 
 

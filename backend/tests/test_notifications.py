@@ -462,7 +462,7 @@ async def test_explicit_worker_process_delivers_one_scheduled_brief(tmp_path: Pa
         assert b'"delivered": 1' in stdout
         items = (await client.get("/api/v1/notifications", headers=AUTH)).json()["data"]["items"]
         assert len(items) == 1 and items[0]["kind"] == "morning"
-        assert "External calendars are not connected" in items[0]["body"]
+        assert "Calendar copies are not consulted" in items[0]["body"]
 
 
 @pytest.mark.asyncio

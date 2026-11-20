@@ -401,3 +401,19 @@ SDK update is an explicit prerequisite: validation found the token API deprecate
 Provider acceptance is not device receipt.
 Uncertain/crashed push attempts are not blindly retried; the durable in-app
 item remains available. Development verification sends no external push.
+
+## D-038 — Owner-requested Calendar and timetable phase after PR #3
+
+The owner requested merging PR #3 and continuing to Phase 9. Develop manual
+events, bounded ICS/timetable imports, read-only Google primary Calendar and
+Outlook default Calendar consent/sync, verified webhook scheduling/renewal,
+normalized agenda events and deterministic conflict/preparation buffers.
+Firebase sign-in grants no calendar access. No calendar provider write is added.
+
+Use separate encrypted OAuth credentials, owner-bound one-use PKCE state,
+fixed provider URLs, an explicit calendar worker and generation checks so
+revocation prevents stale workers from storing data or making subsequent reads.
+Retain source/freshness and partial/unavailable states. Provider fixtures are
+test-only; do not fabricate successful live consent, sync or webhook delivery.
+Earlier cloud gates and Phase 8 device acceptance remain open, and the lost
+private Site identity and locked cube remain unchanged.

@@ -15,6 +15,36 @@ The owner explicitly requested the next phase: Phase 8 notification development
 is implemented on `codex/nexus-notifications` under D-037. Earlier cloud gates
 and full Phase 8 deployed/device acceptance remain open.
 
+PR #3 is merged into the reconciliation development base at `1a5b3de`.
+Phase 9 Calendar/timetable development continues on `codex/nexus-calendar`
+under the owner's explicit request (D-038). Real calendar OAuth, provider webhook
+and deployed acceptance remain open. No replacement Site has been created.
+
+## Phase 9 development — Calendar and timetable
+
+- Dedicated responsive `/app/calendar` agenda with source/date filters,
+  source freshness, stale/error/reconnect states, conflict/preparation warnings,
+  manual creation/edit/removal and NEXUS-only buffer controls.
+- Owned manual events, atomic named ICS copies and weekly timetables; bounded
+  recurrence expansion, exclusive all-day dates and explicit timezone policies.
+- Separate read-only Google primary / Outlook default Calendar OAuth consent,
+  Authlib PKCE, one-use owner-bound state, encrypted tokens/verifiers/cursors,
+  fixed callback/provider URLs and query/log redaction boundaries.
+- PostgreSQL/Alembic calendar schema, an explicit worker, conditional leases,
+  paginated initial/incremental reads, cursor recovery, daily window refresh,
+  verified webhook scheduling/renewal and polling fallback. Failed snapshots
+  preserve last confirmed data; revocation invalidates in-flight persistence.
+- No real provider requests or new cloud identities during verification. Default
+  screen-local samples reset on reload; imports/consent require configured live
+  accounts. Existing other daily screens and general connection controls remain
+  mocked. Notification briefs do not consult calendar copies and disclose this.
+- Local validation: 80 frontend tests, 71 backend tests, eight desktop/mobile
+  browser checks, strict types, linters and both Next/Sites builds pass. Calendar
+  layouts were visually inspected with the unchanged cube. Two PostgreSQL
+  concurrency cases run separately in CI; final remote results belong to the PR.
+- Details, setup, API and acceptance limits: [PHASE_09_CALENDAR.md](PHASE_09_CALENDAR.md).
+- Exact next phase: Phase 10 Email (Gmail, then Outlook mail), not started here.
+
 ## Phase 8 development — notifications and jobs
 
 - Opt-in morning/evening schedules, quiet hours and responsive notification
