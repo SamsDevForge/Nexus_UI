@@ -117,8 +117,9 @@ npm run test:e2e
 ```
 
 Set `NEXUS_E2E_PYTHON` if Python is in a virtual environment. To use installed
-Edge locally, set `NEXUS_E2E_BROWSER_CHANNEL=msedge`. CI installs Chromium and
-runs the same tests. The fixture refuses startup unless `NEXUS_E2E=1`; the
+Edge locally, set `NEXUS_E2E_BROWSER_CHANNEL=msedge`. CI uses preinstalled Chrome
+on the pinned Ubuntu 24.04 runner and runs the same tests without a browser/apt
+download step. The fixture refuses startup unless `NEXUS_E2E=1`; the
 Playwright configuration supplies that flag only to the isolated test process.
 It is not a production identity or provider fallback.
 

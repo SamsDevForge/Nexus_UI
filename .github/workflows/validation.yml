@@ -17,7 +17,10 @@ jobs:
       - run: npm test
       - run: npm run build
   browser:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      NEXUS_E2E_BROWSER_CHANNEL: chrome
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -31,7 +34,6 @@ jobs:
           cache-dependency-path: backend/requirements*.txt
       - run: npm ci
       - run: pip install -r backend/requirements.txt
-      - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
   backend:
     runs-on: ubuntu-latest

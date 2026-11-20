@@ -35,6 +35,8 @@ implemented. Neither Phase 6 nor full Phase 7 cloud acceptance is claimed.
   locally and locked cube hashes remain tested. Browser setup warms the planner
   route and checks real bridge responses before UI assertions; individual
   assertion timeouts remain bounded. Remote validation is rerun after adjustment.
+  The browser job uses preinstalled Chrome on a pinned Ubuntu 24.04 runner to
+  avoid a stalled apt/browser installer, with a ten-minute job limit.
 - Compatible framework/security patches applied under D-036. The final runtime
   dependency audit reports zero findings. Eleven development/tooling advisories
   remain in the retained vinext/Cloudflare/Vite stack; no forced major tooling
