@@ -8,6 +8,12 @@ settings, and durable manual Quick Capture records.
 The default runtime remains deterministic `mock` mode. Live mode is opt-in and
 fails closed when its Firebase or API configuration is incomplete.
 
+An opt-in [commute planner development preview](docs/PUBLIC_CONTEXT_PREVIEW.md)
+adds real location search, endpoint weather forecasts, optional driving
+estimates and deterministic preparation/departure times at `/app/context`.
+It works locally without the unavailable hosting account. Other daily screens
+remain sample-data experiences; cloud acceptance is still open.
+
 ## Local frontend
 
 Requires Node.js 20.9 or newer.
@@ -70,6 +76,9 @@ Uvicorn, and checks `/health/ready`.
 Phase 6 does not connect Gmail, Calendar, Maps, weather, Notion, Microsoft
 Graph/Teams, Drive, n8n, a model provider, notifications, or Android. The
 Microsoft Teams SVG is registered only as a sanitized product asset.
+
+The separately authorized public-context preview connects geocoding, forecasts
+and optional OSRM only. It grants suggestion authority and changes no calendar.
 
 Provider setup and production verification are documented in
 [`docs/PHASE_06_USER_SETUP.md`](docs/PHASE_06_USER_SETUP.md).

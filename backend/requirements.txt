@@ -7,3 +7,4 @@ pydantic-settings==2.14.2
 SQLAlchemy==2.0.51
 tzdata==2026.3
 uvicorn[standard]==0.51.0
+httpx==0.28.1

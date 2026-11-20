@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     firebase_project_id: str | None = None
     firebase_service_account_json_b64: str | None = None
     log_level: str = "INFO"
+    public_context_enabled: bool = False
+    osrm_base_url: str | None = None
     auto_create_test_schema: bool = Field(default=False, exclude=True)
 
     @model_validator(mode="after")

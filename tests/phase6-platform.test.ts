@@ -6,7 +6,18 @@ import {
   getNexusPublicRuntimeConfig,
   getNexusRuntimeMode,
 } from "../lib/runtime/config";
-import { installNexusPublicRuntimeEnvironment } from "../lib/runtime/worker-environment";
+import { installNexusContextRuntimeEnvironment, installNexusPublicRuntimeEnvironment } from "../lib/runtime/worker-environment";
+
+test("context backend binding stays separate from public browser configuration", () => {
+  const bindings = { NEXUS_CONTEXT_API_URL: "https://context.nexus.test", NEXT_PUBLIC_NEXUS_RUNTIME_MODE: "mock" };
+  const publicTarget: Record<string, string | undefined> = {};
+  installNexusPublicRuntimeEnvironment(bindings, publicTarget);
+  assert.deepEqual(publicTarget, { NEXT_PUBLIC_NEXUS_RUNTIME_MODE: "mock" });
+  assert.equal("NEXUS_CONTEXT_API_URL" in getNexusPublicRuntimeConfig(bindings), false);
+  const serverTarget: Record<string, string | undefined> = {};
+  installNexusContextRuntimeEnvironment(bindings, serverTarget);
+  assert.equal(serverTarget.NEXUS_CONTEXT_API_URL, bindings.NEXUS_CONTEXT_API_URL);
+});
 
 test("successful HTTP without an API envelope cannot confirm a saved result", async () => {
   const client = new NexusApiClient({
