@@ -26,6 +26,12 @@ leased incremental synchronization and verified webhook scheduling. The dedicate
 Calendar screen reports sources, freshness and preparation conflicts. Real OAuth
 and deployed acceptance remain open; default mode stays a local demonstration.
 
+[Phase 10 Email](docs/PHASE_10_EMAIL.md) adds a source-linked review queue,
+separate read-only Gmail/Outlook consent, bounded Inbox polling, conservative
+extraction, attachment metadata and explicit corrections. Mail evidence and
+credentials use a separate encrypted store; full bodies are not retained.
+Default examples remain fictional and real provider acceptance remains open.
+
 ## Local frontend
 
 Requires Node.js 20.9 or newer.

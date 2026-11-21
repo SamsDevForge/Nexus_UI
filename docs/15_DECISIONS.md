@@ -417,3 +417,20 @@ Retain source/freshness and partial/unavailable states. Provider fixtures are
 test-only; do not fabricate successful live consent, sync or webhook delivery.
 Earlier cloud gates and Phase 8 device acceptance remain open, and the lost
 private Site identity and locked cube remain unchanged.
+
+## D-039 — Owner-requested Email phase after merging PR #4
+
+PR #4 was merged at `61779bc4` on the owner's instruction to continue development.
+Implement Phase 10 with Gmail then Outlook Inbox read-only consent and bounded
+polling, a source-linked review queue, deterministic important-message detection,
+deadline/event/attachment discovery and explicit corrections. Keep ambiguous
+inferences unconfirmed; do not send mail, download attachments, follow message
+instructions or create calendar events/tasks automatically. Later LLM reasoning,
+Notion/Teams and broader proactive workflows remain outside this phase.
+
+Use a separate encrypted mail store/credential key, one-use PKCE consent, latest
+50 Inbox messages from the preceding 14 days, bounded ephemeral text processing,
+and encrypted minimal structured evidence retained only within that window.
+Display incomplete coverage and stale sources. Deletion/revocation clears owned
+copies and prevents in-flight workers from restoring them. Existing cloud gates
+remain open; no real mailbox or replacement hosting identity is provisioned.
