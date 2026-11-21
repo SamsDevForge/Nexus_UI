@@ -10,6 +10,7 @@ test("calendar demo supports manual scheduling and explains disconnected sources
   await expect(page.getByRole("button", { name: "Connect Google", exact: true })).toBeDisabled();
   await expect(page.getByRole("button", { name: "Connect Outlook", exact: true })).toBeDisabled();
   const date = await page.getByLabel("Week starting").inputValue();
+  await page.getByRole("button", { name: "Add event", exact: true }).click();
   await page.getByLabel("Event title", { exact: true }).fill("Field visit");
   await page.getByLabel("Location", { exact: true }).fill("Test farm");
   await page.getByLabel("Starts", { exact: true }).fill(`${date}T10:00`);

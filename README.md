@@ -32,6 +32,11 @@ extraction, attachment metadata and explicit corrections. Mail evidence and
 credentials use a separate encrypted store; full bodies are not retained.
 Default examples remain fictional and real provider acceptance remains open.
 
+The [workspace UI refinement](docs/UI_AUDIT_2026-11-21.md) unifies Calendar,
+Mail, Notifications and Commute, adds an accessible single-row mobile dock,
+and makes event entry and review actions easier to find. The large cube and
+existing sample/live service boundaries are preserved.
+
 ## Local frontend
 
 Requires Node.js 20.9 or newer.

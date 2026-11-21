@@ -24,6 +24,28 @@ PR #4 is merged at `61779bc4`. Under the owner's request (D-039), Phase 10
 Email is developed on `codex/nexus-email`. Existing deployment, Calendar and
 push-device acceptance gates remain open. No real mailbox was accessed.
 
+PR #5 is merged at `dd576dbe`. The owner requested a UI improvement pass rather
+than the next integration. `codex/nexus-ui-refinement` implements D-040; Phase 11
+remains unstarted and earlier cloud/provider gates remain open.
+
+## UI refinement — 21 November 2026
+
+- Shared Calendar/Mail/Notifications/Commute workspace headers, mode notices,
+  reading surfaces, spacing and primary actions; schedule-first wide layout.
+- Single-row mobile dock plus complete native More navigation and account
+  controls. Measured dock height reduced from 104 to 64px. Keyboard/Escape/focus
+  behavior, touch targets and Quick Capture spacing are checked in the browser.
+- Discoverable Calendar add action and an on-demand event editor with focus and
+  safe-close handling. Mail review retains evidence/corrections with a clearer
+  selected-message and save-action hierarchy.
+- Desktop/laptop/mobile screenshots compare matching populated, empty and
+  disconnected states. Locked cube and landing sources remain unchanged.
+- Local validation: TypeScript, ESLint and 82 frontend tests pass. Ten existing
+  browser regressions and two new desktop/mobile UI cases pass. Production builds
+  and full remote CI are verified before handoff; final evidence belongs to the
+  UI PR. No backend service or provider authority is changed.
+- Audit and reproduction: [UI_AUDIT_2026-11-21.md](UI_AUDIT_2026-11-21.md).
+
 ## Phase 10 development — Email review
 
 - Responsive `/app/mail` review queue with importance filters, source evidence,

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useNexusAuth } from "@/lib/auth/AuthProvider";
+import { WorkspaceHeader, WorkspaceNotice } from "./WorkspaceChrome";
 import "./CommutePlanner.css";
 
 interface Place { name: string; region?: string; country?: string; latitude: number | null; longitude: number | null }
@@ -81,11 +82,9 @@ export function CommutePlanner() {
   }
 
   const formatTime = (value: string) => new Date(value).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
-  return <div className="commute-page">
-    <header><p className="section-kicker">Public context · explicit inputs</p><h1>Plan your departure.</h1>
-      <p>Bring your commitment, journey time and weather into one clear plan.</p></header>
-    <p className="commute-disclosure">This planner requests real public forecasts. The other daily screens still use sample data.
-      Nothing is added to a calendar and no notification is sent.</p>
+  return <div className="commute-page workspace-page">
+    <WorkspaceHeader eyebrow="Commute & weather" title="Plan your departure." description="Bring your commitment, journey time and weather into one clear plan." mode="Public forecasts" />
+    <WorkspaceNotice>This planner requests real public forecasts. The other daily screens still use sample data. Nothing is added to a calendar and no notification is sent.</WorkspaceNotice>
     <form id="commute-form" onSubmit={calculate} className="commute-form">
       <div className="commute-places">{(["origin", "destination"] as const).map(kind => <fieldset key={kind}>
         <legend>{kind === "origin" ? "Starting point" : "Destination"}</legend>
@@ -114,7 +113,7 @@ export function CommutePlanner() {
       <label className="commute-checkbox"><input type="checkbox" checked={driving} disabled={!!busy} onChange={e => { setDriving(e.target.checked); invalidate(); }} />Request a driving estimate if configured; use my fallback if unavailable</label>
       <p className="commute-consent">Searching sends the place query to Open-Meteo/GeoNames. Preparing sends coordinates to Open-Meteo for forecasts;
         optional driving estimates use the configured OSRM service. No live traffic is available.</p>
-      <button className="primary-button" disabled={!!busy} type="submit">{busy === "plan" ? "Preparing your plan…" : "Prepare departure plan"}</button>
+      <button className="primary-button workspace-primary" disabled={!!busy} type="submit">{busy === "plan" ? "Preparing your plan…" : "Prepare departure plan"}</button>
     </form>
     {error && <p className="commute-error" role="alert">{error}</p>}
     {plan && <section ref={resultRef} tabIndex={-1} className="commute-result" aria-label="Departure plan" aria-live="polite">

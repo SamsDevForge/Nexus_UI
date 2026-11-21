@@ -434,3 +434,18 @@ and encrypted minimal structured evidence retained only within that window.
 Display incomplete coverage and stale sources. Deletion/revocation clears owned
 copies and prevents in-flight workers from restoring them. Existing cloud gates
 remain open; no real mailbox or replacement hosting identity is provisioned.
+
+## D-040 — Owner-requested UI refinement after PR #5
+
+The owner requested merging PR #5 and improving the UI. PR #5 is merged at
+`dd576dbe`. This branch is a focused UI iteration, not Phase 11 integration.
+Keep the locked large cube, current service adapters, permissions, phase gates
+and unavailable Site identity. Do not change the NASA repository.
+
+Apply the established UI playbook: compare desktop/laptop/mobile screenshots,
+prioritize useful actions and readable surfaces, consolidate workspace visual
+patterns, and replace the crowded nine-destination mobile dock with four frequent
+destinations plus an accessible More dialog containing every remaining route and
+account controls. Keep Calendar manual entry easy to discover, Mail evidence
+close to review, and Notification schedules scannable. Clearly label sample and
+live/public sources. No new provider/backend capability is introduced.

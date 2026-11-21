@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { MobileProductNavigation } from "./MobileProductNavigation";
 import { GlobalSearch } from "./GlobalSearch";
 import { ProductIcon } from "./ProductIcon";
 import { ProductLandingCubeBackdrop } from "./ProductLandingCubeBackdrop";
@@ -142,7 +143,7 @@ export function ProductShell({
                     ? { label: "Success", detail: "Result recorded" }
                     : productState.source === "rate-limited"
                       ? { label: "Limited", detail: "Last-known data" }
-        : { label: "Observing", detail: "3 live signals" };
+        : { label: "Sample scenario", detail: "Demonstration signals" };
 
   const toggleFocusMode = () => {
     const nextFocusMode = !focusMode;
@@ -153,9 +154,10 @@ export function ProductShell({
   useEffect(() => {
     if (previousPathRef.current === pathname) return;
     previousPathRef.current = pathname;
-    window.requestAnimationFrame(() =>
-      mainRef.current?.focus({ preventScroll: true }),
-    );
+    window.requestAnimationFrame(() => {
+      if (mainRef.current) mainRef.current.scrollTop = 0;
+      mainRef.current?.focus({ preventScroll: true });
+    });
   }, [pathname]);
 
   return (
@@ -360,7 +362,7 @@ export function ProductShell({
             >
               <span aria-hidden="true" />
               <b>Search</b>
-              <kbd>⌘K</kbd>
+              <kbd>Ctrl K / ⌘ K</kbd>
             </button>
             <Link
               className="mobile-controls-link"
@@ -387,22 +389,7 @@ export function ProductShell({
         </main>
       </div>
 
-      <nav className="mobile-navigation" aria-label="Primary product navigation">
-        {dailyNavigation.map((item) => {
-          const active = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={scenarioHref(item.href, scenario)}
-              className={active ? "mobile-nav-link is-active" : "mobile-nav-link"}
-              aria-current={active ? "page" : undefined}
-            >
-              <span className="mobile-nav-cue" aria-hidden="true" />
-              <b>{item.label}</b>
-            </Link>
-          );
-        })}
-      </nav>
+      <MobileProductNavigation daily={dailyNavigation} controls={controlNavigation} pathname={pathname} scenario={scenario} accountName={accountName} live={auth.mode === "phase6-live"} signOut={auth.signOut} />
 
       <GlobalSearch
         scenario={scenario}
