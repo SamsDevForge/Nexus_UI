@@ -49,8 +49,13 @@ Read the documents in numerical order before starting implementation.
 | `10_CODEX_EXECUTION_PROTOCOL.md` | How to work through phases with Codex |
 | `11_COMPLETE_FEATURE_MATRIX.md` | Every promised and added feature mapped to a phase |
 | `12_ACCEPTANCE_GATES.md` | Definition of done for UI, backend, AI, and release work |
+| `16_FINAL_PRODUCT_VISION.md` | Owner-supplied complete end-product vision; future scope |
 | `15_DECISIONS.md` | Durable product and engineering decisions |
 | `PROGRESS.md` | Current implementation status; update after every phase |
+| `PUBLIC_CONTEXT_PREVIEW.md` | Standalone commute preview, setup, contracts, validation and remaining gates |
+| `PHASE_08_NOTIFICATIONS.md` | Notification schedules, queue/worker, opt-in push, verification and remaining gates |
+| `PHASE_09_CALENDAR.md` | Calendar consent, sync, imports and remaining gates |
+| `PHASE_10_EMAIL.md` | Bounded email review, consent, privacy and remaining gates |
 | `prompts/PHASE_01_CODEX_PROMPT.md` | The first implementation prompt |
 | `prompts/UI_REDESIGN_PROMPT.md` | A reusable visual-audit and redesign prompt |
 

@@ -1,0 +1,27 @@
+.commute-page { max-width: 1100px; margin: auto; padding: clamp(18px, 4vw, 48px); color: var(--nx-text-1, #f3f7fb); }
+.commute-page h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin: 10px 0; }
+.commute-page p { line-height: 1.6; }
+.commute-result h2 { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.25; margin: 8px 0 24px; }
+.commute-result p { margin: 10px 0; }
+.commute-forecasts { margin: 24px 0; }
+.commute-forecasts h3 { margin-bottom: 8px; }
+.commute-disclosure, .commute-consent { color: var(--nx-text-2, #aab6c5); font-size: 1rem; }
+.commute-form, .commute-result { background: rgba(14,20,28,.88); border: 1px solid rgba(207,226,245,.16); border-radius: 20px; padding: clamp(16px, 3vw, 32px); margin: 24px 0; }
+.commute-places, .commute-options, .commute-forecasts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; }
+.commute-form fieldset { min-width: 0; border: 1px solid rgba(207,226,245,.16); padding: 16px; border-radius: 12px; }
+.commute-form legend { font-size: 1.125rem; padding: 0 8px; }
+.commute-form label { display: flex; flex-direction: column; gap: 8px; font-size: 1rem; margin: 12px 0; }
+.commute-form input:not([type=checkbox]) { width: 100%; min-width: 0; background: #090d13; border: 1px solid #566779; border-radius: 8px; padding: 12px; color: #f3f7fb; font: inherit; color-scheme: dark; }
+.commute-page button { min-height: 44px; padding: 10px 16px; border: 1px solid #657d90; border-radius: 9px; background: #192734; color: #eef7ff; cursor: pointer; font-size: 1rem; }
+.commute-page button:disabled { opacity: .5; cursor: wait; }
+.commute-page :focus-visible { outline: 2px solid #9edcfa; outline-offset: 3px; }
+.commute-coordinates { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.commute-form small, .commute-result small { font-size: .875rem; line-height: 1.5; color: #aab6c5; }
+.commute-form .commute-checkbox { flex-direction: row; align-items: center; min-height: 44px; }
+.commute-matches { list-style: none; padding: 0; display: grid; gap: 8px; }
+.commute-matches button { width: 100%; text-align: left; }
+.commute-error, .commute-warning { color: #f3c58a; }
+.commute-result ol { padding: 0; list-style: none; }
+.commute-result li { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid #344250; padding: 14px 0; }
+.commute-result a { color: #9edcfa; text-decoration: underline; }
+@media (max-width: 720px) { .commute-places, .commute-options, .commute-forecasts { grid-template-columns: minmax(0,1fr); } }

@@ -1,0 +1,37 @@
+import { expect, test } from "@playwright/test";
+
+test("mail review keeps evidence, corrections and demo boundaries clear", async ({ page }, testInfo) => {
+  if (process.env.CI) await page.context().addCookies([{ name: "nexus-focus-mode", value: "on", url: "http://127.0.0.1:3101" }]);
+  const errors: string[] = [], calls: string[] = [];
+  page.on("pageerror", e => errors.push(e.message));
+  page.on("request", r => { if (r.url().includes("/api/v1/mail")) calls.push(r.url()); });
+  await page.goto("/app/mail");
+  await expect(page.getByRole("heading", { name: "3 messages to consider", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Connect Gmail", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Connect Outlook mail", exact: true })).toBeDisabled();
+  await expect(page.getByRole("link", { name: /Open original message/ })).toHaveCount(0);
+  await page.getByLabel("Item title", { exact: true }).fill("Corrected field report");
+  await expect(page.getByRole("button", { name: "Refresh review", exact: true })).toBeDisabled();
+  await page.getByLabel("Review decision").selectOption("confirmed");
+  await page.getByRole("button", { name: "Save sample review", exact: true }).click();
+  await expect(page.getByText("Sample review saved for this screen.", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("Item title", { exact: true })).toHaveValue("Corrected field report");
+  await expect(page.getByText("field-report-rubric.pdf", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /Workshop time needs a check/ }).click();
+  await expect(page.getByRole("heading", { name: "Workshop time needs a check", exact: true })).toBeFocused();
+  await expect(page.getByLabel("Date or time with offset")).toHaveValue("");
+  await page.getByLabel("Item title", { exact: true }).fill("Unsaved change");
+  await page.getByRole("button", { name: "Discard unsaved edits", exact: true }).click();
+  await expect(page.getByLabel("Item title", { exact: true })).toHaveValue("Workshop next Friday");
+  await page.getByLabel("Review decision").selectOption("dismissed");
+  await page.getByRole("button", { name: "Save sample review", exact: true }).click();
+  await expect(page.getByText("Your previous decision: dismissed. Original value: Unresolved.", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.getByRole("heading", { name: "Workshop time needs a check", exact: true }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath("mail-review.png") });
+  await page.getByRole("heading", { name: "Mail sources, on your terms.", exact: true }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath("mail-sources.png") });
+  expect(calls).toEqual([]); expect(errors).toEqual([]);
+  await page.reload();
+  await expect(page.getByLabel("Item title", { exact: true })).toHaveValue("Submit the field report");
+});

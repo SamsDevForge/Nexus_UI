@@ -8,6 +8,30 @@ settings, and durable manual Quick Capture records.
 The default runtime remains deterministic `mock` mode. Live mode is opt-in and
 fails closed when its Firebase or API configuration is incomplete.
 
+An opt-in [commute planner development preview](docs/PUBLIC_CONTEXT_PREVIEW.md)
+adds real location search, endpoint weather forecasts, optional driving
+estimates and deterministic preparation/departure times at `/app/context`.
+It works locally without the unavailable hosting account. Other daily screens
+remain sample-data experiences; cloud acceptance is still open.
+
+[Phase 8 notifications](docs/PHASE_08_NOTIFICATIONS.md) adds opt-in brief
+schedules, a durable inbox/worker queue and Firebase Installation ID push
+plumbing. The default UI is a labeled demonstration; real scheduling requires
+configured identity, PostgreSQL and a separately started worker. Deployed
+browser/device acceptance remains open.
+
+[Phase 9 Calendar and timetable](docs/PHASE_09_CALENDAR.md) adds an owner-scoped
+agenda, manual events, ICS/timetable imports, read-only Google/Outlook OAuth,
+leased incremental synchronization and verified webhook scheduling. The dedicated
+Calendar screen reports sources, freshness and preparation conflicts. Real OAuth
+and deployed acceptance remain open; default mode stays a local demonstration.
+
+[Phase 10 Email](docs/PHASE_10_EMAIL.md) adds a source-linked review queue,
+separate read-only Gmail/Outlook consent, bounded Inbox polling, conservative
+extraction, attachment metadata and explicit corrections. Mail evidence and
+credentials use a separate encrypted store; full bodies are not retained.
+Default examples remain fictional and real provider acceptance remains open.
+
 ## Local frontend
 
 Requires Node.js 20.9 or newer.
@@ -26,7 +50,7 @@ NEXT_PUBLIC_NEXUS_RUNTIME_MODE=phase6-live
 
 ## Local backend
 
-The backend requires Python 3.11 or newer.
+The backend requires Python 3.12 or newer.
 
 ```powershell
 cd backend
@@ -70,6 +94,9 @@ Uvicorn, and checks `/health/ready`.
 Phase 6 does not connect Gmail, Calendar, Maps, weather, Notion, Microsoft
 Graph/Teams, Drive, n8n, a model provider, notifications, or Android. The
 Microsoft Teams SVG is registered only as a sanitized product asset.
+
+The separately authorized public-context preview connects geocoding, forecasts
+and optional OSRM only. It grants suggestion authority and changes no calendar.
 
 Provider setup and production verification are documented in
 [`docs/PHASE_06_USER_SETUP.md`](docs/PHASE_06_USER_SETUP.md).

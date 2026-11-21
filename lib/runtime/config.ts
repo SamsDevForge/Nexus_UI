@@ -8,6 +8,7 @@ export interface NexusPublicRuntimeConfig {
     authDomain: string;
     projectId: string;
     appId: string;
+    messagingSenderId?: string;
   };
 }
 
@@ -18,7 +19,8 @@ type PublicRuntimeEnvironment = Partial<
     | "NEXT_PUBLIC_FIREBASE_API_KEY"
     | "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN"
     | "NEXT_PUBLIC_FIREBASE_PROJECT_ID"
-    | "NEXT_PUBLIC_FIREBASE_APP_ID",
+    | "NEXT_PUBLIC_FIREBASE_APP_ID"
+    | "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
     string
   >
 >;
@@ -46,6 +48,9 @@ export function getNexusPublicRuntimeConfig(
       authDomain: source["NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN"] ?? "",
       projectId: source["NEXT_PUBLIC_FIREBASE_PROJECT_ID"] ?? "",
       appId: source["NEXT_PUBLIC_FIREBASE_APP_ID"] ?? "",
+      ...(source["NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID"]
+        ? { messagingSenderId: source["NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID"] }
+        : {}),
     },
   };
 }

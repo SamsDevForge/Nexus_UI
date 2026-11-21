@@ -188,11 +188,24 @@ export function AuthProvider({
   );
 
   const signOut = useCallback(async () => {
+    let pushRevocationUnconfirmed = false;
+    if (apiClient && firebaseUser) {
+      let timeout: ReturnType<typeof setTimeout> | undefined;
+      try {
+        const { revokeBrowserPush } = await import("@/lib/notifications/browser-push");
+        await Promise.race([
+          revokeBrowserPush(apiClient, firebaseUser.uid),
+          new Promise<never>((_, reject) => { timeout = setTimeout(() => reject(new Error("Push cleanup timed out.")), 8_000); }),
+        ]);
+      } catch { pushRevocationUnconfirmed = true; }
+      finally { if (timeout) clearTimeout(timeout); }
+    }
     if (auth) await signOutFromFirebase(auth);
     setFirebaseUser(null);
     setNexusUser(null);
+    if (pushRevocationUnconfirmed) setError("Signed out. Browser push revocation could not be confirmed; use your browser’s site permissions to block notifications if needed.");
     router.replace("/sign-in");
-  }, [auth, router]);
+  }, [auth, apiClient, firebaseUser, router]);
 
   const completeOnboarding = useCallback(
     async (payload: OnboardingPayload) => {
