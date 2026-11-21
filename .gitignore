@@ -52,3 +52,6 @@ next-env.d.ts
 *.tsbuildinfo
 /dist/
 /.wrangler/
+
+# Local before/after UI evidence
+/ui-review/

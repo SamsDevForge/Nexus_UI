@@ -7,8 +7,8 @@ export type CalendarAction = (work: () => Promise<string>) => Promise<boolean>;
 const field = (data: FormData, name: string) => String(data.get(name) ?? "");
 const localInput = (value: string) => { const d = new Date(value); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); };
 
-export function ManualCalendarForm({ service, act, busy, editing, close, sample }: {
-  service: CalendarService; act: CalendarAction; busy: boolean; editing: CalendarEvent | null; close: () => void; sample: boolean;
+export function ManualCalendarForm({ service, act, busy, editing, close, sample, onDirty }: {
+  service: CalendarService; act: CalendarAction; busy: boolean; editing: CalendarEvent | null; close: (saved?: boolean) => void; sample: boolean; onDirty: () => void;
 }) {
   const saveKey = useRef<string | null>(null);
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -21,9 +21,9 @@ export function ManualCalendarForm({ service, act, busy, editing, close, sample 
         preparation_minutes: Number(data.get("preparation")), idempotency_key: key }, editing?.id);
       return sample ? "Sample event saved for this screen." : "Event saved to NEXUS.";
     });
-    if (done) { form.reset(); saveKey.current = null; close(); }
+    if (done) { form.reset(); saveKey.current = null; close(true); }
   }
-  return <form onSubmit={submit} onInput={() => { saveKey.current = null; }}>
+  return <form onSubmit={submit} onInput={() => { saveKey.current = null; onDirty(); }}>
     <p className="calendar-note">Times below use your browser timezone. The agenda displays your account timezone. Manual events stay in NEXUS.</p>
     <div className="calendar-form-grid">
       <label>Event title<input name="title" required maxLength={200} defaultValue={editing?.title} /></label>
@@ -32,7 +32,7 @@ export function ManualCalendarForm({ service, act, busy, editing, close, sample 
       <label>Ends<input name="end" type="datetime-local" required defaultValue={editing ? localInput(editing.endsAt) : undefined} /></label>
       <label>Preparation minutes<input name="preparation" type="number" required min={0} max={240} defaultValue={editing?.preparationMinutes ?? 15} /></label>
     </div>
-    <div className="calendar-actions"><button disabled={busy} type="submit">{editing ? "Save event changes" : sample ? "Add sample event" : "Add event"}</button>{editing && <button type="button" disabled={busy} onClick={close}>Cancel editing</button>}</div>
+    <div className="calendar-actions"><button disabled={busy} type="submit">{editing ? "Save event changes" : sample ? "Add sample event" : "Add event"}</button>{editing && <button type="button" disabled={busy} onClick={() => close(false)}>Cancel editing</button>}</div>
   </form>;
 }
 
