@@ -16,6 +16,8 @@ const eslintConfig = defineConfig([
     ".wrangler/**",
     "test-results/**",
     "playwright-report/**",
+    "ui-review/**",
+    "backend/.venv/**",
     "next-env.d.ts",
   ]),
 ]);

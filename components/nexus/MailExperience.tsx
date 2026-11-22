@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useNexusAuth } from "@/lib/auth/AuthProvider";
 import { createLiveMailService, createSampleMailService, mailIsImportant, type MailSnapshot } from "@/lib/services/mail-service";
 import { MailReviewForm } from "./MailReviewForm";
+import { WorkspaceHeader, WorkspaceNotice } from "./WorkspaceChrome";
 import "./MailExperience.css";
 
 const format = (value: string) => new Date(value).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
@@ -54,9 +55,9 @@ function MailWorkspace() {
     window.requestAnimationFrame(() => document.getElementById("mail-detail-title")?.focus());
   }
   const consent = params.get("consent");
-  return <div className="mail-page"><header className="mail-intro"><p className="mail-kicker">COMMUNICATION, WITH EVIDENCE</p><h1>Signal in the inbox.</h1><p>Review the message before it becomes a commitment.</p></header>
-    <p className="mail-boundary">{sample ? "Demonstration mode. These are fictional messages; reviews stay on this screen and reset on reload. No mailbox is connected." : "Read-only Inbox review · up to 50 messages per source from the past 14 days. Detection uses conservative patterns, not a model. No message is sent, marked read, or changed."}</p>
-    {consent && <p role="status">{consent === "connected" ? "Mail consent saved. Waiting for the worker’s first confirmed sync." : consent === "denied" ? "Mail consent declined. No new mailbox access was granted." : "Mail connection could not be completed. Start consent again."}</p>}
+  return <div className="mail-page workspace-page"><WorkspaceHeader eyebrow="Mail & evidence" title="Signal in the inbox." description="Review the message before it becomes a commitment." mode={sample ? "Demonstration" : "Read-only Inbox"} />
+    <WorkspaceNotice>{sample ? "Demonstration mode. These are fictional messages; reviews stay on this screen and reset on reload. No mailbox is connected." : "Read-only Inbox review · up to 50 messages per source from the past 14 days. Pattern matches need your review. No message is sent, marked read, or changed."}</WorkspaceNotice>
+    {consent && <p role="status">{consent === "connected" ? "Mail consent saved. Waiting for the first confirmed sync." : consent === "denied" ? "Mail consent declined. No new mailbox access was granted." : "Mail connection could not be completed. Start consent again."}</p>}
     {error && <p role="alert" className="mail-warning">{error}</p>}{message && <p role="status">{message}</p>}
     {!service && <p role="alert">Sign in to a configured live account to review your mail.</p>}
     {service && <><div className="mail-toolbar"><label>Review filter<select value={filter} disabled={dirty || busy} onChange={e => setFilter(e.target.value)}><option value="all">All messages</option><option value="important">Important</option><option value="unreviewed">Needs review</option></select></label>
@@ -88,7 +89,7 @@ function MailWorkspace() {
               {conn?.status === "connected" && <button disabled={busy || dirty || snapshot.paused} onClick={() => void act(async () => { await service.sync(conn.id); return "Mail sync queued. Results change only after a confirmed provider read."; })}>Request mail sync</button>}
               {conn && conn.status !== "revoked" && <button disabled={busy} onClick={() => { if (window.confirm("Disconnect mail and erase its NEXUS evidence and corrections? Withdraw the app’s provider grant in your account settings too if desired.")) { discard(); void act(async () => { setSnapshot(null); await service.disconnect(conn.id); return "Mail disconnected. NEXUS credentials, evidence and corrections removed. Provider account consent can be withdrawn separately."; }); } }}>Disconnect &amp; erase copies</button>}
             </div></div>; })}
-          <p className="mail-meta">The separate mail worker polls every five minutes. Expired evidence is hidden immediately and physically removed by that worker. A paused or stopped worker cannot keep the view fresh. These reviews do not feed notification briefs or a model.</p>
+          <p className="mail-meta">Connected sources refresh about every five minutes. Older evidence expires after 14 days. Check the last confirmed sync before relying on a suggestion. These reviews stay separate from your notification briefs.</p>
         </section>
       </>}
     </>}

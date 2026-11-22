@@ -6,6 +6,7 @@ import { useNexusAuth } from "@/lib/auth/AuthProvider";
 import { enableBrowserPush, observeForegroundBriefs, revokeBrowserPush } from "@/lib/notifications/browser-push";
 import { createLiveNotificationService, createSampleNotificationService,
   type BriefPreferences, type BriefSnapshot } from "@/lib/services/notification-service";
+import { WorkspaceHeader, WorkspaceNotice } from "./WorkspaceChrome";
 import "./NotificationsExperience.css";
 
 const reasons: Record<string, string> = {
@@ -69,21 +70,17 @@ function NotificationsWorkspace() {
   }
 
   const sample = auth.mode === "mock";
-  return <div className="notifications-page">
-    <header>
-      <p className="section-kicker">Briefs · on your terms</p>
-      <h1>A useful moment.<br />Not another interruption.</h1>
-      <p>Choose when NEXUS prepares your day and helps you close it.</p>
-    </header>
-    <p className="notifications-boundary">{sample
+  return <div className="notifications-page workspace-page">
+    <WorkspaceHeader eyebrow="Briefs & quiet hours" title="Your day, at the right moment." description="Choose when NEXUS prepares your day and helps you close it." mode={sample ? "Demonstration" : "Scheduled briefs"} />
+    <WorkspaceNotice>{sample
       ? "Demonstration mode. Changes last only on this screen; no background job runs and no notification is sent."
-      : "Briefs use your saved NEXUS event drafts. Calendar copies are not consulted by these briefs. Push acceptance does not confirm device receipt."}</p>
+      : "Briefs use your saved NEXUS event drafts. Calendar copies are not consulted by these briefs. Push acceptance does not confirm device receipt."}</WorkspaceNotice>
     {error && <p className="notifications-error" role="alert">{error}</p>}
     {message && <p role="status">{message}</p>}
     {!service && <p role="alert">Live notifications require a configured account and API connection.</p>}
     {service && !snapshot && !error && <p role="status">Loading your notification preferences…</p>}
     {service && error && <button disabled={busy} onClick={() => void act(async () => { const value = await service.load(); setDraft(value.preferences); return "Notifications refreshed."; })}>Retry / refresh</button>}
-    {snapshot && draft && service && <>
+    {snapshot && draft && service && <div className="notification-layout">
       <form className="notification-schedule" onSubmit={event => {
         event.preventDefault();
         void act(async () => { setDraft(await service.save(draft)); return sample ? "Sample preferences updated for this screen." : "Notification preferences saved."; });
@@ -107,7 +104,7 @@ function NotificationsWorkspace() {
           </div>
         </fieldset>
         <label className="notification-toggle"><input type="checkbox" disabled={busy} checked={draft.inApp} onChange={event => setDraft({ ...draft, inApp: event.target.checked })} />Enable the in-app delivery channel</label>
-        <p className="notification-meta">At most one brief of each kind per local day. Briefs expire two hours after their original scheduled time; quiet hours and a 30-minute cooldown can delay or suppress them. Email briefs are not available yet.</p>
+        <details><summary>Schedule rules and limits</summary><p className="notification-meta">At most one brief of each kind per local day. Briefs expire two hours after their original scheduled time; quiet hours and a 30-minute cooldown can delay or suppress them. Email briefs are not available yet.</p></details>
         <button type="submit" disabled={busy}>{busy ? "Working…" : sample ? "Update sample preferences" : "Save brief preferences"}</button>
       </form>
       <section className="notification-push" aria-labelledby="push-heading">
@@ -154,6 +151,6 @@ function NotificationsWorkspace() {
           </article>
         </li>)}</ul>
       </section>
-    </>}
+    </div>}
   </div>;
 }
