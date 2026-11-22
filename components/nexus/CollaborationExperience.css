@@ -1,0 +1,49 @@
+.collaboration-page { width: min(100%,1184px); margin: 0 auto; padding: clamp(22px,3.3vw,44px) clamp(22px,3.3vw,44px) 80px; background: rgba(7,13,19,.9); border-top: 1px solid var(--nx-line); color: var(--nx-text-1); }
+.collaboration-page p { line-height: 1.65; }
+.collaboration-page :is(button,input,select,textarea) { font: inherit; color: inherit; border: 1px solid #405462; background: #101e29; padding: 10px 13px; min-height: 44px; max-width: 100%; }
+.collaboration-page button { cursor: pointer; }
+.collaboration-page button:disabled { cursor: not-allowed; color: #a5b1bb; border-color: #2b3e4c; background: #0b1720; }
+.collaboration-page :is(input,select,textarea) { width: 100%; margin-top: 7px; border-radius: 7px; background: #09141e; }
+.collaboration-page textarea { resize: vertical; line-height: 1.65; }
+.collaboration-page label { display: block; margin: 16px 0; font-size: .8125rem; color: var(--nx-text-2); }
+.collaboration-page a { color: #c4e6fa; text-underline-offset: 4px; overflow-wrap: anywhere; }
+.collaboration-page :is(h2,h3) { line-height: 1.3; font-weight: 550; letter-spacing: -.025em; }
+.collaboration-page h2 { font-size: 1.35rem; margin: 6px 0 14px; }
+.collaboration-page h3 { font-size: 1.05rem; margin: 12px 0; }
+.collaboration-page .collaboration-kicker { font-size: .6875rem; letter-spacing: .1em; text-transform: uppercase; color: var(--nx-accent); margin: 0 0 8px; }
+.collaboration-page .collaboration-meta { color: var(--nx-text-2); font-size: .8125rem; margin: 8px 0; }
+.collaboration-page .collaboration-warning { color: var(--nx-warning); font-size: .875rem; }
+.collaboration-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.collaboration-count { color: var(--nx-text-2); border: 1px solid var(--nx-line); padding: 5px 10px; border-radius: 30px; font-size: .8125rem; }
+.collaboration-workbench { display: grid; grid-template-columns: minmax(240px,.85fr) minmax(0,1.35fr); margin: 30px 0; gap: 30px; align-items: start; }
+.collaboration-reading { border-left: 1px solid var(--nx-line); padding-left: 30px; min-height: 340px; }
+.collaboration-page ul { list-style: none; padding: 0; margin: 14px 0; }
+.collaboration-document-list li { border-bottom: 1px solid var(--nx-line); }
+.collaboration-document-list li > button { position: relative; display: grid; gap: 9px; width: 100%; text-align: left; padding: 19px 32px 19px 14px; border: 0; border-left: 2px solid transparent; border-radius: 0; background: none; }
+.collaboration-document-list li > button[aria-pressed=true] { border-left-color: var(--nx-accent); background: #95c8e60b; }
+.collaboration-document-list button span,.collaboration-document-list small { color: var(--nx-text-2); font-size: .75rem; font-weight: 400; line-height: 1.5; }
+.collaboration-document-list strong { font-size: 1rem; line-height: 1.5; font-weight: 550; }
+.collaboration-document-list button > span:last-child { position: absolute; right: 12px; top: 50%; color: var(--nx-accent); }
+.collaboration-empty { padding: 25px 0; color: var(--nx-text-2); max-width: 430px; }
+.collaboration-empty h2,.collaboration-empty h3 { color: var(--nx-text-1); }
+.collaboration-excerpt { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .9375rem; padding: 18px 0; border-top: 1px solid var(--nx-line); }
+.collaboration-prepare { border-top: 1px solid var(--nx-line); margin-top: 24px; padding-top: 14px; }
+.collaboration-prepare > button { margin-top: 12px; }
+.collaboration-editor { margin: 28px 0; padding: 26px; background: #10202a66; border: 1px solid #496270; border-radius: 10px; }
+.collaboration-editor h2 { scroll-margin-top: 26px; }
+.collaboration-editor fieldset { padding: 0; border: 0; margin: 0; min-width: 0; }
+.collaboration-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.collaboration-approval { border-top: 1px solid var(--nx-line); margin-top: 24px; padding-top: 12px; display: flex; gap: 24px; align-items: center; }
+.collaboration-approval p { color: var(--nx-text-2); font-size: .875rem; flex: 1; }
+.collaboration-approval button { flex-shrink: 0; }
+.collaboration-drafts,.collaboration-sources { padding: 28px 0 0; margin-top: 30px; border-top: 1px solid var(--nx-line); }
+.collaboration-page :is(.collaboration-drafts,.collaboration-selected-sources,.collaboration-discovery) li { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--nx-line); }
+.collaboration-page :is(.collaboration-drafts,.collaboration-selected-sources) li > div { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.collaboration-page :is(.collaboration-drafts,.collaboration-selected-sources,.collaboration-discovery) li > button { flex-shrink: 0; }
+.collaboration-provider-row { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 16px 0; }
+.collaboration-provider-row > div + div { border-left: 1px solid var(--nx-line); padding-left: 30px; }
+.collaboration-discovery { background: #10202a66; padding: 20px; border: 1px solid var(--nx-line); margin: 20px 0; }
+.collaboration-page .collaboration-permission { display: flex; align-items: center; gap: 10px; margin: 12px 0 0; }
+.collaboration-page .collaboration-permission input { margin: 0; min-height: 18px; }
+@media(max-width:800px) { .collaboration-workbench { grid-template-columns: 1fr; } .collaboration-reading { padding: 25px 0 0; border-left: 0; border-top: 1px solid var(--nx-line); min-height: auto; } }
+@media(max-width:640px) { .collaboration-page { padding: 26px 20px 60px; } .collaboration-editor { padding: 18px; } .collaboration-provider-row { grid-template-columns: 1fr; gap: 20px; } .collaboration-provider-row > div + div { border-left: 0; border-top: 1px solid var(--nx-line); padding: 20px 0 0; } .collaboration-approval { flex-direction: column; align-items: stretch; gap: 12px; } .collaboration-section-heading { align-items: start; } .collaboration-page :is(.collaboration-drafts,.collaboration-selected-sources,.collaboration-discovery) li { align-items: start; flex-direction: column; gap: 8px; } }

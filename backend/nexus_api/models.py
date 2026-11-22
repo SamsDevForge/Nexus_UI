@@ -392,3 +392,120 @@ class MailMessage(TimestampMixin, Base):
     payload_encrypted: Mapped[str] = mapped_column(Text)
     correction_encrypted: Mapped[str | None] = mapped_column(Text)
     revision: Mapped[int] = mapped_column(Integer, default=1)
+
+
+class CollaborationConnection(TimestampMixin, Base):
+    __tablename__ = "collaboration_connections"
+    __table_args__ = (
+        UniqueConstraint("user_id", "provider", name="uq_collab_owner_provider"),
+        UniqueConstraint("id", "user_id", name="uq_collab_conn_owner"),
+        Index("ix_collab_due", "status", "next_sync_at"),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    provider: Mapped[str] = mapped_column(String(16))
+    workspace_id: Mapped[str | None] = mapped_column(String(100))
+    status: Mapped[str] = mapped_column(String(24), default="connected")
+    generation: Mapped[int] = mapped_column(Integer, default=1)
+    sync_version: Mapped[int] = mapped_column(Integer, default=1)
+    credentials_encrypted: Mapped[str | None] = mapped_column(Text)
+    last_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    next_sync_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
+    lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    lease_token: Mapped[uuid.UUID | None] = mapped_column(Uuid)
+    error_code: Mapped[str | None] = mapped_column(String(64))
+
+
+class CollaborationOAuthState(Base):
+    __tablename__ = "collaboration_oauth_states"
+    state_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    provider: Mapped[str] = mapped_column(String(16))
+    verifier_encrypted: Mapped[str] = mapped_column(Text)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class CollaborationSource(TimestampMixin, Base):
+    __tablename__ = "collaboration_sources"
+    __table_args__ = (
+        UniqueConstraint("connection_id", "external_key", name="uq_collab_source"),
+        UniqueConstraint("id", "user_id", name="uq_collab_source_owner"),
+        ForeignKeyConstraint(
+            ["connection_id", "user_id"],
+            ["collaboration_connections.id", "collaboration_connections.user_id"],
+            ondelete="CASCADE",
+        ),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    connection_id: Mapped[uuid.UUID] = mapped_column(Uuid)
+    external_key: Mapped[str] = mapped_column(String(64))
+    locator_encrypted: Mapped[str] = mapped_column(Text)
+    writable: Mapped[bool] = mapped_column(Boolean, default=False)
+    generation: Mapped[int] = mapped_column(Integer, default=1)
+    error_code: Mapped[str | None] = mapped_column(String(64))
+    last_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    limited: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class CollaborationDocument(TimestampMixin, Base):
+    __tablename__ = "collaboration_documents"
+    __table_args__ = (
+        UniqueConstraint("source_id", "external_key", name="uq_collab_document"),
+        UniqueConstraint("id", "user_id", name="uq_collab_doc_owner"),
+        ForeignKeyConstraint(
+            ["source_id", "user_id"],
+            ["collaboration_sources.id", "collaboration_sources.user_id"],
+            ondelete="CASCADE",
+        ),
+        Index("ix_collab_doc_owner_expiry", "user_id", "expires_at"),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    source_id: Mapped[uuid.UUID] = mapped_column(Uuid)
+    external_key: Mapped[str] = mapped_column(String(64))
+    payload_encrypted: Mapped[str] = mapped_column(Text)
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class CollaborationDraft(TimestampMixin, Base):
+    __tablename__ = "collaboration_drafts"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["document_id", "user_id"],
+            ["collaboration_documents.id", "collaboration_documents.user_id"],
+            ondelete="CASCADE",
+        ),
+        ForeignKeyConstraint(
+            ["destination_id", "user_id"],
+            ["collaboration_sources.id", "collaboration_sources.user_id"],
+            ondelete="CASCADE",
+        ),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    document_id: Mapped[uuid.UUID] = mapped_column(Uuid)
+    destination_id: Mapped[uuid.UUID] = mapped_column(Uuid)
+    payload_encrypted: Mapped[str] = mapped_column(Text)
+    result_encrypted: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(24), default="prepared")
+    revision: Mapped[int] = mapped_column(Integer, default=1)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    error_code: Mapped[str | None] = mapped_column(String(64))
+
+
+class CollaborationWebhookReceipt(Base):
+    __tablename__ = "collaboration_webhook_receipts"
+    event_key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    kind: Mapped[str] = mapped_column(String(16))
+    secret_encrypted: Mapped[str | None] = mapped_column(Text)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

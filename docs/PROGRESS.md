@@ -26,7 +26,35 @@ push-device acceptance gates remain open. No real mailbox was accessed.
 
 PR #5 is merged at `dd576dbe`. The owner requested a UI improvement pass rather
 than the next integration. `codex/nexus-ui-refinement` implements D-040; Phase 11
-remains unstarted and earlier cloud/provider gates remain open.
+was unstarted at that handoff and earlier cloud/provider gates remain open.
+
+PR #6 is merged at `e5665d11`. Under the owner's request (D-041), Phase 11
+Notion/Teams development is implemented on `codex/nexus-notion-teams`.
+Real provider registration, consent, webhook delivery, note writes and deployed
+acceptance remain open. Optional Drive and Phase 12 are not implemented.
+
+## Phase 11 development — Selected sources and approved notes
+
+- New responsive Sources & notes workspace with permission-aware source excerpts,
+  deterministic class/meeting templates, editable versioned previews, explicit
+  note approval and visible uncertain/conflict outcomes. Mobile More includes it.
+- Separate Notion REST OAuth and Teams organizations-only PKCE consent. Metadata
+  discovery does not ingest content until selection. Teams is read-only, with
+  organization-wide delegated scope clearly explained before consent.
+- Six encrypted owner-bound collaboration tables, migration, dedicated bounded
+  polling worker, conditional leases, source expiry, generation/revocation guards,
+  HMAC-verified Notion invalidation and protected manual webhook bootstrap.
+- Notion create/append and managed-paragraph update workflows with serialized
+  revision claims, evidence revalidation, audit records and external edit/move
+  preflight checks. Uncertain writes are not automatically resent.
+- Fictional adapters remain screen-local. Existing Knowledge/Notes/Connections
+  and Activity prototypes remain distinct; no LLM, RAG or unified-search claim.
+- Desktop/laptop/mobile reading, preview and permission layouts were inspected
+  with the locked cube preserved. Final static checks, full tests, production
+  builds and PostgreSQL CI evidence are recorded in the phase PR.
+- Setup, API contracts, bounds and open acceptance:
+  [PHASE_11_COLLABORATION.md](PHASE_11_COLLABORATION.md).
+- Next: Phase 12 n8n orchestration layer; not started in this branch.
 
 ## UI refinement — 21 November 2026
 
