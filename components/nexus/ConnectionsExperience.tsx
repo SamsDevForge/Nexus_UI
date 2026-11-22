@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { AmbientMotion } from "./AmbientMotion";
 import type {
   ConnectionRecord,
   ConnectionSnapshot,
@@ -112,12 +113,25 @@ export function ConnectionsExperience({
                 remain independent.
               </p>
             </div>
-            <div className="connection-signal" aria-hidden="true">
+            <AmbientMotion
+              className="connection-signal"
+              state={
+                snapshot.scenario === "privacy-paused"
+                  ? "paused"
+                  : snapshot.viewState === "offline" ||
+                      snapshot.viewState === "error" ||
+                      snapshot.viewState === "permission-denied"
+                    ? "degraded"
+                    : snapshot.attentionCount
+                      ? "attention"
+                      : "success"
+              }
+            >
               <span />
               <i />
               <i />
               <i />
-            </div>
+            </AmbientMotion>
             <div className="control-hero-metrics">
               <span><b>{snapshot.healthyCount}</b>Healthy</span>
               <span><b>{snapshot.attentionCount}</b>Attention</span>

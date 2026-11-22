@@ -306,3 +306,146 @@ authority.
 Corrections and deletion operate on the owning user's stored capture. Raw
 capture text, provider tokens, email bodies, location history, and other
 sensitive content do not enter structured logs.
+
+## D-032 — Product motion is semantic, bounded, and visibility-aware
+
+NEXUS product motion communicates arrival, hierarchy, relationship, system
+state, feedback, or spatial continuity. Route content may use short region and
+bounded row choreography while the application shell, navigation, context bar,
+Quick Capture launcher, and locked cube remain stable.
+
+Continuous relative motion is limited to existing illustrations whose geometry
+already represents live relationships: Connections, Memory, and Activity.
+Their signal dots may orbit at different radii, phases, speeds, and directions
+around the existing central tile. Attention, success, degraded, and
+privacy-paused states alter that behavior without replacing textual status.
+
+Ambient loops pause offscreen, in hidden documents, and under reduced-motion
+preferences. Reduced motion removes orbit, drift, translation, scale, scan,
+pulse, and stagger while preserving every status, action, focus path, and live
+announcement. Motion remains dependency-free and must not import, couple to, or
+modify the locked Three.js cube.
+
+Rendered product-owner feedback found the initial cadence visually rushed.
+Motion therefore uses a deliberately slow cadence: 1200 ms item entry,
+900 ms region entry, 900 ms panels, and 28–36 second attention orbits. This is
+a timing calibration only; hierarchy, geometry, state meaning, and interaction
+authority remain unchanged.
+
+All orbital dots resolve their absolute position from one shared center after
+the original static placement rules. Their radii remain within the illustration
+boundary, and central-tile counter-rotation never translates its geometric
+center.
+
+
+## D-034 — Reconcile motion and the current platform foundation
+
+The owner authorized continued development and supplied the final product vision
+in `16_FINAL_PRODUCT_VISION.md`. Preserve the large cube's scale, position,
+material, lighting and visual dominance. Retain the existing phase order.
+
+The motion branch called Phase 6 accepted; newer foundation commits still require
+real-account acceptance. Preserve the newer database, auth, fetch and persistence
+fixes alongside the motion work. Neither branch is proof of deployed acceptance.
+The saved private Site is unavailable and the owner reports lost credentials.
+Preserve its identity; do not create a replacement or begin Phase 7 before the
+Phase 6 cloud acceptance gate can be verified.
+
+## D-035 — Continue isolated development without bypassing cloud acceptance
+
+After reviewing the remaining final-vision work, the owner explicitly requested
+continued implementation. This supersedes D-034's restriction on starting any
+later-phase development, only for independently testable development previews.
+It does not accept Phase 6, promote Phase 7, replace the lost private Site, or
+authorize invented deployment identities. Preserve the large cube unchanged.
+
+The first preview is an on-demand commute planner at `/app/context`: explicit
+locations and event time, Open-Meteo geocoding/forecasts, optional configured
+OSRM driving estimates, and deterministic preparation/departure arithmetic.
+It is disabled on the backend by default. Production requires existing Firebase
+identity verification. It grants suggestion authority only; no calendar write,
+notification, continuous tracking, or automatic action is introduced.
+
+Other daily screens retain their typed fixtures. Provider outages and missing
+weather stay unavailable rather than being replaced by sample data. This slice
+does not fulfill Calendar, traffic, notification, or complete Phase 7 acceptance.
+
+## D-036 — Patch runtime advisories without changing the cube renderer
+
+The dependency check during public-context validation found existing framework
+advisories. Update Next and its ESLint configuration to 16.4.6, React/React DOM/
+RSC to the compatible 19.2.9 patch line, and patched PostCSS/Sharp/gRPC overrides.
+Keep React below 19.3 because the accepted React Three Fiber renderer's peer
+range requires it. No locked cube source or renderer migration is authorized by
+this maintenance work. Apply compatible transitive fixes without forced major
+upgrades. The remaining vinext/Cloudflare/Vite tooling advisories require a
+separate verified tooling migration before hosted release.
+
+## D-037 — Owner-requested notification development after merging PR #2
+
+The owner explicitly requested merging PR #2 and continuing to the next phase.
+PR #2 is merged into its existing reconciliation development base. Develop
+Phase 8 notifications/scheduled jobs independently; earlier cloud acceptance
+and incomplete broader Phase 7 scope stay open. This does not replace the
+private Site or declare production acceptance. Preserve the locked cube.
+
+Use a durable PostgreSQL notification/outbox queue and an explicit background
+worker alongside FastAPI. Keep brief schedules opt-in, honor latest privacy
+and channel preferences at delivery, and never start a worker implicitly in
+the web process. Briefs use only owned, saved local event drafts and disclose
+that external calendars are not connected.
+
+Web push uses Firebase SDK 13.4/Admin SDK Installation IDs, an encrypted device
+identifier store, generic lock-screen text and explicit browser consent. The
+SDK update is an explicit prerequisite: validation found the token API deprecated.
+Provider acceptance is not device receipt.
+Uncertain/crashed push attempts are not blindly retried; the durable in-app
+item remains available. Development verification sends no external push.
+
+## D-038 — Owner-requested Calendar and timetable phase after PR #3
+
+The owner requested merging PR #3 and continuing to Phase 9. Develop manual
+events, bounded ICS/timetable imports, read-only Google primary Calendar and
+Outlook default Calendar consent/sync, verified webhook scheduling/renewal,
+normalized agenda events and deterministic conflict/preparation buffers.
+Firebase sign-in grants no calendar access. No calendar provider write is added.
+
+Use separate encrypted OAuth credentials, owner-bound one-use PKCE state,
+fixed provider URLs, an explicit calendar worker and generation checks so
+revocation prevents stale workers from storing data or making subsequent reads.
+Retain source/freshness and partial/unavailable states. Provider fixtures are
+test-only; do not fabricate successful live consent, sync or webhook delivery.
+Earlier cloud gates and Phase 8 device acceptance remain open, and the lost
+private Site identity and locked cube remain unchanged.
+
+## D-039 — Owner-requested Email phase after merging PR #4
+
+PR #4 was merged at `61779bc4` on the owner's instruction to continue development.
+Implement Phase 10 with Gmail then Outlook Inbox read-only consent and bounded
+polling, a source-linked review queue, deterministic important-message detection,
+deadline/event/attachment discovery and explicit corrections. Keep ambiguous
+inferences unconfirmed; do not send mail, download attachments, follow message
+instructions or create calendar events/tasks automatically. Later LLM reasoning,
+Notion/Teams and broader proactive workflows remain outside this phase.
+
+Use a separate encrypted mail store/credential key, one-use PKCE consent, latest
+50 Inbox messages from the preceding 14 days, bounded ephemeral text processing,
+and encrypted minimal structured evidence retained only within that window.
+Display incomplete coverage and stale sources. Deletion/revocation clears owned
+copies and prevents in-flight workers from restoring them. Existing cloud gates
+remain open; no real mailbox or replacement hosting identity is provisioned.
+
+## D-040 — Owner-requested UI refinement after PR #5
+
+The owner requested merging PR #5 and improving the UI. PR #5 is merged at
+`dd576dbe`. This branch is a focused UI iteration, not Phase 11 integration.
+Keep the locked large cube, current service adapters, permissions, phase gates
+and unavailable Site identity. Do not change the NASA repository.
+
+Apply the established UI playbook: compare desktop/laptop/mobile screenshots,
+prioritize useful actions and readable surfaces, consolidate workspace visual
+patterns, and replace the crowded nine-destination mobile dock with four frequent
+destinations plus an accessible More dialog containing every remaining route and
+account controls. Keep Calendar manual entry easy to discover, Mail evidence
+close to review, and Notification schedules scannable. Clearly label sample and
+live/public sources. No new provider/backend capability is introduced.

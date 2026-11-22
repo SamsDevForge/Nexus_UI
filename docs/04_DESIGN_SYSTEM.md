@@ -270,3 +270,18 @@ A screen is not complete if:
 The visual signature should come from purposeful contrast, stateful light,
 evidence-first insights, restrained glass depth, and a coherent
 context-to-action story.
+
+
+## Workspace refinement — 21 November 2026
+
+Calendar, Mail, Notifications and Commute use shared workspace chrome: bounded
+headings, a compact mode badge, a readable data-boundary notice, coordinated
+spacing and one clear light primary action. Today retains its distinctive
+cinematic decision surface. New daily pages should reuse this chrome rather
+than inventing another heading/control system.
+
+The mobile website dock contains Today, Calendar, Mail, Commute and More.
+More opens an accessible native dialog with every remaining daily/system route
+and account controls. Keep the dock to one row, preserve 44px targets and place
+Quick Capture above it. This website adaptation does not change the later
+Android navigation specification. Detailed review: `UI_AUDIT_2026-11-21.md`.

@@ -6,6 +6,7 @@ import {
 import handler from "vinext/server/app-router-entry";
 import {
   installNexusPublicRuntimeEnvironment,
+  installNexusContextRuntimeEnvironment,
   type NexusWorkerRuntimeEnvironment,
 } from "../lib/runtime/worker-environment";
 
@@ -36,6 +37,7 @@ interface ExecutionContext {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     installNexusPublicRuntimeEnvironment(env);
+    installNexusContextRuntimeEnvironment(env);
     const url = new URL(request.url);
 
     if (url.pathname === "/_vinext/image") {

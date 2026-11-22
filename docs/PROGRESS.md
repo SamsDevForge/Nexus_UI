@@ -2,11 +2,160 @@
 
 ## Current phase
 
-Phase 0 through Phase 5 are accepted. Phase 6 local implementation is complete
-and its cloud acceptance pass is in progress. Railway is deployed, Alembic is
-at the Phase 6 head, readiness is healthy, and the existing owner-only Sites
-project is configured for the live runtime. Real-account persistence and
-cross-user verification remain to be completed before Phase 6 is accepted.
+Phases 0 through 5 retain their recorded acceptance. The Phase 6 foundation
+and motion branches are reconciled on `codex/nexus-phase6-reconciliation`.
+Cloud acceptance remains open: the saved private Site is unavailable through
+the current connection and the owner reports lost credentials. Historical
+reports do not establish current deployment availability. Under renewed owner
+authorization (D-035), an isolated public-context development preview is now
+implemented. Neither Phase 6 nor full Phase 7 cloud acceptance is claimed.
+
+PR #2 is merged into its reconciliation development base at `f589f617`.
+The owner explicitly requested the next phase: Phase 8 notification development
+is implemented on `codex/nexus-notifications` under D-037. Earlier cloud gates
+and full Phase 8 deployed/device acceptance remain open.
+
+PR #3 is merged into the reconciliation development base at `1a5b3de`.
+Phase 9 Calendar/timetable development was completed on `codex/nexus-calendar`
+under the owner's explicit request (D-038). Real calendar OAuth, provider webhook
+and deployed acceptance remain open. No replacement Site has been created.
+
+PR #4 is merged at `61779bc4`. Under the owner's request (D-039), Phase 10
+Email is developed on `codex/nexus-email`. Existing deployment, Calendar and
+push-device acceptance gates remain open. No real mailbox was accessed.
+
+PR #5 is merged at `dd576dbe`. The owner requested a UI improvement pass rather
+than the next integration. `codex/nexus-ui-refinement` implements D-040; Phase 11
+remains unstarted and earlier cloud/provider gates remain open.
+
+## UI refinement — 21 November 2026
+
+- Shared Calendar/Mail/Notifications/Commute workspace headers, mode notices,
+  reading surfaces, spacing and primary actions; schedule-first wide layout.
+- Single-row mobile dock plus complete native More navigation and account
+  controls. Measured dock height reduced from 104 to 64px. Keyboard/Escape/focus
+  behavior, touch targets and Quick Capture spacing are checked in the browser.
+- Discoverable Calendar add action and an on-demand event editor with focus and
+  safe-close handling. Mail review retains evidence/corrections with a clearer
+  selected-message and save-action hierarchy.
+- Desktop/laptop/mobile screenshots compare matching populated, empty and
+  disconnected states. Locked cube and landing sources remain unchanged.
+- Local validation: TypeScript, ESLint and 82 frontend tests pass. Ten existing
+  browser regressions and two new desktop/mobile UI cases pass. Production builds
+  and full remote CI are verified before handoff; final evidence belongs to the
+  UI PR. No backend service or provider authority is changed.
+- Audit and reproduction: [UI_AUDIT_2026-11-21.md](UI_AUDIT_2026-11-21.md).
+
+## Phase 10 development — Email review
+
+- Responsive `/app/mail` review queue with importance filters, source evidence,
+  attachment metadata, editable/dismissible suggestions, source-change warnings,
+  revision-checked saves and protection against losing unsaved edits.
+- Separate Gmail/Outlook read-only OAuth with PKCE, one-use owner-bound consent,
+  encrypted credentials and fixed provider/callback URLs. Sign-in and Calendar
+  do not imply mail consent. Gmail evidence links select the consented account.
+- Dedicated encrypted mail schema and worker: up to 50 Inbox messages/source
+  from the previous 14 days, five-minute polling, conditional leases, bounded
+  reads, expiry cleanup, snapshot retention on failure and revocation guards.
+- Conservative English/ISO-date extraction; ambiguous dates remain unresolved.
+  No full message bodies, attachment bytes, model calls, send/mark-read operations,
+  automatic tasks or Calendar writes. Existing daily mocks remain distinct.
+- Default examples are fictional, screen-local and reset on reload. Real mailbox
+  consent, deployed processing and production privacy operation remain unverified.
+- Local validation: 82 frontend tests, 85 backend tests, ten desktop/mobile
+  browser checks, TypeScript, ESLint, Ruff and strict MyPy pass. Next and retained
+  Sites Worker production builds pass. Layouts were visually inspected with the
+  unchanged cube. Three real PostgreSQL concurrency cases run separately in CI;
+  final remote results belong to the phase PR.
+- Setup, limits, API and remaining gates: [PHASE_10_EMAIL.md](PHASE_10_EMAIL.md).
+- Next: Phase 11 Notion and Microsoft Teams; not started in this branch.
+
+## Phase 9 development — Calendar and timetable
+
+- Dedicated responsive `/app/calendar` agenda with source/date filters,
+  source freshness, stale/error/reconnect states, conflict/preparation warnings,
+  manual creation/edit/removal and NEXUS-only buffer controls.
+- Owned manual events, atomic named ICS copies and weekly timetables; bounded
+  recurrence expansion, exclusive all-day dates and explicit timezone policies.
+- Separate read-only Google primary / Outlook default Calendar OAuth consent,
+  Authlib PKCE, one-use owner-bound state, encrypted tokens/verifiers/cursors,
+  fixed callback/provider URLs and query/log redaction boundaries.
+- PostgreSQL/Alembic calendar schema, an explicit worker, conditional leases,
+  paginated initial/incremental reads, cursor recovery, daily window refresh,
+  verified webhook scheduling/renewal and polling fallback. Failed snapshots
+  preserve last confirmed data; revocation invalidates in-flight persistence.
+- No real provider requests or new cloud identities during verification. Default
+  screen-local samples reset on reload; imports/consent require configured live
+  accounts. Existing other daily screens and general connection controls remain
+  mocked. Notification briefs do not consult calendar copies and disclose this.
+- Local validation: 80 frontend tests, 71 backend tests, eight desktop/mobile
+  browser checks, strict types, linters and both Next/Sites builds pass. Calendar
+  layouts were visually inspected with the unchanged cube. Two PostgreSQL
+  concurrency cases run separately in CI; final remote results belong to the PR.
+- Details, setup, API and acceptance limits: [PHASE_09_CALENDAR.md](PHASE_09_CALENDAR.md).
+- Phase 9 handoff led to the Phase 10 development recorded above.
+
+## Phase 8 development — notifications and jobs
+
+- Opt-in morning/evening schedules, quiet hours and responsive notification
+  inbox/history UI with explicit sample/live boundaries.
+- Readable notification heading over the cube; mobile navigation retains
+  44-pixel touch targets as routes wrap, with Quick Capture above the nav.
+- Authenticated owner-scoped preference, inbox/read, test and device APIs.
+- Alembic migration, durable notification and encrypted-device push outbox,
+  separate 30-second worker, per-user locks/conditional claims, deduplication,
+  cooldown, expiry, privacy/channel checks and uncertain-send suppression.
+- Briefs explain only owned, saved local event drafts; no external calendar or
+  model was consulted. Lock-screen text contains no private event content.
+- Firebase JS 13.4/Admin 7.5 Installation ID registration/sending foundation,
+  opt-in service worker, expiry/tag handling, browser revocation and bounded
+  sign-out cleanup. No actual external push is sent during verification.
+- Local checks include a real worker subprocess delivering one explainable
+  scheduled brief, migration upgrade/downgrade/model comparison and encrypted
+  routing identifiers. PostgreSQL concurrency is separately checked in CI.
+- Validation: 77 frontend tests and 53 local backend tests pass; one PostgreSQL
+  concurrency case also passed in CI (54 backend tests total). Typecheck,
+  ESLint, Ruff and strict MyPy pass.
+  Six desktop/mobile browser cases pass, with explicit additional mobile
+  touch-target/Quick Capture spacing checks. Notification layouts were visually
+  inspected with the unchanged cube; Next and Sites/Worker builds pass. Runtime
+  dependency audit remains clear; the previously documented 11 tooling findings
+  remain. No real Firebase sign-in or device push receipt is claimed.
+- Account changes reset the notification workspace; an account change during
+  browser registration blocks attaching that in-flight registration to another user.
+- Setup, API contracts and acceptance limits: [`PHASE_08_NOTIFICATIONS.md`](PHASE_08_NOTIFICATIONS.md).
+
+## Public-context development preview — 20 November 2026
+
+- `/app/context`: responsive, keyboard-accessible commute planner using explicit
+  inputs, real place search, endpoint forecasts and optional OSRM driving estimates.
+- Deterministic UTC preparation/departure/arrival calculations, elapsed-time
+  warnings, explicit route fallback, complete hourly coverage checks, source
+  attribution, retrieval timestamps, stale-plan warning and manual refresh.
+- FastAPI schemas and provider adapter with bounded cache/deduplication,
+  timeouts, disabled-by-default feature gate and production Firebase verification.
+- Same-origin Next bridge; server-only backend binding in the Worker runtime.
+- Other daily screens retain sample data. No provider calendar write,
+  notification, background tracking, model or automatic action is introduced.
+- Setup, API contracts, provider terms, verification and remaining work:
+  [`PUBLIC_CONTEXT_PREVIEW.md`](PUBLIC_CONTEXT_PREVIEW.md).
+- Validation: 73 frontend tests, 33 backend tests and four desktop/mobile browser
+  checks pass; typecheck, ESLint, Ruff and strict MyPy pass. Live-provider smoke
+  verification returned geocoding, a real driving estimate and both endpoint
+  forecasts. Next and Sites/Worker production builds pass independently. The
+  cube hash checks remain unchanged. Desktop/mobile result layouts were visually
+  inspected; the retained Sites build still reports its existing chunk warning.
+- Linux CI separates functional API checks from software WebGL using the
+  existing Focus-mode cookie. Cube-enabled desktop/mobile layouts are inspected
+  locally and locked cube hashes remain tested. Browser setup warms the planner
+  route and checks real bridge responses before UI assertions; individual
+  assertion timeouts remain bounded. Remote validation is rerun after adjustment.
+  The browser job uses preinstalled Chrome on a pinned Ubuntu 24.04 runner to
+  avoid a stalled apt/browser installer, with a ten-minute job limit.
+- Compatible framework/security patches applied under D-036. The final runtime
+  dependency audit reports zero findings. Eleven development/tooling advisories
+  remain in the retained vinext/Cloudflare/Vite stack; no forced major tooling
+  migration or security-complete hosted-release claim is made.
 
 ## Completed
 
@@ -286,6 +435,61 @@ cross-user verification remain to be completed before Phase 6 is accepted.
   coverage and the complete 63-test frontend suite pass; private redeployment
   and real-account acceptance are in progress.
 
+- The post-Phase-6 motion-completeness pass added centralized press, item,
+  component, panel, and region timing; bounded route and row choreography; and
+  restrained panel, dialog, search, Quick Capture, and status feedback without
+  adding a motion dependency or changing the approved material system.
+- Connections, Memory, and Activity reuse their existing central tiles, rings,
+  and signal dots for state-aware relative orbital motion. A shared visibility
+  controller pauses ambient loops offscreen, in hidden documents, for the
+  privacy-paused state, and under reduced-motion preferences.
+- Sign-in, onboarding, Today, Timeline, Insights, NEXUS, Knowledge, Nexus
+  Notes, Search, Automations, Connections, Permission Centre, Memory, Activity,
+  Settings, Technicals, global search, and Quick Capture received rendered
+  motion review. Entry motion remains on route content while the shell,
+  navigation, context bar, and locked cube stay stable.
+- Motion verification covered 1440 x 900, 1280 x 800, 768 x 1024,
+  390 x 844, and a 720 x 450 reflow equivalent to 200% zoom. Populated,
+  loading, empty, partial, stale, degraded, denied, offline, success, running,
+  and recoverable-failure states retained their hierarchy with no
+  document-level horizontal overflow. Global Search and Quick Capture retained
+  focus containment, restoration, and narrow-viewport fit.
+- Motion-pass validation passes 65 frontend tests, 14 backend tests,
+  TypeScript, ESLint, Ruff, strict MyPy, Next.js and Sites/vinext production
+  builds, `git diff --check`, the secret scan, browser console and hydration
+  inspection, locked-cube hashes, both supplied SVG hashes, and the unchanged
+  22-file `exfonts/` manifest.
+- Product-owner review found the first motion cadence too fast. The follow-up
+  calibration moves item, region, panel, feedback, and semantic orbit motion
+  toward the calm end of the approved ranges while preserving the same
+  hierarchy, states, geometry, reduced-motion behavior, and stable shell.
+- A second rendered review exposed two calibration issues: card arrival still
+  felt rushed, and higher-specificity legacy dot positions displaced some
+  orbital centers. Card entry now takes 1200 ms, every animated dot explicitly
+  resolves from the same center, all radii remain within the illustration, and
+  the central tile no longer translates away from that center.
+- A third product-owner cadence review confirmed that the remaining visible
+  motion still read too quickly. Region and panel entry now take 900 ms, card
+  and row entry takes 1200 ms, attention orbits take 28–36 seconds, steady
+  orbits take 32–40 seconds, and degraded motion takes 48 seconds. Immediate
+  press acknowledgement remains responsive at 160 ms.
+
+## Reconciliation validation
+
+- The current platform branch and motion branch are combined without changes to
+  the locked cube source. LF checkout rules retain its approved hashes on Windows.
+- The API client rejects malformed success envelopes and distinguishes an unknown
+  save outcome after a connection loss from a confirmed failure. Two regression
+  tests cover these cases.
+- Daily context is visibly identified as a sample day, including narrow layouts.
+- Local validation: 72 frontend tests, 16 backend tests, TypeScript, ESLint,
+  Ruff and strict MyPy pass. Next.js and Sites/vinext production builds pass
+  independently. Browser checks cover Today, Connections, Memory, narrow layouts
+  and Quick Capture opening/closing, with no horizontal overflow or page errors.
+- The local npm distribution failed to invoke nested `npm` in postbuild; running
+  the Sites build directly succeeded. This is a local tooling limit.
+- These are local software checks, not production Firebase/Neon acceptance.
+
 ## Current implementation assumptions
 
 - The existing cinematic landing page is the accepted public visual baseline.
@@ -306,15 +510,17 @@ cross-user verification remain to be completed before Phase 6 is accepted.
   migration and API tests pass
 - Identity: Firebase web sign-in and server token verification implemented,
   pending deployed end-to-end verification
-- Integrations: Teams icon registered; no external data connector implemented
+- Integrations: opt-in public geocoding/weather and optional OSRM implemented
+  for the standalone commute planner; productivity connectors remain mocked
+- Notifications: Phase 8 API, durable worker/inbox and opt-in FCM plumbing
+  implemented; deployed browser/device receipt unverified
 - AI: not implemented
 - Android: not implemented
 
-Calendar, route, weather, task, future-source, document, conversation, search,
+Outside the standalone commute planner, Calendar, route, weather, task, future-source, document, conversation, search,
 connection, permission, memory, automation, export, provider deletion,
 approval, and action results remain deterministic mocks behind provider-neutral
-service boundaries. No model, productivity provider, notification service, or
-external tool is called.
+service boundaries. No model, productivity provider or notification service is called.
 
 Quick Capture does not read the clipboard, call a model or parser service, or
 write to a calendar provider. It renders pasted markup as plain text and uses
@@ -324,12 +530,11 @@ in Activity; they do not write to a provider calendar.
 
 ## Known limitations
 
-- Railway Terms of Service are accepted, but the connected workspace still has
-  no deployable project or service. The existing Sites project has no Phase 6
-  runtime keys. Consequently production Alembic state, Railway readiness, real
-  Firebase sign-in, durable reload/reauthentication, cross-user isolation,
-  error-state behavior, and a new private Sites version remain externally
-  unverified.
+- The saved private Sites project returns `project_not_found` through the
+  current connection. The owner reports lost credentials. No replacement Site
+  was created. Deployed sign-in, reload persistence and cross-user isolation
+  remain unverified. Phase 7 release acceptance remains gated on Phase 6 cloud
+  acceptance; isolated development is permitted by D-035.
 - Mock action approvals outside the Phase 6 durable boundaries still update
   only deterministic local state and reset on route reload.
 - Phase 3 connection setup, sync, reconnect, disconnect, export, deletion,
@@ -347,6 +552,7 @@ in Activity; they do not write to a provider calendar.
 
 ## Next phase
 
-Phase 7 — Weather, Maps, and Public Context APIs. Begin only after the Phase 6
-cloud acceptance checks in `docs/PHASE_06_USER_SETUP.md` pass. No Phase 7
-implementation has started.
+Restore existing deployment access and verify the earlier cloud gates, remaining
+Phase 7 scope and Phase 8 scheduled/device acceptance. The next development
+phase is Phase 9 — Calendar and timetable; no productivity OAuth, model or
+Android application is implemented by the notification change.

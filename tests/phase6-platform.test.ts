@@ -6,7 +6,42 @@ import {
   getNexusPublicRuntimeConfig,
   getNexusRuntimeMode,
 } from "../lib/runtime/config";
-import { installNexusPublicRuntimeEnvironment } from "../lib/runtime/worker-environment";
+import { installNexusContextRuntimeEnvironment, installNexusPublicRuntimeEnvironment } from "../lib/runtime/worker-environment";
+
+test("context backend binding stays separate from public browser configuration", () => {
+  const bindings = { NEXUS_CONTEXT_API_URL: "https://context.nexus.test", NEXT_PUBLIC_NEXUS_RUNTIME_MODE: "mock" };
+  const publicTarget: Record<string, string | undefined> = {};
+  installNexusPublicRuntimeEnvironment(bindings, publicTarget);
+  assert.deepEqual(publicTarget, { NEXT_PUBLIC_NEXUS_RUNTIME_MODE: "mock" });
+  assert.equal("NEXUS_CONTEXT_API_URL" in getNexusPublicRuntimeConfig(bindings), false);
+  const serverTarget: Record<string, string | undefined> = {};
+  installNexusContextRuntimeEnvironment(bindings, serverTarget);
+  assert.equal(serverTarget.NEXUS_CONTEXT_API_URL, bindings.NEXUS_CONTEXT_API_URL);
+});
+
+test("successful HTTP without an API envelope cannot confirm a saved result", async () => {
+  const client = new NexusApiClient({
+    baseUrl: "https://api.nexus.test", getToken: async () => "token",
+    fetchImplementation: async () => Response.json({ message: "ok" }),
+  });
+  await assert.rejects(client.request("/api/v1/captures/notes", { method: "POST" }),
+    (error: unknown) => error instanceof NexusApiError && error.code === "invalid_response");
+});
+
+test("a lost write response reports uncertainty instead of asserting no save occurred", async () => {
+  let serverCommitted = false;
+  const client = new NexusApiClient({
+    baseUrl: "https://api.nexus.test", getToken: async () => "token",
+    fetchImplementation: async () => {
+      serverCommitted = true;
+      throw new TypeError("Connection closed after commit");
+    },
+  });
+  await assert.rejects(client.request("/api/v1/captures/notes", { method: "POST" }),
+    (error: unknown) => error instanceof NexusApiError && error.code === "network_unavailable"
+      && /could not confirm whether/.test(error.message));
+  assert.equal(serverCommitted, true);
+});
 
 test("Phase 6 runtime selection is deliberate and mock-safe", () => {
   assert.equal(getNexusRuntimeMode(undefined), "mock");

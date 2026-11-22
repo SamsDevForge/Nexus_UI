@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { MobileProductNavigation } from "./MobileProductNavigation";
 import { GlobalSearch } from "./GlobalSearch";
 import { ProductIcon } from "./ProductIcon";
 import { ProductLandingCubeBackdrop } from "./ProductLandingCubeBackdrop";
@@ -22,6 +23,10 @@ const focusModeCookie = "nexus-focus-mode";
 
 const dailyNavigation = [
   { label: "Today", compact: "T", description: "Your day now", href: "/app/today" },
+  { label: "Commute planner", compact: "CP", description: "Forecast and departure", href: "/app/context" },
+  { label: "Calendar", compact: "CA", description: "Schedule and preparation", href: "/app/calendar" },
+  { label: "Mail review", compact: "MR", description: "Messages and evidence", href: "/app/mail" },
+  { label: "Notifications", compact: "N", description: "Briefs on your terms", href: "/app/notifications" },
   {
     label: "Timeline",
     compact: "TL",
@@ -112,7 +117,15 @@ export function ProductShell({
     .filter(Boolean)
     .join(" ");
   const shellState =
-    canonical === "privacy-paused"
+    pathname === "/app/mail"
+      ? { label: auth.mode === "mock" ? "Demonstration" : "Mail review", detail: "Read-only, source-linked evidence" }
+      : pathname === "/app/calendar"
+      ? { label: auth.mode === "mock" ? "Demonstration" : "Calendar copies", detail: "Source and freshness in Calendar" }
+      : pathname === "/app/notifications"
+      ? { label: auth.mode === "mock" ? "Demonstration" : "Scheduled briefs", detail: "Check delivery in your inbox" }
+      : pathname === "/app/context"
+      ? { label: "On demand", detail: "Forecasts and your inputs" }
+      : canonical === "privacy-paused"
       ? { label: "Privacy paused", detail: "0 new signals" }
       : canonical === "offline"
         ? { label: "Offline", detail: "Prepared state" }
@@ -130,7 +143,7 @@ export function ProductShell({
                     ? { label: "Success", detail: "Result recorded" }
                     : productState.source === "rate-limited"
                       ? { label: "Limited", detail: "Last-known data" }
-        : { label: "Observing", detail: "3 live signals" };
+        : { label: "Sample scenario", detail: "Demonstration signals" };
 
   const toggleFocusMode = () => {
     const nextFocusMode = !focusMode;
@@ -141,9 +154,10 @@ export function ProductShell({
   useEffect(() => {
     if (previousPathRef.current === pathname) return;
     previousPathRef.current = pathname;
-    window.requestAnimationFrame(() =>
-      mainRef.current?.focus({ preventScroll: true }),
-    );
+    window.requestAnimationFrame(() => {
+      if (mainRef.current) mainRef.current.scrollTop = 0;
+      mainRef.current?.focus({ preventScroll: true });
+    });
   }, [pathname]);
 
   return (
@@ -275,7 +289,7 @@ export function ProductShell({
           <span>
             <b>{accountName}</b>
             <small>
-              {auth.mode === "phase6-live" ? "Durable profile" : "Student profile"}
+              {auth.mode === "phase6-live" ? "Durable profile" : "Sample profile"}
             </small>
           </span>
           {auth.mode === "phase6-live" ? (
@@ -302,12 +316,13 @@ export function ProductShell({
         <header className="app-context-bar">
           <div className="mobile-brand">
             <BrandLockup />
+            <small className="sample-day-label">{pathname === "/app/mail" ? "Mail" : pathname === "/app/calendar" ? "Calendar" : pathname === "/app/notifications" ? "Briefs" : pathname === "/app/context" ? "Forecasts" : "Sample day"}</small>
           </div>
           <div className="context-location">
             <span className="context-pulse" aria-hidden="true" />
             <span>
-              <b>Saturday, 25 July</b>
-              <small>Bengaluru · IST</small>
+              <b>{pathname === "/app/mail" ? "Mail review" : pathname === "/app/calendar" ? "Your schedule" : pathname === "/app/notifications" ? "Notifications" : pathname === "/app/context" ? "Commute planner" : "Sample day · Saturday, 25 July"}</b>
+              <small>{pathname === "/app/mail" ? auth.mode === "mock" ? "Fictional messages · this screen only" : "Bounded Inbox evidence · read-only" : pathname === "/app/calendar" ? auth.mode === "mock" ? "Sample events · this screen only" : "Read-only sources · manual events" : pathname === "/app/notifications" ? auth.mode === "mock" ? "Demonstration · no sends" : "Schedules and delivery history" : pathname === "/app/context" ? "Public forecasts · your inputs" : "Bengaluru · IST"}</small>
             </span>
           </div>
           <div className="context-actions">
@@ -347,7 +362,7 @@ export function ProductShell({
             >
               <span aria-hidden="true" />
               <b>Search</b>
-              <kbd>⌘K</kbd>
+              <kbd>Ctrl K / ⌘ K</kbd>
             </button>
             <Link
               className="mobile-controls-link"
@@ -374,22 +389,7 @@ export function ProductShell({
         </main>
       </div>
 
-      <nav className="mobile-navigation" aria-label="Primary product navigation">
-        {dailyNavigation.map((item) => {
-          const active = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={scenarioHref(item.href, scenario)}
-              className={active ? "mobile-nav-link is-active" : "mobile-nav-link"}
-              aria-current={active ? "page" : undefined}
-            >
-              <span className="mobile-nav-cue" aria-hidden="true" />
-              <b>{item.label}</b>
-            </Link>
-          );
-        })}
-      </nav>
+      <MobileProductNavigation daily={dailyNavigation} controls={controlNavigation} pathname={pathname} scenario={scenario} accountName={accountName} live={auth.mode === "phase6-live"} signOut={auth.signOut} />
 
       <GlobalSearch
         scenario={scenario}
