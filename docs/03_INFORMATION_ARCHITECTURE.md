@@ -57,6 +57,7 @@ Purpose:
 | `/app/insights` | Ranked proactive recommendations |
 | `/app/nexus` | Conversation, explanations, and prepared actions |
 | `/app/knowledge` | Search and browse connected knowledge |
+| `/app/collaboration` | Selected Notion/Teams evidence and approval-gated note drafts |
 | `/app/notes` | NEXUS-created and connected notes |
 | `/app/automations` | Recipes, authority, runs, and dry-runs |
 | `/app/connections` | Accounts, permissions, health, and sync state |

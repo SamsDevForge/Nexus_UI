@@ -14,7 +14,7 @@ class CalendarBoundary:
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http" or not scope.get("path", "").startswith(
-            ("/api/v1/calendar", "/api/v1/mail")
+            ("/api/v1/calendar", "/api/v1/mail", "/api/v1/collaboration")
         ):
             await self.app(scope, receive, send)
             return
@@ -29,6 +29,8 @@ class CalendarBoundary:
                 if any(len(v) != 1 for v in values.values()):
                     raise ValueError("Duplicate callback fields")
                 state_key = "mail_oauth" if path.startswith("/api/v1/mail/") else "calendar_oauth"
+                if path.startswith("/api/v1/collaboration/"):
+                    state_key = "collaboration_oauth"
                 scope.setdefault("state", {})[state_key] = {k: v[0] for k, v in values.items()}
             except (ValueError, UnicodeError):
                 await JSONResponse({"message": "Invalid provider callback."}, status_code=400)(

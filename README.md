@@ -37,6 +37,12 @@ Mail, Notifications and Commute, adds an accessible single-row mobile dock,
 and makes event entry and review actions easier to find. The large cube and
 existing sample/live service boundaries are preserved.
 
+[Phase 11 Notion and Teams](docs/PHASE_11_COLLABORATION.md) adds the Sources &
+notes workspace: explicitly selected sources, encrypted bounded snapshots,
+verified Notion invalidation, editable class/meeting templates and revision-bound
+approval for Notion create/append/update. Teams stays read-only. Default examples
+are fictional; real provider consent, writes and hosted acceptance remain open.
+
 ## Local frontend
 
 Requires Node.js 20.9 or newer.

@@ -449,3 +449,25 @@ destinations plus an accessible More dialog containing every remaining route and
 account controls. Keep Calendar manual entry easy to discover, Mail evidence
 close to review, and Notification schedules scannable. Clearly label sample and
 live/public sources. No new provider/backend capability is introduced.
+
+## D-041 — Owner-requested Notion/Teams phase after PR #6
+
+The owner requested merging PR #6 and proceeding according to the plan. It is
+merged at `e5665d11`. Develop Phase 11 selected Notion page/data-source access,
+Teams channel evidence, permission-aware encrypted ingestion, verified Notion
+webhook scheduling, class/meeting-note templates and revision-bound approval for
+Notion create/append/update. Do not start Phase 12. Optional Drive is not selected.
+Preserve the cube/UI pass, lost Site identity and earlier acceptance gates.
+
+Notion pins API 2026-03-11 and uses its documented state-bound REST OAuth flow
+(Basic-auth JSON token exchange; PKCE is not documented for this flow). Teams
+uses separate organizations-only S256 PKCE consent with Team.ReadBasic.All,
+Channel.ReadBasic.All, ChannelMessage.Read.All and offline_access. These scopes
+are broader than a selected channel; local selection remains mandatory. Channel
+meeting-context messages are supported, not chats/transcripts/file downloads.
+
+All provider verification uses fixtures until registrations/hosting are available.
+No real note or Teams message is written during development. Source text is
+untrusted, not model/tool authority. Notes are editable templates with excerpts
+and citations, not claimed AI synthesis. Writes require a preview and explicit
+approval; uncertain provider writes are never automatically retried.

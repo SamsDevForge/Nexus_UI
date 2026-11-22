@@ -26,6 +26,7 @@ const dailyNavigation = [
   { label: "Commute planner", compact: "CP", description: "Forecast and departure", href: "/app/context" },
   { label: "Calendar", compact: "CA", description: "Schedule and preparation", href: "/app/calendar" },
   { label: "Mail review", compact: "MR", description: "Messages and evidence", href: "/app/mail" },
+  { label: "Sources & notes", compact: "SN", description: "Notion and Teams evidence", href: "/app/collaboration" },
   { label: "Notifications", compact: "N", description: "Briefs on your terms", href: "/app/notifications" },
   {
     label: "Timeline",
@@ -117,7 +118,9 @@ export function ProductShell({
     .filter(Boolean)
     .join(" ");
   const shellState =
-    pathname === "/app/mail"
+    pathname === "/app/collaboration"
+      ? { label: auth.mode === "mock" ? "Demonstration" : "Selected sources", detail: "Each note write needs approval" }
+      : pathname === "/app/mail"
       ? { label: auth.mode === "mock" ? "Demonstration" : "Mail review", detail: "Read-only, source-linked evidence" }
       : pathname === "/app/calendar"
       ? { label: auth.mode === "mock" ? "Demonstration" : "Calendar copies", detail: "Source and freshness in Calendar" }

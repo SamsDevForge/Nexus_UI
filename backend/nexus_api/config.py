@@ -45,6 +45,16 @@ class Settings(BaseSettings):
     google_mail_client_secret: SecretStr | None = None
     microsoft_mail_client_id: str | None = None
     microsoft_mail_client_secret: SecretStr | None = None
+    collaboration_enabled: bool = False
+    collaboration_encryption_key: SecretStr | None = None
+    collaboration_api_public_url: str | None = None
+    collaboration_web_url: str | None = None
+    notion_client_id: str | None = None
+    notion_client_secret: SecretStr | None = None
+    teams_client_id: str | None = None
+    teams_client_secret: SecretStr | None = None
+    notion_webhook_verification_token: SecretStr | None = None
+    collaboration_webhook_admin_key: SecretStr | None = None
     auto_create_test_schema: bool = Field(default=False, exclude=True)
 
     @model_validator(mode="after")
@@ -54,6 +64,8 @@ class Settings(BaseSettings):
             self.calendar_web_url,
             self.mail_api_public_url,
             self.mail_web_url,
+            self.collaboration_api_public_url,
+            self.collaboration_web_url,
         ):
             if origin:
                 parsed = urlsplit(origin)
@@ -81,6 +93,13 @@ class Settings(BaseSettings):
             from cryptography.fernet import Fernet
 
             Fernet(self.mail_encryption_key.get_secret_value().encode())
+        if (
+            self.collaboration_encryption_key
+            and self.collaboration_encryption_key.get_secret_value()
+        ):
+            from cryptography.fernet import Fernet
+
+            Fernet(self.collaboration_encryption_key.get_secret_value().encode())
         if self.push_enabled:
             if not self.notifications_enabled or not self.push_token_encryption_key:
                 raise ValueError("Push requires notifications and an encryption key.")

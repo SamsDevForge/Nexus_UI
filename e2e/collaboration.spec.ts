@@ -1,0 +1,37 @@
+import { expect,test } from "@playwright/test";
+
+test("selected evidence leads to an edited and explicitly approved sample note",async ({ page },testInfo) => {
+  await page.context().addCookies([{ name:"nexus-focus-mode",value:"on",url:"http://127.0.0.1:3101" }]);
+  const errors:string[] = [], calls:string[] = [], confirmations:string[] = [];
+  page.on("dialog",async dialog => { confirmations.push(dialog.message()); await dialog.accept(); });
+  page.on("pageerror",error => errors.push(error.message));
+  page.on("request",request => { if (request.url().includes("/api/v1/collaboration")) calls.push(request.url()); });
+  await page.goto("/app/collaboration");
+  await expect(page.getByRole("heading",{ name:"Keep the source. Add your thinking.",exact:true })).toBeVisible();
+  await expect(page.getByRole("button",{ name:"Connect Notion",exact:true })).toBeDisabled();
+  await expect(page.getByRole("button",{ name:"Connect Teams",exact:true })).toBeDisabled();
+  await page.getByRole("button",{ name:/Before the next field visit/ }).click();
+  await expect(page.getByText(/Calibrate soil sensors/)).toBeVisible();
+  await page.getByRole("combobox",{ name:"Note template",exact:true }).selectOption("class");
+  await page.getByRole("button",{ name:"Prepare note draft",exact:true }).click();
+  await expect(page.getByRole("textbox",{ name:"Note content",exact:true })).toHaveValue(/Key concepts/);
+  await page.getByRole("textbox",{ name:"Note title",exact:true }).fill("My reviewed field notes");
+  await page.getByRole("textbox",{ name:"Note content",exact:true }).fill("Check the sampling depth before comparing soil readings.");
+  await expect(page.getByRole("button",{ name:"Refresh workspace",exact:true })).toBeDisabled();
+  await expect(page.getByRole("button",{ name:"Simulate approval",exact:true })).toBeDisabled();
+  await page.getByRole("button",{ name:"Save preview",exact:true }).click();
+  await expect(page.getByRole("button",{ name:"Simulate approval",exact:true })).toBeEnabled();
+  await page.getByRole("button",{ name:"Simulate approval",exact:true }).click();
+  await expect(page.getByText("Sample approval recorded. Nothing was published.",{ exact:true })).toBeVisible();
+  await expect(page.getByRole("link",{ name:/Open published note/ })).toHaveCount(0);
+  await page.getByRole("heading",{ name:"Review before publishing.",exact:true }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path:testInfo.outputPath("collaboration-note-preview.png") });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole("button",{ name:"Close preview",exact:true }).click();
+  await page.getByRole("button",{ name:"Remove source",exact:true }).first().click();
+  await expect(page.getByText("My reviewed field notes",{ exact:true })).toHaveCount(0);
+  await page.getByRole("heading",{ name:"Choose what comes in.",exact:true }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path:testInfo.outputPath("collaboration-source-permissions.png") });
+  expect(calls).toEqual([]); expect(errors).toEqual([]);
+  expect(confirmations.filter(message => message.startsWith("Simulate create"))).toHaveLength(1);
+});

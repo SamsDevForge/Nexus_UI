@@ -15,7 +15,10 @@ from fastapi.responses import JSONResponse
 from .api import api_router, health_router
 from .calendar_api import router as calendar_router
 from .calendar_boundary import CalendarBoundary
-from .calendar_provider import CalendarProvider
+from .calendar_provider import CalendarFailure, CalendarProvider
+from .collaboration_api import router as collaboration_router
+from .collaboration_provider import CollaborationProvider
+from .collaboration_service import CollaborationService
 from .config import Settings, get_settings
 from .db import Database
 from .errors import ApiError
@@ -67,11 +70,15 @@ def create_app(
         app.state.public_context = PublicContextService(client, settings.osrm_base_url)
         app.state.calendar_provider = CalendarProvider(settings)
         app.state.mail_provider = MailProvider(settings)
+        app.state.collaboration = CollaborationService(
+            database, settings, CollaborationProvider(settings)
+        )
         try:
             yield
         finally:
             await app.state.calendar_provider.close()
             await app.state.mail_provider.close()
+            await app.state.collaboration.provider.close()
             await client.aclose()
             await database.stop()
 
@@ -115,7 +122,9 @@ def create_app(
         request.state.request_id = incoming[:64] if incoming else str(uuid.uuid4())
         response = await call_next(request)
         response.headers["X-Request-ID"] = request.state.request_id
-        if request.url.path.startswith(("/api/v1/calendar", "/api/v1/mail")):
+        if request.url.path.startswith(
+            ("/api/v1/calendar", "/api/v1/mail", "/api/v1/collaboration")
+        ):
             response.headers["Cache-Control"] = "no-store"
             response.headers["Referrer-Policy"] = "no-referrer"
         return response
@@ -141,6 +150,17 @@ def create_app(
             ),
         )
 
+    @app.exception_handler(CalendarFailure)
+    async def handle_provider_error(request: Request, error: CalendarFailure) -> JSONResponse:
+        return JSONResponse(
+            status_code=502,
+            content=error_payload(
+                request,
+                error.code,
+                "The provider request was not confirmed. Check access and try again.",
+            ),
+        )
+
     @app.exception_handler(Exception)
     async def handle_unexpected_error(request: Request, error: Exception) -> JSONResponse:
         logging.getLogger("nexus.api").exception(
@@ -163,6 +183,7 @@ def create_app(
     app.include_router(notification_router)
     app.include_router(calendar_router)
     app.include_router(mail_router)
+    app.include_router(collaboration_router)
     app.add_middleware(CalendarBoundary)
     return app
 
